@@ -131,7 +131,7 @@ def metadata_block(
     """
     return {
         "@context": "https://c2pa.org/statements/v1",
-        "claim_generator": "AtherosAI Developer Compliance Kit",
+        "claim_generator": "AtherosAI Compliance Kit",
         "assertions": [
             {"label": "c2pa.ai_generated", "data": {
                 "generated_by": model, "system": system, "content_type": content_type}},

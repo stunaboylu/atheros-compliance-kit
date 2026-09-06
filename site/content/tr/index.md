@@ -14,16 +14,20 @@ atheros-kit init --ci github
 
 :::<p><a class="cta" href="quickstart.html">Beş dakikalık hızlı başlangıç</a><a class="cta ghost" href="honesty.html">Neyi ölçemediğini neden söyler</a><a class="cta ghost" href="/demo/">Gerçek bir raporu görün</a></p>
 
-## Sıfatsız dört sayı
+## atheros-compliance-kit'in çalışma zamanı bağımlılığı var mı?
+
+<p class="lead">Sıfatsız dört sayı — her biri build zamanında üründen ölçülüyor, elle yazılmıyor.</p>
 
 :::<div class="grid">
-:::<div class="card"><div class="stat good">0</div><p class="muted">çekirdekte çalışma zamanı bağımlılığı. Kısıtlı bir CI imajına kurulur.</p></div>
+:::<div class="card"><div class="stat good">{{runtime_dependencies}}</div><p class="muted">çekirdekte çalışma zamanı bağımlılığı. Kısıtlı bir CI imajına kurulur.</p></div>
 :::<div class="card"><div class="stat good">0</div><p class="muted">bayt veriniz süreçten çıkar. Yükleyecek bir yer yok.</p></div>
-:::<div class="card"><div class="stat">24</div><p class="muted">ağırlıklı satıcı ölçütü; <code>unknown</code> atlanmaz, cezalandırılır.</p></div>
-:::<div class="card"><div class="stat">146</div><p class="muted">test; ağ yok, API anahtarı yok, bir saniyenin altında.</p></div>
+:::<div class="card"><div class="stat">{{vendor_criteria}}</div><p class="muted">ağırlıklı satıcı ölçütü; <code>unknown</code> atlanmaz, cezalandırılır.</p></div>
+:::<div class="card"><div class="stat">{{tests}}</div><p class="muted">test; ağ yok, API anahtarı yok, bir saniyenin altında.</p></div>
 :::</div>
 
-## Kapattığı üç boşluk
+## Hangi EU AI Act yükümlülükleri otomatik olarak kanıtlanabilir?
+
+<p class="lead">Üç boşluk ve her birini kapatan modül.</p>
 
 **Kanıt boşluğu.** Art. 11 ve Annex IV teknik dokümantasyon ister; ISO/IEC 42001 §9.1 izleme kayıtları ister. İkisi de yalnızca çalışan sistemin üretebileceği çıktıları tarif eder — ve ikisi de genellikle bir insanın aylar sonra hafızadan yazdığı bir belgeyle üretilir. `euact` yapıyı üretir ve diğer modüllerin kanıtlayabildiğini doldurur.
 
@@ -31,7 +35,9 @@ atheros-kit init --ci github
 
 **Bilinmeyen bilinmeyenler boşluğu.** RAG külliyatları kayar, gömmeler çarpılır ve önyargı modelden değil bilgi tabanından girer. Herkes modeli denetler. Külliyatı kimse ölçmez. `rag` külliyatı ölçer.
 
-## Dört modül, tek bağımlılık
+## Her modül ne yapıyor ve hangi maddeyi kanıtlıyor?
+
+<p class="lead">Dört modül, tek bağımlılık.</p>
 
 | | Modül | Yanıtladığı soru |
 |---|---|---|
@@ -45,7 +51,9 @@ Her modül kanıtladığı yükümlülüğü adlandırır; böylece hukuki bir g
 
 :::<p><a class="cta ghost" href="modules.html">Modül referansını okuyun</a></p>
 
-## Neden bu, neden bir yönetişim platformu değil
+## EU AI Act kanıtı için kütüphane mi, SaaS mı?
+
+<p class="lead">Neden bu, neden bir yönetişim platformu değil.</p>
 
 **Verinin olduğu yerde çalışır.** Kendi sürecinizde bir kütüphane. Varsayılan olarak veri dışarı çıkmaz, yüklenecek bir şey yoktur, yeniden girilecek bir şey yoktur. Barındırılan bir platform bunu yapısal olarak sunamaz.
 
@@ -53,7 +61,9 @@ Her modül kanıtladığı yükümlülüğü adlandırır; böylece hukuki bir g
 
 **Düşer, durmaz.** Çekirdek yalnızca standart kütüphanedir. Her yeteneğin anahtarsız ve ağsız çalışan deterministik bir yolu vardır ve yedeğe düşen her çalışma, yedeği gerçekmiş gibi sunmak yerine `degraded` olarak işaretlenir.
 
-## Kimsenin göndermediği kısım
+## Bir kontrol ölçülemediğinde Kit ne yapıyor?
+
+<p class="lead">Kimsenin göndermediği kısım.</p>
 
 Rakiplerin tüm gösterge panelleri yeşildir. Bizimki neyi tespit edemediğini söyler.
 
@@ -70,7 +80,9 @@ Rakiplerin tüm gösterge panelleri yeşildir. Bizimki neyi tespit edemediğini 
 
 :::<p><a class="cta" href="honesty.html">Dürüstlük sözleşmesinin tamamı</a></p>
 
-## Derlemenizi başarısız kılar
+## Uyum gerilemesinde CI derlemesini nasıl başarısız kılarım?
+
+<p class="lead">Derlemenizi başarısız kılar.</p>
 
 ```yaml
 # atheros.yml
@@ -95,13 +107,17 @@ uyum kapısı — BAŞARISIZ
 
 `atlandı` satırına dikkat edin. Neyi kontrol etmediğini gizleyen bir kapı, tam kapsam gibi okunur.
 
-## Kendi üzerimizde çalıştırıyoruz
+## Satıcı bu aracı kendi ürünü üzerinde çalıştırıyor mu?
+
+<p class="lead">Kendi üzerimizde çalıştırıyor ve sonucu yayımlıyoruz.</p>
 
 Kendi ürünümüzü kendi aracımızla değerlendirip sonucu yayımlıyoruz — %33 Annex IV tamlık skoru ve bilerek kırmızı bırakılmış bir kontrol dâhil. Satıcısı kendi değerlendirmesini üretemeyen bir uyum aracı, kimsenin satın almaması gereken bir araçtır.
 
 Bunu yapmak, kendi yerleşim mantığımızda gerçek bir hata buldu; değişiklik günlüğünde kendi başlığı altında duruyor.
 
-## Yapmadığı şeyler
+## AtherosAI Compliance Kit neyi yapmaz?
+
+<p class="lead">Sınırlar, açıkça.</p>
 
 - Hukuki tavsiye vermek, belgelendirmek ya da uygunluk değerlendirmesi yapmak.
 - Herhangi bir şeyi eğitmek, ince ayarlamak ya da önyargıdan arındırmak. İyileştirme önerir; onu bir insan çalıştırır.
@@ -109,13 +125,17 @@ Bunu yapmak, kendi yerleşim mantığımızda gerçek bir hata buldu; değişikl
 - Verinizi bir yerde saklamak. Raporlar sizin sahip olduğunuz dosyalardır.
 - Mevzuat metnini kendi kendine güncellemek. Hukuki içerik sürümlerle gelen sürümlenmiş veridir ve her değerlendirme hangi sürümle çalıştığını kaydeder.
 
-## Ne ürettiğini görün
+## Hiçbir şey kurmadan gerçek bir raporu görebilir miyim?
+
+<p class="lead">Ne ürettiğini görün.</p>
 
 [Canlı konsol](/demo/), gerçek bir raporu gösteriyor — dört modülün sentetik bir işe alım külliyatı üzerinde çalıştırılmasıyla üretildi; kapı kırmızı, Adillik Skoru ölçülemedi, Annex IV dosyası %33 tam. Her ekran JSON, Markdown veya PDF olarak dışa aktarılıyor ve dışa aktarılan her dosya, örnek olduğunu dosyanın içinde söylüyor.
 
 Statik bir sayfa. Sunucusu, veritabanı ve hiçbir yazma yolu yok — o sayfanın kendi içerik güvenlik politikası, herhangi bir yere bağlanmasını yasaklıyor.
 
-## Başlayın
+## Nasıl kurarım ve ilk raporu nasıl alırım?
+
+<p class="lead">Buradan başlayın.</p>
 
 ```
 pip install atheros-compliance-kit          # çekirdek, yalnızca standart kütüphane

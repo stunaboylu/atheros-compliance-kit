@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "atheros-compliance-kit"
 version = "1.0.0"
-description = "Enterprise AI-governance toolkit: RAG data-quality & bias evaluation, third-party LLM guardrails, EU AI Act classification, and vendor/ISO 42001 assessment — in your codebase and your CI."
+description = "AtherosAI Compliance Kit — EU AI Act and ISO/IEC 42001 evidence from inside your own codebase and CI: RAG bias and data-quality scoring, third-party LLM guardrails, risk classification with Annex IV dossiers, and vendor assessment. English and Turkish."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "LicenseRef-AtherosAI-Commercial" }
@@ -38,8 +38,10 @@ dev  = ["pytest>=8.0", "pytest-cov>=5.0", "ruff>=0.6"]
 atheros-kit = "atheros_kit.cli:main"
 
 [project.urls]
-Homepage = "https://atheros.ai/compliance-kit"
-Documentation = "https://docs.atheros.ai/compliance-kit"
+Homepage = "https://atherosai.com/compliance-kit"
+Documentation = "https://atherosai.com/compliance-kit/en/quickstart.html"
+Repository = "https://github.com/stunaboylu/atherosai_compliance_kit"
+Changelog = "https://github.com/stunaboylu/atherosai_compliance_kit/blob/main/CHANGELOG.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/atheros_kit"]

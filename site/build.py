@@ -6,32 +6,90 @@ That is not minimalism for its own sake: the site's whole argument is that this
 product does not need infrastructure to be trustworthy, and a marketing site
 pulling four CDNs would contradict it on the first page load.
 
-Design tokens are taken from BRAND_KIT.md and inlined, so the site is
-theme-aware, printable, and readable with JavaScript off.
+WHY THIS FILE DOES SO MUCH HEAD WORK
 
-    python site/build.py          # → site/dist/{en,tr}/*.html
+A generative engine can only cite a URL it can fetch and parse without running
+JavaScript. Everything below the markdown renderer exists for that reader:
+absolute canonicals, self-referencing hreflang with x-default, Open Graph,
+JSON-LD, a real root page rather than a script redirect, and sitemap / robots /
+llms.txt as actual files. A page missing a canonical or a JSON-LD block FAILS
+the build, in the same way banned phrasing does — a requirement that is only a
+convention is one that decays.
+
+Every number the pages state about the product is substituted from
+`facts.json`, which `scripts/collect_facts.py` measures from the product itself.
+Three surfaces once carried three different test counts because each was typed
+by hand; an unresolved or hand-written figure now breaks the build.
+
+    python scripts/collect_facts.py && python site/build.py
 """
 from __future__ import annotations
 
 import html
+import json
+import os
 import pathlib
 import re
 import shutil
+import subprocess
 import sys
+from datetime import date
 
 ROOT = pathlib.Path(__file__).resolve().parent
+REPO = ROOT.parent
 OUT = ROOT / "dist"
 CONTENT = ROOT / "content"
+FACTS_FILE = ROOT / "facts.json"
 LOCALES = ("en", "tr")
+
+#: Where the site will actually live. The canonical URL must be the one that
+#: serves the page: pointing it at a domain that does not yet resolve tells every
+#: engine to attribute the content to a 404.
+#:
+#: `SITE_URL` wins; Vercel's production URL is the fallback on a deploy; and the
+#: last resort is flagged loudly rather than silently baked in.
+_DEFAULT_SITE = "https://atherosai.com/compliance-kit"
+SITE_URL = (
+    os.environ.get("SITE_URL")
+    or (f"https://{os.environ['VERCEL_PROJECT_PRODUCTION_URL']}"
+        if os.environ.get("VERCEL_PROJECT_PRODUCTION_URL") else "")
+    or _DEFAULT_SITE
+).rstrip("/")
+
+ORG = {
+    "name": "AtherosAI B.V.",
+    "legal": "AtherosAI B.V.",
+    "country": "NL",
+    "email": "hello@atheros.ai",
+    "repo": "https://github.com/stunaboylu/atherosai_compliance_kit",
+    "pypi": "https://pypi.org/project/atheros-compliance-kit/",
+}
+PRODUCT = "AtherosAI Compliance Kit"
 
 NAV = {
     "en": [("index", "Home"), ("quickstart", "Quickstart"), ("modules", "Modules"),
-           ("ci", "CI gate"), ("honesty", "Honesty"), ("privacy", "Privacy"),
-           ("pricing", "Pricing")],
+           ("ci", "CI gate"), ("honesty", "Honesty"), ("faq", "FAQ"),
+           ("privacy", "Privacy"), ("pricing", "Pricing")],
     "tr": [("index", "Ana sayfa"), ("quickstart", "Hızlı başlangıç"), ("modules", "Modüller"),
-           ("ci", "CI kapısı"), ("honesty", "Dürüstlük"), ("privacy", "Gizlilik"),
-           ("pricing", "Fiyatlandırma")],
+           ("ci", "CI kapısı"), ("honesty", "Dürüstlük"), ("faq", "SSS"),
+           ("privacy", "Gizlilik"), ("pricing", "Fiyatlandırma")],
 }
+
+#: Which schema.org type each page is. An engine answering "which tool does X"
+#: wants SoftwareApplication; one answering "how do I" wants HowTo; one answering
+#: a question wants FAQPage. Getting this wrong is worse than omitting it.
+PAGE_TYPE = {
+    "index": "SoftwareApplication",
+    "quickstart": "HowTo",
+    "ci": "HowTo",
+    "modules": "TechArticle",
+    "honesty": "TechArticle",
+    "privacy": "TechArticle",
+    "pricing": "Offer",
+    "faq": "FAQPage",
+}
+
+LANG_NAME = {"en": "English", "tr": "Türkçe"}
 
 FOOTER = {
     "en": "AtherosAI B.V. · The Kit assesses and evidences. It does not certify.",
@@ -47,9 +105,21 @@ BANNED = [
     "tamamen uyumlu", "belgelendirilmiş", "uyum garantisi", "%100 uyumlu",
     "tek tıkla uyum", "risksiz",
 ]
-#: Where the banned words appear legitimately: the page that explains we do not
-#: say them, and the licence text that disclaims them.
-BANNED_EXEMPT = {"honesty"}
+#: Where the banned words appear legitimately: the pages whose SUBJECT is that we
+#: do not say them.
+#:
+#: The exemption is conditional. An exempt page must itself carry the
+#: non-certification statement — otherwise "add it to BANNED_EXEMPT" becomes the
+#: way any page gets to say "fully compliant", and the lint quietly stops being a
+#: control on exactly the pages most tempted to break it.
+BANNED_EXEMPT = {"honesty", "faq"}
+#: Checked against the page's own MARKDOWN, not the rendered HTML. Every page
+#: carries the statement in its footer, so testing the render would have passed
+#: for any page at all — a check that cannot fail is not a check.
+EXEMPT_REQUIRES = {
+    "en": "it does not certify",
+    "tr": "belgelendirme yapmaz",
+}
 
 CSS = """
 :root{--bg:#FBFBFD;--surface:#fff;--surface-2:#F3F4F8;--surface-3:#EAECF2;--border:#DFE2EA;
@@ -114,8 +184,51 @@ text-transform:uppercase;padding:2px 8px;border-radius:999px;border:1px solid cu
 .pill.critical{color:var(--critical)}.pill.degraded{color:var(--degraded)}
 footer.site{border-top:1px solid var(--border);color:var(--faint);font-size:13px;
 padding:28px 24px;text-align:center}
+.updated{margin-top:48px;padding-top:16px;border-top:1px solid var(--border);
+color:var(--faint);font-size:13px}
+header.site .brand{color:var(--text);text-decoration:none}
+header.site .brand:hover{text-decoration:none}
 @media print{header.site,footer.site{display:none}body{background:#fff;color:#000}}
 """
+
+
+def load_facts() -> dict:
+    if not FACTS_FILE.exists():
+        sys.exit("site/facts.json is missing — run scripts/collect_facts.py first. "
+                 "The site states measured numbers and will not publish guessed ones.")
+    return json.loads(FACTS_FILE.read_text(encoding="utf-8"))
+
+
+_PLACEHOLDER = re.compile(r"\{\{\s*([a-z_]+)\s*\}\}")
+
+
+def substitute(text: str, facts: dict, where: str) -> str:
+    """Replace `{{tests}}` and friends. An unknown placeholder stops the build.
+
+    Silently leaving `{{tests}}` on a published page would be worse than a wrong
+    number: it advertises that the figures are templated and that nobody looked.
+    """
+    def one(m: re.Match) -> str:
+        key = m.group(1)
+        if key not in facts:
+            sys.exit(f"{where}: unknown placeholder {{{{{key}}}}} — "
+                     f"add it to scripts/collect_facts.py or remove the claim")
+        return f"{facts[key]:,}".replace(",", "\u202f") if isinstance(facts[key], int) \
+            and facts[key] >= 10000 else str(facts[key])
+    return _PLACEHOLDER.sub(one, text)
+
+
+def last_modified(path: pathlib.Path) -> str:
+    """The content file's own last commit date.
+
+    Not the build clock: that would stamp every page as freshly updated on every
+    deploy, which is a freshness signal that means nothing and, in a regulated
+    domain, reads as one the publisher does not maintain honestly.
+    """
+    proc = subprocess.run(
+        ["git", "log", "-1", "--format=%cs", "--", str(path.relative_to(REPO))],
+        cwd=REPO, capture_output=True, text=True, check=False)
+    return proc.stdout.strip() or date.today().isoformat()
 
 
 def render_inline(text: str) -> str:
@@ -188,79 +301,456 @@ def render_markdown(src: str) -> str:
     return "\n".join(out)
 
 
-def page(slug: str, locale: str, title: str, body: str, description: str) -> str:
+def url_for(slug: str, locale: str) -> str:
+    return f"{SITE_URL}/{locale}/{slug}.html"
+
+
+def json_ld(slug: str, locale: str, title: str, description: str, modified: str,
+            facts: dict, faq: list[tuple[str, str]]) -> str:
+    """One `@graph` per page.
+
+    Organization is repeated on every page deliberately: engines resolve an
+    entity by seeing the name, the URL and the identifiers occur together
+    repeatedly, and a single about-page mention is not repetition.
+    """
+    page_url = url_for(slug, locale)
+    org = {
+        "@type": "Organization",
+        "@id": f"{SITE_URL}/#organization",
+        "name": ORG["name"],
+        "legalName": ORG["legal"],
+        "url": SITE_URL,
+        "email": ORG["email"],
+        "address": {"@type": "PostalAddress", "addressCountry": ORG["country"]},
+        "sameAs": [ORG["repo"], ORG["pypi"]],
+    }
+    software = {
+        "@type": "SoftwareApplication",
+        "@id": f"{SITE_URL}/#software",
+        "name": PRODUCT,
+        "alternateName": ["atheros-compliance-kit", "atheros-kit"],
+        "applicationCategory": "DeveloperApplication",
+        "applicationSubCategory": "AI governance and compliance tooling",
+        "operatingSystem": "Linux, macOS, Windows",
+        "softwareVersion": facts["version"],
+        "programmingLanguage": "Python",
+        "softwareRequirements": "Python 3.10+",
+        "downloadUrl": ORG["pypi"],
+        "codeRepository": ORG["repo"],
+        "publisher": {"@id": f"{SITE_URL}/#organization"},
+        "inLanguage": ["en", "tr"],
+        "description": (
+            f"Python toolkit that produces EU AI Act and ISO/IEC 42001 evidence from inside a "
+            f"customer's own codebase and CI: RAG corpus bias and quality scoring, PII masking "
+            f"and prompt-injection defence around third-party LLMs, risk classification with "
+            f"Annex IV dossier generation, and vendor due diligence. "
+            f"{facts['runtime_dependencies']} runtime dependencies in the core."
+        ),
+        "featureList": [
+            "EU AI Act risk classification against a versioned vocabulary",
+            "Annex IV technical documentation generation with coverage reporting",
+            "RAG corpus bias scoring across %d dimensions" % facts["bias_dimensions"],
+            "Semantic drift detection with a sample-size-aware noise floor",
+            "PII and custom-entity masking before third-party LLM calls",
+            "Prompt-injection firewall with %d signatures in English and Turkish"
+            % facts["injection_signatures"],
+            "Vendor due diligence across %d weighted criteria" % facts["vendor_criteria"],
+            "SHA-256 hash-chained audit ledger with independent verification",
+            "CI gate that fails the build on a compliance regression",
+        ],
+        "offers": [
+            {"@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "EUR",
+             "description": "Guardrails, risk classification and the full audit ledger. "
+                            "No activation, no expiry."},
+            {"@type": "Offer", "name": "Team", "price": "79", "priceCurrency": "EUR",
+             "priceSpecification": {"@type": "UnitPriceSpecification", "price": "79",
+                                    "priceCurrency": "EUR",
+                                    "unitText": "developer per month",
+                                    "referenceQuantity": {"@type": "QuantitativeValue",
+                                                          "minValue": 5, "unitText": "seats"}},
+             "description": "All four modules, CI gate, dossier export."},
+            {"@type": "Offer", "name": "Enterprise", "price": "1150",
+             "priceCurrency": "EUR",
+             "priceSpecification": {"@type": "UnitPriceSpecification", "price": "1150",
+                                    "priceCurrency": "EUR", "unitText": "month",
+                                    "valueAddedTaxIncluded": False},
+             "description": "Air-gap bundle, SBOM, security-questionnaire support, "
+                            "30-day regulation-version SLA."},
+        ],
+    }
+    breadcrumb = {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": PRODUCT,
+             "item": f"{SITE_URL}/{locale}/index.html"},
+        ] + ([] if slug == "index" else [
+            {"@type": "ListItem", "position": 2, "name": title, "item": page_url}]),
+    }
+    kind = PAGE_TYPE.get(slug, "WebPage")
+    # schema.org has no page type for "this page IS the product", so the landing
+    # page is a WebPage whose mainEntity is the software. That is the shape an
+    # engine answering "which tool does X" actually looks for.
+    doc_type = {"FAQPage": "FAQPage", "HowTo": "HowTo",
+                "SoftwareApplication": "WebPage", "Offer": "WebPage"}.get(kind, "TechArticle")
+    doc = {
+        "@type": doc_type,
+        "@id": f"{page_url}#page",
+        "headline": title,
+        "name": title,
+        "description": description,
+        "url": page_url,
+        "inLanguage": locale,
+        "dateModified": modified,
+        "datePublished": modified,
+        "isPartOf": {"@id": f"{SITE_URL}/#software"},
+        "publisher": {"@id": f"{SITE_URL}/#organization"},
+        "author": {"@id": f"{SITE_URL}/#organization"},
+        "about": {"@id": f"{SITE_URL}/#software"},
+        "license": "https://spdx.org/licenses/LicenseRef-AtherosAI-Commercial",
+    }
+    if kind in ("SoftwareApplication", "Offer"):
+        doc["mainEntity"] = {"@id": f"{SITE_URL}/#software"}
+    if kind == "FAQPage" and faq:
+        doc["mainEntity"] = [
+            {"@type": "Question", "name": q,
+             "acceptedAnswer": {"@type": "Answer", "text": a}}
+            for q, a in faq
+        ]
+    graph = [org, software, breadcrumb, doc]
+    return json.dumps({"@context": "https://schema.org", "@graph": graph},
+                      ensure_ascii=False, separators=(",", ":"))
+
+
+def head(slug: str, locale: str, title: str, description: str, modified: str,
+         facts: dict, faq: list[tuple[str, str]]) -> str:
+    """Everything an engine reads before it reads the page."""
+    canonical = url_for(slug, locale)
+    alternates = "".join(
+        f'<link rel="alternate" hreflang="{lo}" href="{url_for(slug, lo)}">'
+        for lo in LOCALES
+    ) + f'<link rel="alternate" hreflang="x-default" href="{url_for(slug, "en")}">'
+    full_title = title if slug == "index" else f"{title} · {PRODUCT}"
+    return f"""<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{html.escape(full_title)}</title>
+<meta name="description" content="{html.escape(description)}">
+<link rel="canonical" href="{canonical}">
+{alternates}
+<meta name="author" content="{ORG['name']}">
+<meta name="publisher" content="{ORG['name']}">
+<meta name="date" content="{modified}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{PRODUCT}">
+<meta property="og:locale" content="{'tr_TR' if locale == 'tr' else 'en_GB'}">
+<meta property="og:title" content="{html.escape(full_title)}">
+<meta property="og:description" content="{html.escape(description)}">
+<meta property="og:url" content="{canonical}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{html.escape(full_title)}">
+<meta name="twitter:description" content="{html.escape(description)}">
+<script type="application/ld+json">{json_ld(slug, locale, title, description, modified, facts, faq)}</script>
+<style>{CSS}</style>"""
+
+
+def page(slug: str, locale: str, title: str, body: str, description: str,
+         modified: str, facts: dict, faq: list[tuple[str, str]]) -> str:
     other = "tr" if locale == "en" else "en"
     nav = "".join(
         f'<a href="{s}.html"{" aria-current=page" if s == slug else ""}>{html.escape(label)}</a>'
-        for s, label in NAV[locale])
+        for s, label in NAV[locale]
+    )
+    updated = {"en": "Last updated", "tr": "Son güncelleme"}[locale]
     return f"""<!doctype html>
 <html lang="{locale}">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{html.escape(title)}</title>
-<meta name="description" content="{html.escape(description)}">
-<link rel="alternate" hreflang="{other}" href="../{other}/{slug}.html">
-<style>{CSS}</style>
+{head(slug, locale, title, description, modified, facts, faq)}
 <header class="site"><div class="inner">
-  <span class="brand">AtherosAI Compliance Kit</span>
+  <a class="brand" href="index.html">{PRODUCT}</a>
   <nav>{nav}</nav>
-  <a class="lang" href="../{other}/{slug}.html">{other.upper()}</a>
+  <a class="lang" href="../{other}/{slug}.html" hreflang="{other}">{LANG_NAME[other]}</a>
 </div></header>
 <main class="{'narrow' if slug != 'index' else ''}">
 {body}
+<p class="updated"><time datetime="{modified}">{updated}: {modified}</time> ·
+<span>{ORG['name']}</span></p>
 </main>
 <footer class="site">{html.escape(FOOTER[locale])}</footer>
 </html>"""
 
 
+def root_page(facts: dict) -> str:
+    """The root URL, with real content.
+
+    It used to be a script redirect, which meant the site's most-linked URL
+    returned an empty body to anything that does not run JavaScript — which is
+    most crawlers, and every generative engine's fetcher.
+    """
+    ld = json.dumps({
+        "@context": "https://schema.org",
+        "@graph": [
+            {"@type": "WebSite", "@id": f"{SITE_URL}/#website", "url": f"{SITE_URL}/",
+             "name": PRODUCT, "inLanguage": ["en", "tr"],
+             "publisher": {"@id": f"{SITE_URL}/#organization"}},
+            {"@type": "Organization", "@id": f"{SITE_URL}/#organization",
+             "name": ORG["name"], "legalName": ORG["legal"], "url": SITE_URL,
+             "email": ORG["email"], "sameAs": [ORG["repo"], ORG["pypi"]]},
+        ],
+    }, ensure_ascii=False, separators=(",", ":"))
+    return f"""<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{PRODUCT} — EU AI Act and ISO/IEC 42001 evidence from your own CI</title>
+<meta name="description" content="A Python toolkit that produces EU AI Act and ISO/IEC 42001
+ compliance evidence from inside your own codebase and CI — RAG bias scoring, PII masking,
+ risk classification, vendor assessment. English and Turkish.">
+<link rel="canonical" href="{SITE_URL}/">
+<link rel="alternate" hreflang="en" href="{SITE_URL}/en/index.html">
+<link rel="alternate" hreflang="tr" href="{SITE_URL}/tr/index.html">
+<link rel="alternate" hreflang="x-default" href="{SITE_URL}/en/index.html">
+<script type="application/ld+json">{ld}</script>
+<style>{CSS}</style>
+<main class="narrow">
+<h1>{PRODUCT}</h1>
+<p class="lead">Compliance evidence, generated by the system that needs it. A Python toolkit
+that runs inside your own codebase and CI and produces the artefacts EU AI Act and ISO/IEC 42001
+governance asks for — automatically, hash-chained, and without your data leaving the process.</p>
+<p><a class="cta" href="en/index.html">English</a>
+<a class="cta ghost" href="tr/index.html">Türkçe</a></p>
+<h2>What it does</h2>
+<ul>
+<li><strong>rag</strong> — is our knowledge base biased, duplicated, drifting, or full of
+personal data?</li>
+<li><strong>guard</strong> — what leaves for a third-party LLM, and what comes back?</li>
+<li><strong>euact</strong> — what is our EU AI Act risk tier, and what does Annex IV still
+need?</li>
+<li><strong>vendor</strong> — can this supplier be used, and is the training opt-out actually
+enforced?</li>
+<li><strong>cicd</strong> — fail the build when any of the above regresses.</li>
+</ul>
+<p><code>pip install atheros-compliance-kit</code> — {facts['runtime_dependencies']} runtime
+dependencies in the core, {facts['tests']} tests, no API key and no network required.</p>
+<footer class="site">{html.escape(FOOTER['en'])}</footer>
+</main>
+<script>
+// A convenience for humans only. The page above is complete without it, so a
+// crawler that never runs this still gets the content and the canonical.
+(function () {{
+  try {{
+    if ((navigator.language || "").toLowerCase().startsWith("tr")) {{
+      location.replace("tr/index.html");
+    }}
+  }} catch (e) {{}}
+}})();
+</script>
+</html>"""
+
+
+def write_sitemap(pages: list[tuple[str, str, str]]) -> str:
+    """`pages` is (slug, locale, lastmod). Real XML, not an SPA fallback."""
+    urls = [f"  <url><loc>{SITE_URL}/</loc><changefreq>weekly</changefreq>"
+            f"<priority>1.0</priority></url>"]
+    for slug, locale, modified in pages:
+        alts = "".join(
+            f'<xhtml:link rel="alternate" hreflang="{lo}" href="{url_for(slug, lo)}"/>'
+            for lo in LOCALES)
+        urls.append(
+            f"  <url><loc>{url_for(slug, locale)}</loc>"
+            f"<lastmod>{modified}</lastmod>"
+            f"<priority>{'0.9' if slug == 'index' else '0.7'}</priority>{alts}</url>")
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
+            'xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'
+            + "\n".join(urls) + "\n</urlset>\n")
+
+
+def write_robots() -> str:
+    """Explicit permission for the AI crawlers, rather than relying on the default.
+
+    Silence is permission, but silence is also indistinguishable from an oversight
+    — and a product whose entire argument is that absence of a signal must not be
+    read as a positive finding should not be relying on that ambiguity itself.
+    """
+    agents = ["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-Web",
+              "anthropic-ai", "PerplexityBot", "Perplexity-User", "Google-Extended",
+              "Applebot-Extended", "CCBot", "Bingbot", "Googlebot"]
+    blocks = "\n\n".join(f"User-agent: {a}\nAllow: /\nDisallow: /demo/" for a in agents)
+    return f"""# {PRODUCT} — {ORG['name']}
+# Generative engines are welcome to read and cite these pages.
+#
+# /demo/ is disallowed on purpose: it renders synthetic compliance findings for
+# an invented company. Indexed, they would surface as though they described
+# something real, and the "sample data" banner does not travel into a snippet.
+
+{blocks}
+
+User-agent: *
+Allow: /
+Disallow: /demo/
+
+Sitemap: {SITE_URL}/sitemap.xml
+"""
+
+
+def write_llms_txt(facts: dict, pages: list[tuple[str, str, str]]) -> str:
+    """An llms.txt that answers the question rather than listing links."""
+    en = [f"- [{title}]({url_for(slug, 'en')})"
+          for slug, title in NAV["en"]]
+    return f"""# {PRODUCT}
+
+> A Python toolkit that produces EU AI Act (Regulation (EU) 2024/1689) and ISO/IEC 42001
+> evidence from inside a customer's own codebase and CI. It runs as a library and a CLI, not
+> as a hosted service: no data leaves the process, and the core has
+> {facts['runtime_dependencies']} runtime dependencies.
+
+Publisher: {ORG['name']} ({ORG['country']}) · Version {facts['version']} ·
+Measured {facts['measured_on']} · Languages: English, Türkçe
+
+## What it does
+
+- **rag** — RAG corpus quality, semantic drift, and bias across
+  {facts['bias_dimensions']} dimensions producing a 0–100 Fairness Score (EU AI Act Art. 10).
+- **guard** — PII and custom-entity masking plus a
+  {facts['injection_signatures']}-signature prompt-injection firewall around any third-party
+  LLM, in English and Turkish (Art. 15, ISO/IEC 42001 §8.3).
+- **euact** — risk classification against a versioned vocabulary
+  ({facts['regulation_version']}), covering {facts['annex_iii_categories']} Annex III
+  categories, and an Annex IV dossier across {facts['annex_iv_sections']} sections with
+  per-section coverage (Art. 6, Art. 11).
+- **vendor** — supplier due diligence across {facts['vendor_criteria']} weighted criteria,
+  data-residency verification, and training opt-out enforcement (GDPR Art. 28, Ch. V).
+- **cicd** — a CI gate that fails the build on a compliance regression.
+
+## The distinguishing design decision
+
+Unmeasured is never a pass. A score with no measurement renders as `unmeasured` and FAILS the
+gate rather than passing it. "No indicator matched" is never rendered as "low risk". An
+ambiguous classification reports a grey zone with the conflict named rather than a confident
+tier. Machine evidence makes an Annex IV section partial, never covered. An unanswered vendor
+question is penalised, not skipped.
+
+The Kit assesses and evidences. It does not certify, and a lint over generated artefacts and
+marketing copy — in both languages — fails the build on certification language.
+
+## Verifiable facts
+
+- {facts['tests']} tests, run with no network and no API key
+- {facts['runtime_dependencies']} runtime dependencies in `atheros_kit.core`
+- {facts['modules']} Python modules, {facts['source_lines']} lines
+- {facts['vector_stores']} vector-store connectors (Chroma, pgvector, Pinecone, Milvus)
+- Free tier requires no activation and does not expire
+- The publisher runs the tool on itself and publishes the result, including a 33% Annex IV
+  completeness score and one deliberately failing check
+
+## Pages
+
+{chr(10).join(en)}
+
+## Source
+
+- Repository: {ORG['repo']}
+- Package: {ORG['pypi']} (`pip install atheros-compliance-kit`)
+"""
+
+
+def extract_faq(raw: str) -> list[tuple[str, str]]:
+    """Question/answer pairs from an FAQ page: each `### Question` plus its prose.
+
+    Parsed from the same markdown the humans read, so the FAQPage schema cannot
+    drift from the page — two copies of an answer is one copy that goes stale.
+    """
+    items: list[tuple[str, str]] = []
+    question, answer = None, []
+    for line in raw.split("\n"):
+        if line.startswith("### "):
+            if question:
+                items.append((question, " ".join(answer).strip()))
+            question, answer = line[4:].strip(), []
+        elif question is not None and line.strip() and not line.startswith(("#", "|", "```")):
+            answer.append(re.sub(r"[*`\[\]]|\(([^)]*)\)", r"", line).strip())
+    if question:
+        items.append((question, " ".join(answer).strip()))
+    return [(q, a) for q, a in items if a]
+
+
 def main() -> int:
     if OUT.exists():
         shutil.rmtree(OUT)
+    facts = load_facts()
     problems: list[str] = []
+    written: list[tuple[str, str, str]] = []
+
+    if SITE_URL == _DEFAULT_SITE and not os.environ.get("SITE_URL"):
+        print(f"note: SITE_URL is unset; canonicals point at {SITE_URL}. "
+              f"Set SITE_URL to the domain that actually serves these pages.",
+              file=sys.stderr)
 
     for locale in LOCALES:
         (OUT / locale).mkdir(parents=True, exist_ok=True)
         for source in sorted((CONTENT / locale).glob("*.md")):
             slug = source.stem
-            raw = source.read_text(encoding="utf-8")
-            # Front matter: first line "# Title", second line "> description".
+            raw = substitute(source.read_text(encoding="utf-8"), facts,
+                             f"{locale}/{slug}.md")
             lines = raw.split("\n")
             title = lines[0].lstrip("# ").strip()
             description = lines[1].lstrip("> ").strip() if len(lines) > 1 else title
             body = render_markdown("\n".join(lines[2:]))
-            rendered = page(slug, locale, title, body, description)
+            modified = last_modified(source)
+            faq = extract_faq(raw) if slug == "faq" else []
+            rendered = page(slug, locale, title, body, description, modified, facts, faq)
             (OUT / locale / f"{slug}.html").write_text(rendered, encoding="utf-8")
+            written.append((slug, locale, modified))
 
-            if slug not in BANNED_EXEMPT:
-                low = rendered.lower()
+            low = rendered.lower()
+            if slug in BANNED_EXEMPT:
+                if EXEMPT_REQUIRES[locale] not in raw.lower():
+                    problems.append(
+                        f"{locale}/{slug}: exempt from the copy lint but does not carry the "
+                        f"non-certification statement ({EXEMPT_REQUIRES[locale]!r}) — the "
+                        f"exemption is for pages ABOUT the rule, not pages that break it")
+            else:
                 hits = [b for b in BANNED if b in low]
                 if hits:
-                    problems.append(f"{locale}/{slug}: {hits}")
+                    problems.append(f"{locale}/{slug}: banned phrasing {hits}")
 
-    # Root redirect, honouring the browser's language.
-    (OUT / "index.html").write_text(
-        '<!doctype html><meta charset="utf-8">'
-        '<title>AtherosAI Compliance Kit</title>'
-        '<script>location.replace((navigator.language||"en")'
-        '.toLowerCase().startsWith("tr")?"tr/index.html":"en/index.html")</script>'
-        '<noscript><a href="en/index.html">English</a> · '
-        '<a href="tr/index.html">Türkçe</a></noscript>',
-        encoding="utf-8")
+            # The GEO requirements are enforced, not encouraged. A page without a
+            # canonical or a JSON-LD block is invisible to the readers this whole
+            # head section exists for, and "we meant to add it" is not a control.
+            for required, label in [
+                (f'<link rel="canonical" href="{SITE_URL}', "canonical"),
+                ('application/ld+json', "JSON-LD"),
+                ('hreflang="x-default"', "x-default hreflang"),
+                ('property="og:title"', "Open Graph"),
+                ('<time datetime=', "dateModified"),
+            ]:
+                if required not in rendered:
+                    problems.append(f"{locale}/{slug}: missing {label}")
+            if "{{" in rendered:
+                problems.append(f"{locale}/{slug}: unresolved placeholder")
+            if slug == "faq" and not faq:
+                problems.append(f"{locale}/{slug}: FAQPage with no parsed questions")
+
+    # Both languages must carry the same pages, or hreflang points at a 404.
+    by_locale = {lo: {slug for slug, l, _ in written if l == lo} for lo in LOCALES}
+    if by_locale["en"] != by_locale["tr"]:
+        problems.append(f"locale parity broken: {by_locale['en'] ^ by_locale['tr']}")
+
+    (OUT / "index.html").write_text(root_page(facts), encoding="utf-8")
+    (OUT / "sitemap.xml").write_text(write_sitemap(written), encoding="utf-8")
+    (OUT / "robots.txt").write_text(write_robots(), encoding="utf-8")
+    (OUT / "llms.txt").write_text(write_llms_txt(facts, written), encoding="utf-8")
 
     pages = sorted(p.relative_to(OUT) for p in OUT.rglob("*.html"))
-    print(f"built {len(pages)} pages → {OUT}")
-    for p in pages:
-        print(f"  {p}")
+    print(f"built {len(pages)} pages + sitemap/robots/llms.txt → {OUT}")
+    print(f"  canonical base: {SITE_URL}")
+    print(f"  facts: {facts['tests']} tests · {facts['modules']} modules · "
+          f"v{facts['version']} · measured {facts['measured_on']}")
 
     if problems:
-        # The copy lint, applied to marketing. This is where the temptation is:
-        # nobody writes "guaranteed compliant" into a finding, and everybody is
-        # tempted to write it into a hero.
-        print("\nCOPY LINT FAILED — banned phrasing found:", file=sys.stderr)
-        for p in problems:
-            print(f"  {p}", file=sys.stderr)
+        print("\nBUILD FAILED:", file=sys.stderr)
+        for x in problems:
+            print(f"  {x}", file=sys.stderr)
         return 1
-    print("\ncopy lint: clean (both languages)")
+    print("  copy lint + GEO requirements: clean (both languages)")
     return 0
 
 

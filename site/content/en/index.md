@@ -14,16 +14,20 @@ atheros-kit init --ci github
 
 :::<p><a class="cta" href="quickstart.html">Five-minute quickstart</a><a class="cta ghost" href="honesty.html">Why it tells you what it could not measure</a><a class="cta ghost" href="/demo/">See a real report</a></p>
 
-## Four numbers, no adjectives
+## Does atheros-compliance-kit have runtime dependencies?
+
+<p class="lead">Four numbers, no adjectives — each one measured from the product at build time rather than typed by hand.</p>
 
 :::<div class="grid">
-:::<div class="card"><div class="stat good">0</div><p class="muted">runtime dependencies in the core. It installs in a locked-down CI image.</p></div>
+:::<div class="card"><div class="stat good">{{runtime_dependencies}}</div><p class="muted">runtime dependencies in the core. It installs in a locked-down CI image.</p></div>
 :::<div class="card"><div class="stat good">0</div><p class="muted">bytes of your data leave the process. There is nowhere to upload it to.</p></div>
-:::<div class="card"><div class="stat">24</div><p class="muted">weighted vendor criteria, where <code>unknown</code> is penalised rather than skipped.</p></div>
-:::<div class="card"><div class="stat">146</div><p class="muted">tests, no network, no API key, under a second.</p></div>
+:::<div class="card"><div class="stat">{{vendor_criteria}}</div><p class="muted">weighted vendor criteria, where <code>unknown</code> is penalised rather than skipped.</p></div>
+:::<div class="card"><div class="stat">{{tests}}</div><p class="muted">tests, no network, no API key, under a second.</p></div>
 :::</div>
 
-## The three gaps this closes
+## Which EU AI Act obligations can be evidenced automatically?
+
+<p class="lead">Three gaps, and the module that closes each.</p>
 
 **The evidence gap.** Art. 11 and Annex IV want technical documentation; ISO/IEC 42001 §9.1 wants monitoring records. Both describe artefacts only the running system can produce — and both are usually produced by a person writing a document from memory, months late. `euact` generates the structure and fills what the other modules can evidence.
 
@@ -31,7 +35,9 @@ atheros-kit init --ci github
 
 **The unknown-unknowns gap.** RAG corpora drift, embeddings skew, and bias enters through the knowledge base rather than the model. Everybody audits the model. Nobody measures the corpus. `rag` measures the corpus.
 
-## Four modules, one dependency
+## What does each module do, and which article does it evidence?
+
+<p class="lead">Four modules, one dependency.</p>
 
 | | Module | What it answers |
 |---|---|---|
@@ -45,7 +51,9 @@ Each module names the obligation it evidences, so a legal duty maps to a command
 
 :::<p><a class="cta ghost" href="modules.html">Read the module reference</a></p>
 
-## Why this and not a governance platform
+## Library or SaaS: which is better for EU AI Act evidence?
+
+<p class="lead">Why this, and not a governance platform.</p>
 
 **It runs where the data is.** A library in your process. No payload egress by default, nothing to upload, nothing to re-enter. A hosted platform structurally cannot offer this.
 
@@ -53,7 +61,9 @@ Each module names the obligation it evidences, so a legal duty maps to a command
 
 **It degrades, never stalls.** The core is stdlib-only. Every capability has a deterministic path that runs with no key and no network, and any run that fell back is marked `degraded` rather than quietly presenting the fallback as the real thing.
 
-## The part nobody else ships
+## What does the Kit do when a check cannot be measured?
+
+<p class="lead">The part nobody else ships.</p>
 
 Every competitor's dashboard is green. Ours tells you what it could not establish.
 
@@ -70,7 +80,9 @@ Every competitor's dashboard is green. Ours tells you what it could not establis
 
 :::<p><a class="cta" href="honesty.html">The full honesty contract</a></p>
 
-## It fails your build
+## How do I fail a CI build on a compliance regression?
+
+<p class="lead">It fails your build.</p>
 
 ```yaml
 # atheros.yml
@@ -95,13 +107,17 @@ compliance gate — FAILED
 
 Note the `skipped` row. A gate that hides what it did not check reads as full coverage.
 
-## We run it on ourselves
+## Does the vendor run this tool on its own product?
+
+<p class="lead">We run it on ourselves, and publish the result.</p>
 
 We assess our own product with our own tool and publish the result — including a 33% Annex IV completeness score and one deliberately red check. A compliance tool whose vendor cannot produce its own assessment is not one anybody should buy.
 
 Doing it found a real bug in our own residency logic, which is in the changelog under its own heading.
 
-## What it does not do
+## What does the AtherosAI Compliance Kit not do?
+
+<p class="lead">The limits, stated plainly.</p>
 
 - Give legal advice, certify, or perform a conformity assessment.
 - Train, fine-tune or de-bias anything. It recommends remediation; a human runs it.
@@ -109,13 +125,17 @@ Doing it found a real bug in our own residency logic, which is in the changelog 
 - Store your data anywhere. Reports are files you own.
 - Update the regulation text by itself. Legal content is versioned data shipped with releases, and every assessment records the version it ran under.
 
-## See what it produces
+## Can I see a real report before installing anything?
+
+<p class="lead">See what it produces.</p>
 
 The [live console](/demo/) renders a real report — generated by running all four modules over a synthetic hiring corpus, with a failing gate, an unmeasured Fairness Score and a 33%-complete Annex IV file. Every screen exports to JSON, Markdown or PDF, and every exported file says in the file that it is a sample.
 
 It is a static page. It has no server, no database and no write path — the browser's own content-security policy on that page forbids it from contacting anything at all.
 
-## Start
+## How do I install it and get a first report?
+
+<p class="lead">Start here.</p>
 
 ```
 pip install atheros-compliance-kit          # core, stdlib only

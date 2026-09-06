@@ -1,6 +1,6 @@
 # AtherosAI Compliance Console
 
-A read-only reader for the reports the [AtherosAI Developer Compliance Kit](../atheros-compliance-kit)
+A read-only reader for the reports the [AtherosAI Compliance Kit](../atheros-compliance-kit)
 emits. Expo Router universal app — web is the primary target; iOS and Android come from the same
 source.
 

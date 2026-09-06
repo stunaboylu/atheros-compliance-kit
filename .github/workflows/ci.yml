@@ -208,7 +208,12 @@ jobs:
           cache: npm
           cache-dependency-path: console/package-lock.json
 
-      - name: Build the site (fails on banned phrasing, EN or TR)
+      - name: Measure the product (the site states no hand-written numbers)
+        run: |
+          pip install -e atheros-compliance-kit
+          python scripts/collect_facts.py --print
+
+      - name: Build the site (fails on banned phrasing or a missing canonical)
         run: python site/build.py
 
       - name: Build the public output (site + console demo) — the Vercel build
@@ -243,9 +248,31 @@ jobs:
                   problems.append(f"{page.name}: un-rebased {asset}")
 
           for required in ["index.html", "en/index.html", "tr/index.html",
-                           "demo/index.html", "demo/risk.html"]:
+                           "demo/index.html", "demo/risk.html",
+                           "robots.txt", "sitemap.xml", "llms.txt"]:
               if not (out / required).exists():
                   problems.append(f"missing {required}")
+
+          # The root URL is the most-linked one. It used to be a script redirect,
+          # so anything that does not run JavaScript — which is every generative
+          # engine's fetcher — received an empty body from it.
+          root = (out / "index.html").read_text()
+          visible = " ".join(re.sub(r"<script.*?</script>|<style.*?</style>|<[^>]+>", " ",
+                                    root, flags=re.S).split())
+          if len(visible) < 400:
+              problems.append(f"root page has only {len(visible)} chars of text without JS")
+          if 'rel="canonical"' not in root or "ld+json" not in root:
+              problems.append("root page is missing a canonical or JSON-LD")
+
+          # Every locale page must be citable: canonical, hreflang, structured data.
+          for page in list((out / "en").glob("*.html")) + list((out / "tr").glob("*.html")):
+              html = page.read_text()
+              for needle, label in [('rel="canonical"', "canonical"),
+                                    ('hreflang="x-default"', "x-default"),
+                                    ("application/ld+json", "JSON-LD"),
+                                    ('property="og:title"', "Open Graph")]:
+                  if needle not in html:
+                      problems.append(f"{page.parent.name}/{page.name}: no {label}")
 
           sys.exit("public build is not servable:\n  " + "\n  ".join(problems)
                    if problems else 0)

@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "tests": 177,
+  "modules": 40,
+  "source_lines": 8843,
+  "runtime_dependencies": 0,
+  "languages": 2,
+  "vendor_criteria": 24,
+  "injection_signatures": 25,
+  "bias_dimensions": 7,
+  "annex_iii_categories": 8,
+  "annex_iv_sections": 9,
+  "vector_stores": 4,
+  "regulation_version": "EU-2024/1689:2024-07-12",
+  "measured_on": "2026-09-06",
+  "commit": "fbc6497"
+}

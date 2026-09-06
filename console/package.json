@@ -2,7 +2,7 @@
   "name": "atheros-compliance-console",
   "version": "1.0.0",
   "private": true,
-  "description": "Read-only console for reports emitted by the AtherosAI Developer Compliance Kit. Expo Router universal app — web is the primary target, iOS/Android come from the same source.",
+  "description": "Read-only console for reports emitted by the AtherosAI Compliance Kit. Expo Router universal app — web is the primary target, iOS/Android come from the same source.",
   "main": "expo-router/entry",
   "scripts": {
     "web": "expo start --web",

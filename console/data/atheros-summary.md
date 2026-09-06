@@ -13,4 +13,4 @@
 | ❌ | `guard_blocks` | 2 | 0 | 2 blocked invocation(s) exceed the configured cap of 0 |
 | ✅ | `audit_chain` | intact | intact |  |
 
-_Produced by the AtherosAI Developer Compliance Kit._
+_Produced by the AtherosAI Compliance Kit._

@@ -64,9 +64,9 @@ export function filename(kind: string, subject: string, ext: string): string {
 // two people reading "the report" are reading different things.
 
 const FOOTER: Record<Locale, string> = {
-  en: '_Automated assessment by the AtherosAI Developer Compliance Kit. It evidences what was '
+  en: '_Automated assessment by the AtherosAI Compliance Kit. It evidences what was '
     + 'measured and names what was not. It is not a certification and not a legal opinion._',
-  tr: '_AtherosAI Developer Compliance Kit tarafından üretilen otomatik değerlendirme. Ölçülen '
+  tr: '_AtherosAI Compliance Kit tarafından üretilen otomatik değerlendirme. Ölçülen '
     + 'şeyi kanıtlar ve ölçülmeyeni açıkça belirtir. Belgelendirme değildir ve hukuki görüş '
     + 'niteliği taşımaz._',
 };

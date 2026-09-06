@@ -38,6 +38,11 @@ def main(site_only: bool = False) -> int:
         shutil.rmtree(OUT)
     OUT.mkdir(parents=True)
 
+    # ── measured facts → the site's numbers ──────────────────────────────────
+    # Before the site, not after: build.py refuses to publish a page carrying an
+    # unresolved placeholder, and every figure on those pages comes from here.
+    run([sys.executable, "scripts/collect_facts.py"], ROOT)
+
     # ── marketing site → / ───────────────────────────────────────────────────
     run([sys.executable, "site/build.py"], ROOT)
     site_dist = ROOT / "site" / "dist"
@@ -74,6 +79,11 @@ def main(site_only: bool = False) -> int:
 
     pages = sorted(p.relative_to(OUT) for p in OUT.rglob("*.html"))
     print(f"\nbuilt {len(pages)} pages → {OUT}  ({rewritten} rebased under /demo)")
+    for name in ("robots.txt", "sitemap.xml", "llms.txt"):
+        if not (OUT / name).exists():
+            sys.exit(f"{name} is missing from the deployment — an engine that cannot find "
+                     f"the sitemap crawls what it happens to stumble on")
+        print(f"  {name}")
     for p in pages:
         print(f"  {p}")
     return 0

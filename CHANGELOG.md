@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the AtherosAI Developer Compliance Kit.
+All notable changes to the AtherosAI Compliance Kit.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/). This project
 adds one section type of its own:

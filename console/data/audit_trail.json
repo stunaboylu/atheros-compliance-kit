@@ -1,7 +1,7 @@
 [
   {
-    "timestamp": "2026-09-06T16:24:14.928593+00:00",
-    "session_id": "926713408311440f",
+    "timestamp": "2026-09-06T16:59:25.987216+00:00",
+    "session_id": "a6a1820bea2f44aa",
     "module": "rag",
     "event_type": "corpus_audit",
     "iso_42001_clause": "8.4 — Data for AI systems (and Art. 10 EU AI Act)",
@@ -27,12 +27,12 @@
         "extend_lexicon_socioeconomic"
       ]
     },
-    "hash": "411592eacb4af04c67bacdeffa23c9dd8d93b9b742cddec5b8510483f732d4f0",
+    "hash": "037c6cf1613b49edf83a03219a4356d32b5278fdf7b2a2c2b4e4f209da3631df",
     "previous_hash": "GENESIS"
   },
   {
-    "timestamp": "2026-09-06T16:24:14.929222+00:00",
-    "session_id": "2fd3675737f345aa",
+    "timestamp": "2026-09-06T16:59:25.987671+00:00",
+    "session_id": "93b077c25cca4ec5",
     "module": "guard",
     "event_type": "llm_invocation",
     "iso_42001_clause": "8.3 — Operational controls / AI system operation",
@@ -59,12 +59,12 @@
       "attempts": 1,
       "error": null
     },
-    "hash": "bd5d2243da386167b8d7d1c240b846b8e150d5a50e8d7770cda86fc7567b7c36",
-    "previous_hash": "411592eacb4af04c67bacdeffa23c9dd8d93b9b742cddec5b8510483f732d4f0"
+    "hash": "5e4ee1c37101574806f9b8ffd76f0ca4121ce0a7c0998c521e8b6171d56843fa",
+    "previous_hash": "037c6cf1613b49edf83a03219a4356d32b5278fdf7b2a2c2b4e4f209da3631df"
   },
   {
-    "timestamp": "2026-09-06T16:24:14.929424+00:00",
-    "session_id": "2fd3675737f345aa",
+    "timestamp": "2026-09-06T16:59:25.987934+00:00",
+    "session_id": "93b077c25cca4ec5",
     "module": "guard",
     "event_type": "llm_invocation",
     "iso_42001_clause": "8.3 — Operational controls / AI system operation",
@@ -77,7 +77,7 @@
         "total": 31,
         "estimated": true
       },
-      "latency_ms": 0.07,
+      "latency_ms": 0.1,
       "input_action": "pass",
       "output_action": "pass",
       "masked_entities": {
@@ -91,12 +91,12 @@
       "attempts": 1,
       "error": null
     },
-    "hash": "66317f2dc104c89a83a326b118030b5ed3e8a937a4805cba9b8e479a9d174f19",
-    "previous_hash": "bd5d2243da386167b8d7d1c240b846b8e150d5a50e8d7770cda86fc7567b7c36"
+    "hash": "fd961e30b69a95b7a0a32c2e431ab3ba77201e06c39a0951a928a6225d302b5e",
+    "previous_hash": "5e4ee1c37101574806f9b8ffd76f0ca4121ce0a7c0998c521e8b6171d56843fa"
   },
   {
-    "timestamp": "2026-09-06T16:24:14.929582+00:00",
-    "session_id": "2fd3675737f345aa",
+    "timestamp": "2026-09-06T16:59:25.988100+00:00",
+    "session_id": "93b077c25cca4ec5",
     "module": "guard",
     "event_type": "llm_invocation",
     "iso_42001_clause": "8.3 — Operational controls / AI system operation",
@@ -123,12 +123,12 @@
       "attempts": 0,
       "error": null
     },
-    "hash": "908067d99f3af76d68cf956708bc62e2bacf61b6c7cff0af8a7ac2363ac0ae9e",
-    "previous_hash": "66317f2dc104c89a83a326b118030b5ed3e8a937a4805cba9b8e479a9d174f19"
+    "hash": "1d1b16d17cfb64addb00e6f33ddbbabe6ebe4d1b83dcf94b50f44e1432fe65e6",
+    "previous_hash": "fd961e30b69a95b7a0a32c2e431ab3ba77201e06c39a0951a928a6225d302b5e"
   },
   {
-    "timestamp": "2026-09-06T16:24:14.929712+00:00",
-    "session_id": "2fd3675737f345aa",
+    "timestamp": "2026-09-06T16:59:25.988235+00:00",
+    "session_id": "93b077c25cca4ec5",
     "module": "guard",
     "event_type": "llm_invocation",
     "iso_42001_clause": "8.3 — Operational controls / AI system operation",
@@ -154,12 +154,12 @@
       "attempts": 0,
       "error": null
     },
-    "hash": "36609438dc0de52a4f83d0e6e8fcb168bd3c87a0a805f2283b6f883918efb792",
-    "previous_hash": "908067d99f3af76d68cf956708bc62e2bacf61b6c7cff0af8a7ac2363ac0ae9e"
+    "hash": "dd1a1c346ad418cd71e1b3864d45a14abece513b96203a8be7a88ffd42ba3fd1",
+    "previous_hash": "1d1b16d17cfb64addb00e6f33ddbbabe6ebe4d1b83dcf94b50f44e1432fe65e6"
   },
   {
-    "timestamp": "2026-09-06T16:24:14.929888+00:00",
-    "session_id": "a1de1055cadb4f74",
+    "timestamp": "2026-09-06T16:59:25.988377+00:00",
+    "session_id": "e12227c6fcc447f2",
     "module": "vendor",
     "event_type": "vendor_assessment",
     "iso_42001_clause": "8.5 — Third-party and customer relationships",
@@ -180,12 +180,12 @@
       "stale": true,
       "worst_severity": "high"
     },
-    "hash": "d33242bd9ab6f007c3fb42f0767b479bac8844deb001ded78d7023c9657b9f97",
-    "previous_hash": "36609438dc0de52a4f83d0e6e8fcb168bd3c87a0a805f2283b6f883918efb792"
+    "hash": "459318ec92192901a013482a098f4c5e13f3d568a5529cb3b63942960f95d9c0",
+    "previous_hash": "dd1a1c346ad418cd71e1b3864d45a14abece513b96203a8be7a88ffd42ba3fd1"
   },
   {
-    "timestamp": "2026-09-06T16:24:14.930114+00:00",
-    "session_id": "e565825701a149bd",
+    "timestamp": "2026-09-06T16:59:25.988535+00:00",
+    "session_id": "0d0ee6985a9744bd",
     "module": "vendor",
     "event_type": "vendor_assessment",
     "iso_42001_clause": "8.5 — Third-party and customer relationships",
@@ -206,12 +206,12 @@
       "stale": true,
       "worst_severity": "high"
     },
-    "hash": "4473253d871968bf358d406a109149ca0eab508bf6fd08c2cfc0cf7eef0f5444",
-    "previous_hash": "d33242bd9ab6f007c3fb42f0767b479bac8844deb001ded78d7023c9657b9f97"
+    "hash": "92134e2907dea93f6381f6bac79a8b2a25e38e8327f4cb66d0a5031bf8126bd0",
+    "previous_hash": "459318ec92192901a013482a098f4c5e13f3d568a5529cb3b63942960f95d9c0"
   },
   {
-    "timestamp": "2026-09-06T16:24:14.931816+00:00",
-    "session_id": "7d8470ab36da470d",
+    "timestamp": "2026-09-06T16:59:25.989904+00:00",
+    "session_id": "59d7ae20945c41b3",
     "module": "cicd",
     "event_type": "gate_run",
     "iso_42001_clause": "9.1 — Monitoring, measurement, analysis and evaluation",
@@ -231,7 +231,7 @@
         "audit_chain": "pass"
       }
     },
-    "hash": "9723f6a29c0b0fd22d101ad080d283ed57de2d5f299535af63e8ff4685e2fcab",
-    "previous_hash": "4473253d871968bf358d406a109149ca0eab508bf6fd08c2cfc0cf7eef0f5444"
+    "hash": "480409e8dfb97dae8a15ba2d9cdb866987a546780aad796d22ea46eedf00f46f",
+    "previous_hash": "92134e2907dea93f6381f6bac79a8b2a25e38e8327f4cb66d0a5031bf8126bd0"
   }
 ]

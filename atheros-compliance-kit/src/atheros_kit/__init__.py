@@ -1,4 +1,4 @@
-"""AtherosAI Developer Compliance Kit.
+"""AtherosAI Compliance Kit.
 
 Four modules over one core, each usable alone:
 
