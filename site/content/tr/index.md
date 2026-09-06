@@ -12,7 +12,7 @@ pip install atheros-compliance-kit
 atheros-kit init --ci github
 ```
 
-:::<p><a class="cta" href="quickstart.html">Beş dakikalık hızlı başlangıç</a><a class="cta ghost" href="honesty.html">Neyi ölçemediğini neden söyler</a></p>
+:::<p><a class="cta" href="quickstart.html">Beş dakikalık hızlı başlangıç</a><a class="cta ghost" href="honesty.html">Neyi ölçemediğini neden söyler</a><a class="cta ghost" href="/demo/">Gerçek bir raporu görün</a></p>
 
 ## Sıfatsız dört sayı
 
@@ -108,6 +108,12 @@ Bunu yapmak, kendi yerleşim mantığımızda gerçek bir hata buldu; değişikl
 - Külliyatınızı, istemlerinizi ya da satıcı sözleşmelerinizi değiştirmek.
 - Verinizi bir yerde saklamak. Raporlar sizin sahip olduğunuz dosyalardır.
 - Mevzuat metnini kendi kendine güncellemek. Hukuki içerik sürümlerle gelen sürümlenmiş veridir ve her değerlendirme hangi sürümle çalıştığını kaydeder.
+
+## Ne ürettiğini görün
+
+[Canlı konsol](/demo/), gerçek bir raporu gösteriyor — dört modülün sentetik bir işe alım külliyatı üzerinde çalıştırılmasıyla üretildi; kapı kırmızı, Adillik Skoru ölçülemedi, Annex IV dosyası %33 tam. Her ekran JSON, Markdown veya PDF olarak dışa aktarılıyor ve dışa aktarılan her dosya, örnek olduğunu dosyanın içinde söylüyor.
+
+Statik bir sayfa. Sunucusu, veritabanı ve hiçbir yazma yolu yok — o sayfanın kendi içerik güvenlik politikası, herhangi bir yere bağlanmasını yasaklıyor.
 
 ## Başlayın
 

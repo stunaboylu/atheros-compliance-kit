@@ -28,6 +28,8 @@ web-build/
 # make the hash chain look like a shared artefact when it is per-installation.
 .atheros/
 site/dist/
+public/
+.vercel/
 
 # The Console's bundled sample IS committed (console/data/) — it is the demo, it
 # is regenerable via scripts/generate_console_fixtures.py, and the site needs it.

@@ -1,0 +1,26 @@
+# What the public build actually needs: site/content, the console source, and
+# scripts/build_public.py. Everything else is either the product itself or local
+# state — shipping it to a build container is slower and a wider surface than the
+# deployment needs.
+#
+# NOTE: patterns here match at ANY depth, .gitignore-style. A bare `*.md` would
+# therefore exclude site/content/**/*.md — the entire source of the site — and
+# produce an empty build. Directories are named explicitly instead.
+
+atheros-compliance-kit/
+services/
+artifacts/
+.github/
+.atheros/
+
+console/node_modules/
+console/dist/
+site/dist/
+public/
+.vercel/
+
+BRAND_KIT.md
+CHANGELOG.md
+PLAYBOOK.md
+RELEASING.md
+SELF_ASSESSMENT.md
