@@ -1,0 +1,229 @@
+[
+  {
+    "timestamp": "2026-09-06T15:55:32.655638+00:00",
+    "session_id": "83857543ce2442b4",
+    "module": "rag",
+    "event_type": "corpus_audit",
+    "iso_42001_clause": "8.4 — Data for AI systems (and Art. 10 EU AI Act)",
+    "payload": {
+      "subject": "hiring-knowledge-base",
+      "chunks_scanned": 67,
+      "quality_score": 24.5,
+      "fairness_score": 0.0,
+      "drift_verdict": "stable",
+      "findings": 12,
+      "worst_severity": "high",
+      "recipes": [
+        "dedupe",
+        "reembed_orphans",
+        "redact_pii",
+        "rebalance_gender",
+        "reframe_gender",
+        "extend_lexicon_age",
+        "extend_lexicon_disability",
+        "extend_lexicon_ethnicity_origin",
+        "extend_lexicon_geographic",
+        "extend_lexicon_ideological",
+        "extend_lexicon_socioeconomic"
+      ]
+    },
+    "hash": "7e04da4895c9be2d1e5047e256aee31c54a5e56b33863f75cdfe15230b1304d5",
+    "previous_hash": "GENESIS"
+  },
+  {
+    "timestamp": "2026-09-06T15:55:32.656082+00:00",
+    "session_id": "3af8a777232f4029",
+    "module": "guard",
+    "event_type": "llm_invocation",
+    "iso_42001_clause": "8.3 — Operational controls / AI system operation",
+    "payload": {
+      "call_index": 1,
+      "model": "gpt-5-2025-08-07",
+      "tokens": {
+        "prompt": 14,
+        "completion": 25,
+        "total": 39,
+        "estimated": true
+      },
+      "latency_ms": 0.1,
+      "input_action": "pass",
+      "output_action": "pass",
+      "masked_entities": {
+        "CODENAME": 1,
+        "EMAIL": 1
+      },
+      "signatures": [],
+      "degraded": false,
+      "fallback_reason": null,
+      "error": null
+    },
+    "hash": "0188da073d724b1cadd2cf2820e56cac1f20bd4ba31792fc20bf22be0e35fdc9",
+    "previous_hash": "7e04da4895c9be2d1e5047e256aee31c54a5e56b33863f75cdfe15230b1304d5"
+  },
+  {
+    "timestamp": "2026-09-06T15:55:32.656270+00:00",
+    "session_id": "3af8a777232f4029",
+    "module": "guard",
+    "event_type": "llm_invocation",
+    "iso_42001_clause": "8.3 — Operational controls / AI system operation",
+    "payload": {
+      "call_index": 2,
+      "model": "gpt-5-2025-08-07",
+      "tokens": {
+        "prompt": 10,
+        "completion": 21,
+        "total": 31,
+        "estimated": true
+      },
+      "latency_ms": 0.07,
+      "input_action": "pass",
+      "output_action": "pass",
+      "masked_entities": {
+        "IBAN": 1,
+        "PHONE": 1
+      },
+      "signatures": [],
+      "degraded": false,
+      "fallback_reason": null,
+      "error": null
+    },
+    "hash": "6892fb520e9d873b8d48d51b5da05e104ce42927b7f2173f101579e60685525b",
+    "previous_hash": "0188da073d724b1cadd2cf2820e56cac1f20bd4ba31792fc20bf22be0e35fdc9"
+  },
+  {
+    "timestamp": "2026-09-06T15:55:32.656417+00:00",
+    "session_id": "3af8a777232f4029",
+    "module": "guard",
+    "event_type": "llm_invocation",
+    "iso_42001_clause": "8.3 — Operational controls / AI system operation",
+    "payload": {
+      "call_index": 3,
+      "model": "gpt-5-2025-08-07",
+      "tokens": {
+        "prompt": 17,
+        "completion": 0,
+        "total": 17,
+        "estimated": true
+      },
+      "latency_ms": 0.06,
+      "input_action": "block",
+      "output_action": "block",
+      "masked_entities": {},
+      "signatures": [
+        "instruction_override",
+        "verdict_override"
+      ],
+      "degraded": true,
+      "fallback_reason": "input_blocked",
+      "error": null
+    },
+    "hash": "91835aa98accceafcf72f31737d2bd1623ce91b366f0fbb47ed236b2721a3955",
+    "previous_hash": "6892fb520e9d873b8d48d51b5da05e104ce42927b7f2173f101579e60685525b"
+  },
+  {
+    "timestamp": "2026-09-06T15:55:32.656540+00:00",
+    "session_id": "3af8a777232f4029",
+    "module": "guard",
+    "event_type": "llm_invocation",
+    "iso_42001_clause": "8.3 — Operational controls / AI system operation",
+    "payload": {
+      "call_index": 4,
+      "model": "gpt-5-2025-08-07",
+      "tokens": {
+        "prompt": 6,
+        "completion": 0,
+        "total": 6,
+        "estimated": true
+      },
+      "latency_ms": 0.04,
+      "input_action": "block",
+      "output_action": "block",
+      "masked_entities": {},
+      "signatures": [
+        "verdict_override"
+      ],
+      "degraded": true,
+      "fallback_reason": "input_blocked",
+      "error": null
+    },
+    "hash": "f47e51fe1df1600fe207ea128eaf6e34df06013a4841967f1be522cd9287250b",
+    "previous_hash": "91835aa98accceafcf72f31737d2bd1623ce91b366f0fbb47ed236b2721a3955"
+  },
+  {
+    "timestamp": "2026-09-06T15:55:32.656677+00:00",
+    "session_id": "74e2ac92130e4a3f",
+    "module": "vendor",
+    "event_type": "vendor_assessment",
+    "iso_42001_clause": "8.5 — Third-party and customer relationships",
+    "payload": {
+      "provider": "openai",
+      "score": 83.3,
+      "group_scores": {
+        "certifications": 69.5,
+        "data_protection": 100.0,
+        "retention": 85.5,
+        "security": 90.4,
+        "ai_specific": 61.4,
+        "operations": 82.4
+      },
+      "unknown_criteria": 1,
+      "residency_verdict": "requires_scc",
+      "training_optout_verdict": "enforced",
+      "stale": true,
+      "worst_severity": "high"
+    },
+    "hash": "d403ede7ae672ce26b145c612d34900d317beaf65516500dda03e16807a609f5",
+    "previous_hash": "f47e51fe1df1600fe207ea128eaf6e34df06013a4841967f1be522cd9287250b"
+  },
+  {
+    "timestamp": "2026-09-06T15:55:32.656816+00:00",
+    "session_id": "553e2fc8636e4bc2",
+    "module": "vendor",
+    "event_type": "vendor_assessment",
+    "iso_42001_clause": "8.5 — Third-party and customer relationships",
+    "payload": {
+      "provider": "mistral",
+      "score": 64.4,
+      "group_scores": {
+        "certifications": 55.2,
+        "data_protection": 90.6,
+        "retention": 59.4,
+        "security": 63.5,
+        "ai_specific": 55.5,
+        "operations": 48.2
+      },
+      "unknown_criteria": 5,
+      "residency_verdict": "compliant",
+      "training_optout_verdict": "available_not_evidenced",
+      "stale": true,
+      "worst_severity": "high"
+    },
+    "hash": "5c6ba498dfa9cc67493bf15d59202c3dd9219dab9d279e58fbeacb876b44acb9",
+    "previous_hash": "d403ede7ae672ce26b145c612d34900d317beaf65516500dda03e16807a609f5"
+  },
+  {
+    "timestamp": "2026-09-06T15:55:32.658849+00:00",
+    "session_id": "e055c50eed1c4e16",
+    "module": "cicd",
+    "event_type": "gate_run",
+    "iso_42001_clause": "9.1 — Monitoring, measurement, analysis and evaluation",
+    "payload": {
+      "passed": false,
+      "exit_code": 1,
+      "checks": {
+        "fairness_score": "fail",
+        "quality_score": "fail",
+        "corpus_drift": "pass",
+        "eu_ai_act_tier": "pass",
+        "vendor_score.openai": "pass",
+        "residency.openai": "pass",
+        "vendor_score.mistral": "pass",
+        "residency.mistral": "pass",
+        "guard_blocks": "fail",
+        "audit_chain": "pass"
+      }
+    },
+    "hash": "7c85c99de763023834d09a9e9e75c4df8454024bd64ad414d867d0ea21969568",
+    "previous_hash": "5c6ba498dfa9cc67493bf15d59202c3dd9219dab9d279e58fbeacb876b44acb9"
+  }
+]

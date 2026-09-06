@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "AtherosAI Compliance Console",
+    "slug": "atheros-compliance-console",
+    "version": "1.0.0",
+    "orientation": "default",
+    "scheme": "atheros",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ai.atheros.console"
+    },
+    "android": {
+      "package": "ai.atheros.console"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

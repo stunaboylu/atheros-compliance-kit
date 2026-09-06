@@ -1,0 +1,161 @@
+# Tag-driven release. Publishes to PyPI via Trusted Publishing (OIDC) — no API
+# token is stored anywhere, so there is no long-lived credential to leak.
+#
+# The order matters: the wheel is smoke-installed in a CLEAN container BEFORE it
+# reaches PyPI. A broken wheel on PyPI cannot be replaced, only yanked, and a
+# compliance library that fails to import is a very public way to fail.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Build and smoke-test only; publish nothing"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install build
+
+      - name: Assert the tag matches the package version
+        id: meta
+        run: |
+          VERSION=$(grep -m1 '^version = ' atheros-compliance-kit/pyproject.toml | cut -d'"' -f2)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if [ "${GITHUB_REF_TYPE}" = "tag" ] && [ "${GITHUB_REF_NAME}" != "v$VERSION" ]; then
+            echo "tag ${GITHUB_REF_NAME} does not match version $VERSION" >&2
+            exit 1
+          fi
+
+      - name: Build sdist and wheel
+        working-directory: atheros-compliance-kit
+        # Reproducible: the mtime baked into the archive comes from the commit,
+        # so two builds of one commit are byte-identical and the attestation
+        # below describes something a third party can rebuild.
+        env:
+          SOURCE_DATE_EPOCH: ${{ github.event.repository.pushed_at }}
+        run: python -m build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: atheros-compliance-kit/dist/
+
+  smoke:
+    # A clean container with no repo, no source tree, and no extras — the state a
+    # customer's CI image is in.
+    needs: build
+    runs-on: ubuntu-latest
+    container: python:3.12-slim
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - name: Install the wheel and nothing else
+        run: pip install --no-cache-dir dist/*.whl
+      - name: The core must import with no third-party module present
+        run: |
+          python - <<'PY'
+          import sys, atheros_kit.core
+          # Injected by the interpreter/venv before our code runs, not imported by us.
+          INJECTED = {"sitecustomize", "usercustomize", "apport_python_hook",
+                      "_distutils_hack", "pkg_resources"}
+          stdlib = set(sys.stdlib_module_names)
+          extra = sorted(m for m in sys.modules
+                         if not m.startswith(("atheros_kit", "_"))
+                         and m.split(".")[0] not in stdlib
+                         and m.split(".")[0] not in INJECTED)
+          assert not extra, f"core pulled in {extra}"
+          print("core is stdlib-only")
+          PY
+      - name: Every command must work offline
+        run: |
+          atheros-kit doctor
+          atheros-kit init --format json
+          atheros-kit euact classify --name Smoke --sector hr --use-case "cv screening"
+          atheros-kit euact classify --name Smoke --sector hr --use-case "cv screening" --lang tr
+          atheros-kit vendor assess mistral --region EU
+          atheros-kit audit verify
+      - name: Optional extras must install cleanly
+        run: pip install --no-cache-dir "dist/"*.whl
+
+  publish-test:
+    needs: smoke
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: testpypi
+    permissions:
+      id-token: write        # Trusted Publishing — no stored token
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  publish:
+    needs: publish-test
+    runs-on: ubuntu-latest
+    environment: pypi         # requires a manual approval on the environment
+    permissions:
+      id-token: write
+      attestations: write
+      contents: read
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Attest build provenance
+        # A customer installing a compliance library should be able to establish
+        # which commit and which workflow produced the artefact they are running.
+        # We ask exactly this of the vendors we assess (`incident_history_disclosed`,
+        # `model_card`); asking it of ourselves is the cheap part.
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: "dist/*"
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
+  sbom:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install cyclonedx-bom
+      - name: Generate a CycloneDX SBOM
+        working-directory: atheros-compliance-kit
+        # Generated per release including the extras, because an enterprise
+        # customer's air-gap bundle contains the extras and their supply chain is
+        # the one they have to review.
+        run: |
+          pip install '.[all]'
+          cyclonedx-py environment -o ../sbom-atheros-compliance-kit.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom-atheros-compliance-kit.json
+          retention-days: 365

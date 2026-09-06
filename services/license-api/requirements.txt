@@ -1,0 +1,11 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.0
+pydantic==2.9.2
+pydantic-settings==2.5.2
+sqlalchemy[asyncio]==2.0.35
+asyncpg==0.30.0
+alembic==1.13.3
+# Ed25519 SIGNING. The Kit verifies in pure Python (core/ed25519.py) so its own
+# install stays stdlib-only; only this service needs a real crypto library,
+# because only this service holds a private key.
+cryptography==43.0.1

@@ -1,0 +1,43 @@
+AtherosAI Developer Compliance Kit — Commercial Licence
+Copyright (c) 2026 AtherosAI B.V. All rights reserved.
+
+SPDX-Identifier: LicenseRef-AtherosAI-Commercial
+
+1. FREE TIER
+   Modules `atheros_kit.guard` and `atheros_kit.euact.classify`, together with
+   `atheros_kit.core`, may be used without charge and without activation, for any
+   purpose including commercial use, by any number of users, indefinitely.
+   No telemetry is collected and no network call is made.
+
+2. PAID TIERS
+   Use of `atheros_kit.rag`, `atheros_kit.vendor`, `atheros_kit.cicd`, and
+   dossier export requires a current Team or Enterprise licence.
+
+3. WHAT THIS SOFTWARE IS
+   The Software produces automated ASSESSMENTS and EVIDENCE. It does not
+   certify, does not perform a conformity assessment within the meaning of
+   Regulation (EU) 2024/1689, and does not constitute legal advice. Every report
+   states the limits of what it measured, and those statements are part of the
+   output, not a disclaimer appended to it.
+
+4. NO WARRANTY AS TO COMPLIANCE OUTCOMES
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED. AtherosAI B.V. does not warrant that use of the Software will result
+   in compliance with any law, regulation, or standard. Regulatory obligations
+   rest with the customer, and no output of this Software transfers them.
+
+5. REGULATION CONTENT
+   Legal vocabulary ships as versioned data and every assessment records the
+   version it was produced under. Content is maintained on a best-effort basis
+   for the Free and Team tiers, and to the service level stated in the agreement
+   for Enterprise. It may lag changes in the underlying law.
+
+6. REDISTRIBUTION
+   The Software may not be redistributed, sublicensed, or offered as a hosted
+   service to third parties without a written agreement with AtherosAI B.V.
+
+7. THIRD-PARTY COMPONENTS
+   The core has no runtime dependencies. Optional extras install third-party
+   packages under their own licences; see the SBOM published with each release.
+
+Contact: legal@atheros.ai

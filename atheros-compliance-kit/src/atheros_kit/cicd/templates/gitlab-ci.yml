@@ -1,0 +1,24 @@
+# .gitlab-ci.yml (fragment)
+#
+# Same contract as the GitHub template: the gate fails the pipeline on a
+# threshold breach OR on a check that could not be measured.
+ai-compliance-gate:
+  stage: test
+  image: python:3.12-slim
+  variables:
+    ATHEROS_AUDIT_FILE: .atheros/audit_trail.jsonl
+  before_script:
+    - pip install --no-cache-dir atheros-compliance-kit
+  script:
+    - atheros-kit ci gate --config atheros.yml
+  artifacts:
+    when: always            # the report matters most when the job failed
+    expire_in: 90 days
+    paths:
+      - .atheros/
+    reports:
+      # Surfaces the summary in the merge-request widget.
+      codequality: .atheros/reports/atheros-report.json
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

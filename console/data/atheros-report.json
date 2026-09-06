@@ -1,0 +1,1607 @@
+{
+  "schema": "atheros.gate/v1",
+  "locale": "en",
+  "session_id": "e055c50eed1c4e16",
+  "passed": false,
+  "exit_code": 1,
+  "checks": [
+    {
+      "name": "fairness_score",
+      "status": "fail",
+      "actual": 0.0,
+      "threshold": 70,
+      "detail": "0.0 < 70"
+    },
+    {
+      "name": "quality_score",
+      "status": "fail",
+      "actual": 24.5,
+      "threshold": 70,
+      "detail": "24.5 < 70"
+    },
+    {
+      "name": "corpus_drift",
+      "status": "pass",
+      "actual": "stable",
+      "threshold": [
+        "shifted"
+      ],
+      "detail": ""
+    },
+    {
+      "name": "eu_ai_act_tier",
+      "status": "pass",
+      "actual": "high",
+      "threshold": [
+        "unacceptable"
+      ],
+      "detail": ""
+    },
+    {
+      "name": "vendor_score.openai",
+      "status": "pass",
+      "actual": 83.3,
+      "threshold": 60,
+      "detail": ""
+    },
+    {
+      "name": "residency.openai",
+      "status": "pass",
+      "actual": "requires_scc",
+      "threshold": [
+        "non_compliant"
+      ],
+      "detail": ""
+    },
+    {
+      "name": "vendor_score.mistral",
+      "status": "pass",
+      "actual": 64.4,
+      "threshold": 60,
+      "detail": ""
+    },
+    {
+      "name": "residency.mistral",
+      "status": "pass",
+      "actual": "compliant",
+      "threshold": [
+        "non_compliant"
+      ],
+      "detail": ""
+    },
+    {
+      "name": "guard_blocks",
+      "status": "fail",
+      "actual": 2,
+      "threshold": 0,
+      "detail": "2 blocked invocation(s) exceed the configured cap of 0"
+    },
+    {
+      "name": "audit_chain",
+      "status": "pass",
+      "actual": "intact",
+      "threshold": "intact",
+      "detail": ""
+    }
+  ],
+  "reports": {
+    "rag": {
+      "locale": "en",
+      "schema": "atheros.report/v1",
+      "module": "rag",
+      "subject": "hiring-knowledge-base",
+      "generated_at": "2026-09-06T15:55:32.655465+00:00",
+      "session_id": "83857543ce2442b4",
+      "degraded": false,
+      "worst_severity": "high",
+      "scores": [
+        {
+          "name": "quality_score",
+          "value": 24.5,
+          "method": "deterministic",
+          "degraded": false,
+          "threshold": 70.0,
+          "basis": {
+            "content": 100.0,
+            "retrievable": 98.5,
+            "distinct": 7.5,
+            "sizing": 100.0,
+            "capped_for_mixed_dimensions": false,
+            "near_duplicate_check_sampled": false
+          },
+          "band": "critical",
+          "passed": false
+        },
+        {
+          "name": "fairness_score",
+          "value": 0.0,
+          "method": "deterministic",
+          "degraded": false,
+          "threshold": 70.0,
+          "basis": {
+            "gender": 0.0
+          },
+          "band": "critical",
+          "passed": false
+        },
+        {
+          "name": "drift_stability",
+          "value": 98.5,
+          "method": "deterministic",
+          "degraded": false,
+          "threshold": 70.0,
+          "basis": {
+            "centroid_component": 100.0,
+            "psi_component": 98.5,
+            "verdict": "stable",
+            "centroid_informative": true
+          },
+          "band": "good",
+          "passed": true
+        }
+      ],
+      "findings": [
+        {
+          "check": "unembedded_chunks",
+          "severity": "medium",
+          "detail": "1 chunk(s) have no embedding and cannot be retrieved at all",
+          "module": "rag",
+          "action": "flag",
+          "article": "Art. 10",
+          "evidence": {
+            "count": 1,
+            "sample_ids": [
+              "kb-orphan"
+            ]
+          },
+          "remediation": "Re-run embedding for these ids. They are in the corpus and absent from the index — every recall figure computed over this collection is optimistic by this amount.",
+          "params": {
+            "count": 1
+          },
+          "detail_tr": "1 parçanın gömmesi yok ve hiçbir şekilde getirilemez",
+          "remediation_tr": "Bu kimlikler için gömmeyi yeniden çalıştırın. Külliyatta varlar ama dizinde yoklar — bu koleksiyon üzerinde hesaplanan her geri çağırma değeri bu kadar iyimserdir."
+        },
+        {
+          "check": "duplicate_chunks",
+          "severity": "high",
+          "detail": "62 redundant copies across 3 group(s) (92.5% of the corpus)",
+          "module": "rag",
+          "action": "flag",
+          "article": "Art. 10",
+          "evidence": {
+            "groups": 3,
+            "redundant": 62
+          },
+          "remediation": "De-duplicate by content hash before the next ingestion, and make the ingestion idempotent so this does not recur.",
+          "params": {
+            "redundant": 62,
+            "groups": 3,
+            "pct": "92.5"
+          },
+          "detail_tr": "3 grup içinde 62 gereksiz kopya (külliyatın %92.5'i)",
+          "remediation_tr": "Bir sonraki alımdan önce içerik özetine göre tekilleştirin ve tekrarlanmaması için alımı idempotent hale getirin."
+        },
+        {
+          "check": "personal_data_in_corpus",
+          "severity": "high",
+          "detail": "1 chunk(s) contain structurally recognisable personal data (EMAIL)",
+          "module": "rag",
+          "action": "flag",
+          "article": "Art. 10 / GDPR Art. 5(1)(c)",
+          "evidence": {
+            "count": 1,
+            "categories": [
+              "EMAIL"
+            ],
+            "sample_ids": [
+              "kb-pii"
+            ]
+          },
+          "remediation": "Redact at ingestion. Note that these detectors are structural — names and free-text identifiers are not caught, so this count is a floor, never a total.",
+          "params": {
+            "count": 1,
+            "categories": "EMAIL"
+          },
+          "detail_tr": "1 parça yapısal olarak tanınabilir kişisel veri içeriyor (EMAIL)",
+          "remediation_tr": "Alım sırasında maskeleyin. Bu dedektörler yapısaldır — isimler ve serbest metin tanımlayıcıları yakalanmaz, dolayısıyla bu sayı bir alt sınırdır, toplam değil."
+        },
+        {
+          "check": "representation_imbalance.gender",
+          "severity": "high",
+          "detail": "'gender' fails the four-fifths rule (ratio 0.17); under-represented: feminine, non_binary",
+          "module": "rag",
+          "action": "flag",
+          "article": "Art. 10",
+          "evidence": {
+            "dimension": "gender",
+            "ratio": 0.1731,
+            "group_counts": {
+              "feminine": 18,
+              "masculine": 104,
+              "non_binary": 0
+            }
+          },
+          "remediation": "Augment the corpus for the under-represented groups, or down-sample the dominant one. Do not re-weight retrieval to hide it.",
+          "params": {
+            "dimension": "gender",
+            "ratio": "0.17",
+            "groups": "feminine, non_binary"
+          },
+          "detail_tr": "'gender' beşte-dört kuralını karşılamıyor (oran 0.17); yetersiz temsil: feminine, non_binary",
+          "remediation_tr": "Yetersiz temsil edilen gruplar için külliyatı zenginleştirin ya da baskın olanı seyreltin. Gizlemek için getirmeyi yeniden ağırlıklandırmayın."
+        },
+        {
+          "check": "framing_skew.gender",
+          "severity": "high",
+          "detail": "'gender' shows a contextual-language gap of 2.00 between groups; negatively framed: feminine",
+          "module": "rag",
+          "action": "flag",
+          "article": "Art. 10",
+          "evidence": {
+            "dimension": "gender",
+            "spread": 2.0,
+            "group_sentiment": {
+              "feminine": -1.0,
+              "masculine": 1.0
+            }
+          },
+          "remediation": "The corpus is balanced in counts and unbalanced in language. Review the source documents for the affected groups; this is the form of bias that survives a representation audit.",
+          "params": {
+            "dimension": "gender",
+            "spread": "2.00",
+            "groups": "feminine"
+          },
+          "detail_tr": "'gender' gruplar arasında 2.00 bağlamsal dil farkı gösteriyor; olumsuz çerçevelenen: feminine",
+          "remediation_tr": "Külliyat sayıca dengeli, dil bakımından dengesiz. Etkilenen gruplar için kaynak belgeleri gözden geçirin; bu, temsil denetiminden sağ çıkan önyargı biçimidir."
+        },
+        {
+          "check": "bias_unassessable.age",
+          "severity": "low",
+          "detail": "'age' could not be assessed: only 0 mention(s) across 0 group(s); below the 20-mention / 2-group floor needed to distinguish imbalance from absence",
+          "module": "rag",
+          "action": "flag",
+          "article": "Art. 10",
+          "evidence": {
+            "dimension": "age",
+            "mentions": 0
+          },
+          "remediation": "Either the corpus does not discuss this dimension, or it does so in vocabulary the lexicon does not carry. Extend it via `extra_dimensions=` before concluding the first.",
+          "params": {
+            "dimension": "age",
+            "reason": "only 0 mention(s) across 0 group(s); below the 20-mention / 2-group floor needed to distinguish imbalance from absence",
+            "reason_tr": "0 grup genelinde yalnızca 0 anma; dengesizliği yokluktan ayırmak için gereken 20-anma / 2-grup alt sınırının altında"
+          },
+          "detail_tr": "'age' değerlendirilemedi: 0 grup genelinde yalnızca 0 anma; dengesizliği yokluktan ayırmak için gereken 20-anma / 2-grup alt sınırının altında",
+          "remediation_tr": "Ya külliyat bu boyuttan söz etmiyor ya da sözlükte bulunmayan bir kelime dağarcığıyla söz ediyor. İlkine karar vermeden önce `extra_dimensions=` ile genişletin."
+        },
+        {
+          "check": "bias_unassessable.ethnicity_origin",
+          "severity": "low",
+          "detail": "'ethnicity_origin' could not be assessed: only 0 mention(s) across 0 group(s); below the 20-mention / 2-group floor needed to distinguish imbalance from absence",
+          "module": "rag",
+          "action": "flag",
+          "article": "Art. 10",
+          "evidence": {
+            "dimension": "ethnicity_origin",
+            "mentions": 0
+          },
+          "remediation": "Either the corpus does not discuss this dimension, or it does so in vocabulary the lexicon does not carry. Extend it via `extra_dimensions=` before concluding the first.",
+          "params": {
+            "dimension": "ethnicity_origin",
+            "reason": "only 0 mention(s) across 0 group(s); below the 20-mention / 2-group floor needed to distinguish imbalance from absence",
+            "reason_tr": "0 grup genelinde yalnızca 0 anma; dengesizliği yokluktan ayırmak için gereken 20-anma / 2-grup alt sınırının altında"
+          },
+          "detail_tr": "'ethnicity_origin' değerlendirilemedi: 0 grup genelinde yalnızca 0 anma; dengesizliği yokluktan ayırmak için gereken 20-anma / 2-grup alt sınırının altında",
+          "remediation_tr": "Ya külliyat bu boyuttan söz etmiyor ya da sözlükte bulunmayan bir kelime dağarcığıyla söz ediyor. İlkine karar vermeden önce `extra_dimensions=` ile genişletin."
+        },
+        {
+          "check": "bias_unassessable.disability",
+          "severity": "low",
+          "detail": "'disability' could not be assessed: only 0 mention(s) across 0 group(s); below the 20-mention / 2-group floor needed to distinguish imbalance from absence",
+          "module": "rag",
+          "action": "flag",
+          "article": "Art. 10",
+          "evidence": {
+            "dimension": "disability",
+            "mentions": 0
+          },
+          "remediation": "Either the corpus does not discuss this dimension, or it does so in vocabulary the lexicon does not carry. Extend it via `extra_dimensions=` before concluding the first.",
+          "params": {
+            "dimension": "disability",
+            "reason": "only 0 mention(s) across 0 group(s); below the 20-mention / 2-group floor needed to distinguish imbalance from absence",
+            "reason_tr": "0 grup genelinde yalnızca 0 anma; dengesizliği yokluktan ayırmak için gereken 20-anma / 2-grup alt sınırının altında"
+          },
+          "detail_tr": "'disability' değerlendirilemedi: 0 grup genelinde yalnızca 0 anma; dengesizliği yokluktan ayırmak için gereken 20-anma / 2-grup alt sınırının altında",
+          "remediation_tr": "Ya külliyat bu boyuttan söz etmiyor ya da sözlükte bulunmayan bir kelime dağarcığıyla söz ediyor. İlkine karar vermeden önce `extra_dimensions=` ile genişletin."
+        },
+        {
+          "check": "bias_unassessable.ideological",
+          "severity": "low",
+          "detail": "'ideological' could not be assessed: only 0 mention(s) across 0 group(s); below the 20-mention / 2-group floor needed to distinguish imbalance from absence",
+          "module": "rag",
+          "action": "flag",
+          "article": "Art. 10",
+          "evidence": {
+            "dimension": "ideological",
+            "mentions": 0
+          },
+          "remediation": "Either the corpus does not discuss this dimension, or it does so in vocabulary the lexicon does not carry. Extend it via `extra_dimensions=` before concluding the first.",
+          "params": {
+            "dimension": "ideological",
+            "reason": "only 0 mention(s) across 0 group(s); below the 20-mention / 2-group floor needed to distinguish imbalance from absence",
+            "reason_tr": "0 grup genelinde yalnızca 0 anma; dengesizliği yokluktan ayırmak için gereken 20-anma / 2-grup alt sınırının altında"
+          },
+          "detail_tr": "'ideological' değerlendirilemedi: 0 grup genelinde yalnızca 0 anma; dengesizliği yokluktan ayırmak için gereken 20-anma / 2-grup alt sınırının altında",
+          "remediation_tr": "Ya külliyat bu boyuttan söz etmiyor ya da sözlükte bulunmayan bir kelime dağarcığıyla söz ediyor. İlkine karar vermeden önce `extra_dimensions=` ile genişletin."
+        },
+        {
+          "check": "bias_unassessable.geographic",
+          "severity": "low",
+          "detail": "'geographic' could not be assessed: only 0 mention(s) across 0 group(s); below the 20-mention / 2-group floor needed to distinguish imbalance from absence",
+          "module": "rag",
+          "action": "flag",
+          "article": "Art. 10",
+          "evidence": {
+            "dimension": "geographic",
+            "mentions": 0
+          },
+          "remediation": "Either the corpus does not discuss this dimension, or it does so in vocabulary the lexicon does not carry. Extend it via `extra_dimensions=` before concluding the first.",
+          "params": {
+            "dimension": "geographic",
+            "reason": "only 0 mention(s) across 0 group(s); below the 20-mention / 2-group floor needed to distinguish imbalance from absence",
+            "reason_tr": "0 grup genelinde yalnızca 0 anma; dengesizliği yokluktan ayırmak için gereken 20-anma / 2-grup alt sınırının altında"
+          },
+          "detail_tr": "'geographic' değerlendirilemedi: 0 grup genelinde yalnızca 0 anma; dengesizliği yokluktan ayırmak için gereken 20-anma / 2-grup alt sınırının altında",
+          "remediation_tr": "Ya külliyat bu boyuttan söz etmiyor ya da sözlükte bulunmayan bir kelime dağarcığıyla söz ediyor. İlkine karar vermeden önce `extra_dimensions=` ile genişletin."
+        },
+        {
+          "check": "bias_unassessable.socioeconomic",
+          "severity": "low",
+          "detail": "'socioeconomic' could not be assessed: only 0 mention(s) across 0 group(s); below the 20-mention / 2-group floor needed to distinguish imbalance from absence",
+          "module": "rag",
+          "action": "flag",
+          "article": "Art. 10",
+          "evidence": {
+            "dimension": "socioeconomic",
+            "mentions": 0
+          },
+          "remediation": "Either the corpus does not discuss this dimension, or it does so in vocabulary the lexicon does not carry. Extend it via `extra_dimensions=` before concluding the first.",
+          "params": {
+            "dimension": "socioeconomic",
+            "reason": "only 0 mention(s) across 0 group(s); below the 20-mention / 2-group floor needed to distinguish imbalance from absence",
+            "reason_tr": "0 grup genelinde yalnızca 0 anma; dengesizliği yokluktan ayırmak için gereken 20-anma / 2-grup alt sınırının altında"
+          },
+          "detail_tr": "'socioeconomic' değerlendirilemedi: 0 grup genelinde yalnızca 0 anma; dengesizliği yokluktan ayırmak için gereken 20-anma / 2-grup alt sınırının altında",
+          "remediation_tr": "Ya külliyat bu boyuttan söz etmiyor ya da sözlükte bulunmayan bir kelime dağarcığıyla söz ediyor. İlkine karar vermeden önce `extra_dimensions=` ile genişletin."
+        },
+        {
+          "check": "fairness_score_below_threshold",
+          "severity": "high",
+          "detail": "Fairness Score 0.0/100 across 1 assessed dimension(s)",
+          "module": "rag",
+          "action": "flag",
+          "article": "Art. 10",
+          "evidence": {
+            "score": 0.0,
+            "assessed": [
+              "gender"
+            ],
+            "unassessable": [
+              "age",
+              "ethnicity_origin",
+              "disability",
+              "ideological",
+              "geographic",
+              "socioeconomic"
+            ],
+            "affected": [
+              "gender:feminine",
+              "gender:non_binary"
+            ]
+          },
+          "remediation": "See the per-dimension findings; remediation recipes are in `rag.remediation.recommend()`.",
+          "params": {
+            "score": "0.0",
+            "n": 1
+          },
+          "detail_tr": "Adillik Skoru 0.0/100, 1 değerlendirilen boyut üzerinden",
+          "remediation_tr": "Boyut bazlı bulgulara bakın; iyileştirme tarifleri `rag.remediation.recommend()` içinde."
+        }
+      ],
+      "coverage": {
+        "Art. 10 — chunk quality": "covered",
+        "Art. 10 — bias examination": "partial",
+        "Art. 15 — corpus stability": "covered"
+      },
+      "limits": [
+        "Detection is lexicon-based and English-first. A clean result means no listed term was matched — it is not evidence that the corpus is unbiased, and a non-English corpus will under-report on every dimension.",
+        "Representation counts surface terms, not people. A corpus discussing a group without using its listed vocabulary is invisible to this measure.",
+        "With 52 embedded chunks per snapshot, two identical corpora would score a mean PSI of about 0.346 from sampling alone. The bands were raised to 0.692 / 1.039 accordingly — a real shift smaller than that cannot be distinguished from noise at this sample size."
+      ],
+      "limits_tr": [
+        "Tespit sözlük tabanlıdır ve önce İngilizcedir. Temiz bir sonuç, listelenen hiçbir terimin eşleşmediği anlamına gelir — külliyatın önyargısız olduğunun kanıtı değildir ve İngilizce olmayan bir külliyat her boyutta eksik raporlanır.",
+        "Temsil, insanları değil yüzey terimlerini sayar. Listelenen kelime dağarcığını kullanmadan bir gruptan söz eden bir külliyat bu ölçüm için görünmezdir.",
+        "Anlık görüntü başına 52 gömülü parça ile, iki özdeş külliyat yalnızca örnekleme nedeniyle yaklaşık 0.346 ortalama PSI alırdı. Bantlar buna göre 0.692 / 1.039 seviyesine yükseltildi — bundan küçük gerçek bir kayma, bu örneklem büyüklüğünde gürültüden ayırt edilemez."
+      ],
+      "metadata": {
+        "connector": "memory",
+        "chunks_scanned": 67,
+        "baseline_chunks": 52,
+        "assessed_dimensions": [
+          "gender"
+        ],
+        "unassessable_dimensions": [
+          "age",
+          "ethnicity_origin",
+          "disability",
+          "ideological",
+          "geographic",
+          "socioeconomic"
+        ],
+        "drift_verdict": "stable"
+      },
+      "quality": {
+        "total_chunks": 67,
+        "empty": 0,
+        "near_empty": 0,
+        "duplicate_groups": 3,
+        "duplicate_chunks": 62,
+        "near_duplicate_pairs": 0,
+        "orphans": 1,
+        "dimension_histogram": {
+          "12": 66
+        },
+        "length_stats": {
+          "min": 64.0,
+          "max": 136.0,
+          "mean": 126.3,
+          "median": 136.0,
+          "stdev": 20.5
+        },
+        "outliers_short": 0,
+        "outliers_long": 0,
+        "pii_chunks": 1,
+        "pii_categories": [
+          "EMAIL"
+        ],
+        "near_dup_sampled": false,
+        "score": {
+          "name": "quality_score",
+          "value": 24.5,
+          "method": "deterministic",
+          "degraded": false,
+          "threshold": 70.0,
+          "basis": {
+            "content": 100.0,
+            "retrievable": 98.5,
+            "distinct": 7.5,
+            "sizing": 100.0,
+            "capped_for_mixed_dimensions": false,
+            "near_duplicate_check_sampled": false
+          },
+          "band": "critical",
+          "passed": false
+        }
+      },
+      "bias": {
+        "fairness_score": {
+          "name": "fairness_score",
+          "value": 0.0,
+          "method": "deterministic",
+          "degraded": false,
+          "threshold": 70.0,
+          "basis": {
+            "gender": 0.0
+          },
+          "band": "critical",
+          "passed": false
+        },
+        "chunks_scanned": 67,
+        "assessed_dimensions": [
+          "gender"
+        ],
+        "unassessable": [
+          "age",
+          "ethnicity_origin",
+          "disability",
+          "ideological",
+          "geographic",
+          "socioeconomic"
+        ],
+        "affected_groups": [
+          "gender:feminine",
+          "gender:non_binary"
+        ],
+        "dimensions": [
+          {
+            "dimension": "gender",
+            "assessed": true,
+            "reason": "",
+            "reason_tr": "",
+            "total_mentions": 122,
+            "group_counts": {
+              "feminine": 18,
+              "masculine": 104,
+              "non_binary": 0
+            },
+            "representation_ratio": 0.1731,
+            "representation_score": 21.6,
+            "group_sentiment": {
+              "feminine": -1.0,
+              "masculine": 1.0
+            },
+            "sentiment_spread": 2.0,
+            "sentiment_score": 0.0,
+            "score": 0.0,
+            "underrepresented": [
+              "feminine",
+              "non_binary"
+            ],
+            "negatively_framed": [
+              "feminine"
+            ]
+          },
+          {
+            "dimension": "age",
+            "assessed": false,
+            "reason": "only 0 mention(s) across 0 group(s); below the 20-mention / 2-group floor needed to distinguish imbalance from absence",
+            "reason_tr": "0 grup genelinde yalnızca 0 anma; dengesizliği yokluktan ayırmak için gereken 20-anma / 2-grup alt sınırının altında",
+            "total_mentions": 0,
+            "group_counts": {
+              "young": 0,
+              "middle": 0,
+              "older": 0
+            },
+            "representation_ratio": null,
+            "representation_score": null,
+            "group_sentiment": {},
+            "sentiment_spread": null,
+            "sentiment_score": null,
+            "score": null,
+            "underrepresented": [],
+            "negatively_framed": []
+          },
+          {
+            "dimension": "ethnicity_origin",
+            "assessed": false,
+            "reason": "only 0 mention(s) across 0 group(s); below the 20-mention / 2-group floor needed to distinguish imbalance from absence",
+            "reason_tr": "0 grup genelinde yalnızca 0 anma; dengesizliği yokluktan ayırmak için gereken 20-anma / 2-grup alt sınırının altında",
+            "total_mentions": 0,
+            "group_counts": {
+              "european": 0,
+              "asian": 0,
+              "african": 0,
+              "latin_american": 0,
+              "middle_eastern": 0
+            },
+            "representation_ratio": null,
+            "representation_score": null,
+            "group_sentiment": {},
+            "sentiment_spread": null,
+            "sentiment_score": null,
+            "score": null,
+            "underrepresented": [],
+            "negatively_framed": []
+          },
+          {
+            "dimension": "disability",
+            "assessed": false,
+            "reason": "only 0 mention(s) across 0 group(s); below the 20-mention / 2-group floor needed to distinguish imbalance from absence",
+            "reason_tr": "0 grup genelinde yalnızca 0 anma; dengesizliği yokluktan ayırmak için gereken 20-anma / 2-grup alt sınırının altında",
+            "total_mentions": 0,
+            "group_counts": {
+              "disability_mentioned": 0,
+              "accommodation": 0
+            },
+            "representation_ratio": null,
+            "representation_score": null,
+            "group_sentiment": {},
+            "sentiment_spread": null,
+            "sentiment_score": null,
+            "score": null,
+            "underrepresented": [],
+            "negatively_framed": []
+          },
+          {
+            "dimension": "ideological",
+            "assessed": false,
+            "reason": "only 0 mention(s) across 0 group(s); below the 20-mention / 2-group floor needed to distinguish imbalance from absence",
+            "reason_tr": "0 grup genelinde yalnızca 0 anma; dengesizliği yokluktan ayırmak için gereken 20-anma / 2-grup alt sınırının altında",
+            "total_mentions": 0,
+            "group_counts": {
+              "progressive": 0,
+              "conservative": 0,
+              "centrist": 0
+            },
+            "representation_ratio": null,
+            "representation_score": null,
+            "group_sentiment": {},
+            "sentiment_spread": null,
+            "sentiment_score": null,
+            "score": null,
+            "underrepresented": [],
+            "negatively_framed": []
+          },
+          {
+            "dimension": "geographic",
+            "assessed": false,
+            "reason": "only 0 mention(s) across 0 group(s); below the 20-mention / 2-group floor needed to distinguish imbalance from absence",
+            "reason_tr": "0 grup genelinde yalnızca 0 anma; dengesizliği yokluktan ayırmak için gereken 20-anma / 2-grup alt sınırının altında",
+            "total_mentions": 0,
+            "group_counts": {
+              "global_north": 0,
+              "global_south": 0,
+              "urban": 0,
+              "rural": 0
+            },
+            "representation_ratio": null,
+            "representation_score": null,
+            "group_sentiment": {},
+            "sentiment_spread": null,
+            "sentiment_score": null,
+            "score": null,
+            "underrepresented": [],
+            "negatively_framed": []
+          },
+          {
+            "dimension": "socioeconomic",
+            "assessed": false,
+            "reason": "only 0 mention(s) across 0 group(s); below the 20-mention / 2-group floor needed to distinguish imbalance from absence",
+            "reason_tr": "0 grup genelinde yalnızca 0 anma; dengesizliği yokluktan ayırmak için gereken 20-anma / 2-grup alt sınırının altında",
+            "total_mentions": 0,
+            "group_counts": {
+              "high_income": 0,
+              "low_income": 0
+            },
+            "representation_ratio": null,
+            "representation_score": null,
+            "group_sentiment": {},
+            "sentiment_spread": null,
+            "sentiment_score": null,
+            "score": null,
+            "underrepresented": [],
+            "negatively_framed": []
+          }
+        ],
+        "limits": [
+          "Detection is lexicon-based and English-first. A clean result means no listed term was matched — it is not evidence that the corpus is unbiased, and a non-English corpus will under-report on every dimension.",
+          "Representation counts surface terms, not people. A corpus discussing a group without using its listed vocabulary is invisible to this measure."
+        ]
+      },
+      "drift": {
+        "verdict": "stable",
+        "centroid_similarity": 1.0,
+        "centroid_informative": true,
+        "psi_mean": 0.0318,
+        "psi_max": 0.0438,
+        "psi_noise_floor": 0.3462,
+        "psi_stable_threshold": 0.6924,
+        "psi_dimensions_unstable": 0,
+        "dimensions": 12,
+        "baseline_count": 52,
+        "current_count": 67,
+        "volume_ratio": 1.288,
+        "limits": [
+          "With 52 embedded chunks per snapshot, two identical corpora would score a mean PSI of about 0.346 from sampling alone. The bands were raised to 0.692 / 1.039 accordingly — a real shift smaller than that cannot be distinguished from noise at this sample size."
+        ],
+        "score": {
+          "name": "drift_stability",
+          "value": 98.5,
+          "method": "deterministic",
+          "degraded": false,
+          "threshold": 70.0,
+          "basis": {
+            "centroid_component": 100.0,
+            "psi_component": 98.5,
+            "verdict": "stable",
+            "centroid_informative": true
+          },
+          "band": "good",
+          "passed": true
+        }
+      },
+      "remediation": [
+        {
+          "key": "dedupe",
+          "title": "De-duplicate the corpus by content hash",
+          "rationale": "62 redundant copies occupy retrieval slots that would otherwise hold distinct evidence, and inflate every recall figure measured on this collection.",
+          "steps": [
+            "Group chunks by a whitespace- and case-normalised SHA-256 of their text.",
+            "Keep the copy with the richest metadata; delete the rest.",
+            "Add the same hash as a uniqueness constraint at ingestion so it cannot recur.",
+            "Re-run `atheros-kit rag audit` to confirm the group count is zero."
+          ],
+          "impact": "high",
+          "effort": "low",
+          "risk": "Deleting the wrong copy loses its metadata. Keep the richest, not the oldest.",
+          "article": "Art. 10",
+          "affects": {
+            "groups": 3,
+            "redundant": 62
+          },
+          "code": "from atheros_kit.rag import assess_chunks\nreport = assess_chunks(connector.chunks())\nfor fingerprint, ids in report.exact_duplicates.items():\n    keep, remove = ids[0], ids[1:]      # inspect metadata before choosing\n    print('delete', remove)             # then delete via YOUR store's client",
+          "leverage": 8
+        },
+        {
+          "key": "reembed_orphans",
+          "title": "Embed the chunks that have no vector",
+          "rationale": "1 chunks are in the corpus and absent from the index. They can never be retrieved, and every recall number computed over this collection is optimistic by that amount.",
+          "steps": [
+            "Collect the orphan ids from the quality report.",
+            "Re-run the embedding step for exactly those ids — not the whole corpus.",
+            "Confirm the new vectors match the collection's existing dimension.",
+            "Make the ingestion fail loudly when an embedding call returns nothing."
+          ],
+          "impact": "high",
+          "effort": "low",
+          "risk": "Embedding with a different model than the rest of the collection is worse than leaving them absent — it corrupts distances for every query.",
+          "article": "Art. 10",
+          "affects": {
+            "count": 1,
+            "sample_ids": [
+              "kb-orphan"
+            ]
+          },
+          "code": null,
+          "leverage": 8
+        },
+        {
+          "key": "redact_pii",
+          "title": "Redact personal data at ingestion",
+          "rationale": "1 chunks carry structurally recognisable personal data (EMAIL). Under Art. 10 and GDPR Art. 5(1)(c) a knowledge base should hold what the task needs and no more.",
+          "steps": [
+            "Run `atheros_kit.guard.Anonymizer` over documents in the ingestion pipeline.",
+            "Re-ingest the affected documents from source, masked.",
+            "Delete the unmasked chunks; masking a copy does not remove the original.",
+            "Add the masking step to CI so new documents cannot bypass it."
+          ],
+          "impact": "high",
+          "effort": "medium",
+          "risk": "These detectors are structural. Names and free-text identifiers are NOT caught, so this count is a floor. Do not treat a clean re-run as proof of a clean corpus.",
+          "article": "Art. 10 / GDPR Art. 5(1)(c)",
+          "affects": {
+            "count": 1,
+            "categories": [
+              "EMAIL"
+            ],
+            "sample_ids": [
+              "kb-pii"
+            ]
+          },
+          "code": "from atheros_kit.guard import Anonymizer\nanon = Anonymizer(reversible=False)   # ingestion never needs to restore\nclean = anon.mask(document_text).text",
+          "leverage": 7
+        },
+        {
+          "key": "rebalance_gender",
+          "title": "Rebalance corpus representation for 'gender'",
+          "rationale": "The 'gender' dimension fails the four-fifths rule (ratio 0.1731). A retrieval layer returns what the corpus contains, so this imbalance reaches every answer.",
+          "steps": [
+            "Identify source documents covering the under-represented groups: feminine, masculine, non_binary.",
+            "Augment with real documents first. Synthetic augmentation is a last resort and must be labelled as synthetic in metadata.",
+            "Re-run the bias scan and compare the ratio, not the score.",
+            "If augmentation is impossible, down-sample the dominant group and record the decision — a smaller balanced corpus is defensible; a large skewed one is not."
+          ],
+          "impact": "high",
+          "effort": "high",
+          "risk": "Never re-weight retrieval to mask this. It hides the imbalance from the metric while leaving it in the evidence base, which is the failure mode Art. 10 exists to prevent.",
+          "article": "Art. 10",
+          "affects": {
+            "dimension": "gender",
+            "ratio": 0.1731,
+            "group_counts": {
+              "feminine": 18,
+              "masculine": 104,
+              "non_binary": 0
+            }
+          },
+          "code": null,
+          "leverage": 6
+        },
+        {
+          "key": "reframe_gender",
+          "title": "Review how 'gender' groups are described",
+          "rationale": "Groups are present in comparable numbers but described in measurably different language (gap 2.0). This is the form of bias that survives a representation audit and reaches the model intact.",
+          "steps": [
+            "Pull the chunks mentioning the negatively framed groups and read them.",
+            "Distinguish accurate domain language from editorialising in the source.",
+            "Where the source is the problem, replace the document; where the extraction is, fix the pipeline.",
+            "Re-run and compare the sentiment spread per group."
+          ],
+          "impact": "high",
+          "effort": "high",
+          "risk": "This one needs human reading. An automated rewrite of source documents destroys the provenance that makes them evidence.",
+          "article": "Art. 10",
+          "affects": {
+            "dimension": "gender",
+            "spread": 2.0,
+            "group_sentiment": {
+              "feminine": -1.0,
+              "masculine": 1.0
+            }
+          },
+          "code": null,
+          "leverage": 6
+        },
+        {
+          "key": "extend_lexicon_age",
+          "title": "Extend the 'age' lexicon or confirm absence",
+          "rationale": "'age' could not be scored. That is an open question, not a pass — the corpus either does not discuss it or discusses it in vocabulary the lexicon does not carry.",
+          "steps": [
+            "Read a sample of chunks and decide which of the two is true.",
+            "If the vocabulary is wrong, pass `extra_dimensions=` with your domain terms.",
+            "If the dimension genuinely does not apply, record that decision so the gap is not re-litigated every quarter."
+          ],
+          "impact": "low",
+          "effort": "low",
+          "risk": "None. But leaving it unresolved means the Fairness Score describes less of the corpus than a reader will assume.",
+          "article": "Art. 10",
+          "affects": {
+            "dimension": "age",
+            "mentions": 0
+          },
+          "code": null,
+          "leverage": 2
+        },
+        {
+          "key": "extend_lexicon_disability",
+          "title": "Extend the 'disability' lexicon or confirm absence",
+          "rationale": "'disability' could not be scored. That is an open question, not a pass — the corpus either does not discuss it or discusses it in vocabulary the lexicon does not carry.",
+          "steps": [
+            "Read a sample of chunks and decide which of the two is true.",
+            "If the vocabulary is wrong, pass `extra_dimensions=` with your domain terms.",
+            "If the dimension genuinely does not apply, record that decision so the gap is not re-litigated every quarter."
+          ],
+          "impact": "low",
+          "effort": "low",
+          "risk": "None. But leaving it unresolved means the Fairness Score describes less of the corpus than a reader will assume.",
+          "article": "Art. 10",
+          "affects": {
+            "dimension": "disability",
+            "mentions": 0
+          },
+          "code": null,
+          "leverage": 2
+        },
+        {
+          "key": "extend_lexicon_ethnicity_origin",
+          "title": "Extend the 'ethnicity_origin' lexicon or confirm absence",
+          "rationale": "'ethnicity_origin' could not be scored. That is an open question, not a pass — the corpus either does not discuss it or discusses it in vocabulary the lexicon does not carry.",
+          "steps": [
+            "Read a sample of chunks and decide which of the two is true.",
+            "If the vocabulary is wrong, pass `extra_dimensions=` with your domain terms.",
+            "If the dimension genuinely does not apply, record that decision so the gap is not re-litigated every quarter."
+          ],
+          "impact": "low",
+          "effort": "low",
+          "risk": "None. But leaving it unresolved means the Fairness Score describes less of the corpus than a reader will assume.",
+          "article": "Art. 10",
+          "affects": {
+            "dimension": "ethnicity_origin",
+            "mentions": 0
+          },
+          "code": null,
+          "leverage": 2
+        },
+        {
+          "key": "extend_lexicon_geographic",
+          "title": "Extend the 'geographic' lexicon or confirm absence",
+          "rationale": "'geographic' could not be scored. That is an open question, not a pass — the corpus either does not discuss it or discusses it in vocabulary the lexicon does not carry.",
+          "steps": [
+            "Read a sample of chunks and decide which of the two is true.",
+            "If the vocabulary is wrong, pass `extra_dimensions=` with your domain terms.",
+            "If the dimension genuinely does not apply, record that decision so the gap is not re-litigated every quarter."
+          ],
+          "impact": "low",
+          "effort": "low",
+          "risk": "None. But leaving it unresolved means the Fairness Score describes less of the corpus than a reader will assume.",
+          "article": "Art. 10",
+          "affects": {
+            "dimension": "geographic",
+            "mentions": 0
+          },
+          "code": null,
+          "leverage": 2
+        },
+        {
+          "key": "extend_lexicon_ideological",
+          "title": "Extend the 'ideological' lexicon or confirm absence",
+          "rationale": "'ideological' could not be scored. That is an open question, not a pass — the corpus either does not discuss it or discusses it in vocabulary the lexicon does not carry.",
+          "steps": [
+            "Read a sample of chunks and decide which of the two is true.",
+            "If the vocabulary is wrong, pass `extra_dimensions=` with your domain terms.",
+            "If the dimension genuinely does not apply, record that decision so the gap is not re-litigated every quarter."
+          ],
+          "impact": "low",
+          "effort": "low",
+          "risk": "None. But leaving it unresolved means the Fairness Score describes less of the corpus than a reader will assume.",
+          "article": "Art. 10",
+          "affects": {
+            "dimension": "ideological",
+            "mentions": 0
+          },
+          "code": null,
+          "leverage": 2
+        },
+        {
+          "key": "extend_lexicon_socioeconomic",
+          "title": "Extend the 'socioeconomic' lexicon or confirm absence",
+          "rationale": "'socioeconomic' could not be scored. That is an open question, not a pass — the corpus either does not discuss it or discusses it in vocabulary the lexicon does not carry.",
+          "steps": [
+            "Read a sample of chunks and decide which of the two is true.",
+            "If the vocabulary is wrong, pass `extra_dimensions=` with your domain terms.",
+            "If the dimension genuinely does not apply, record that decision so the gap is not re-litigated every quarter."
+          ],
+          "impact": "low",
+          "effort": "low",
+          "risk": "None. But leaving it unresolved means the Fairness Score describes less of the corpus than a reader will assume.",
+          "article": "Art. 10",
+          "affects": {
+            "dimension": "socioeconomic",
+            "mentions": 0
+          },
+          "code": null,
+          "leverage": 2
+        }
+      ]
+    },
+    "euact": {
+      "system": "TalentFlow",
+      "tier": "high",
+      "confidence": 0.85,
+      "grey_zone": false,
+      "grey_zone_reason": null,
+      "articles": [
+        "Annex III",
+        "Art. 6(2)"
+      ],
+      "annex_categories": [
+        "4. Employment and worker management"
+      ],
+      "reasoning": [
+        "use case matches Annex III 4. Employment and worker management (cv screening, candidate ranking, job applicant)",
+        "deployed in a high-risk sector: hr"
+      ],
+      "reasoning_tr": [
+        "kullanım senaryosu Annex III 4. Employment and worker management ile eşleşiyor (cv screening, candidate ranking, job applicant)",
+        "yüksek riskli bir sektörde konuşlandırılmış: hr"
+      ],
+      "grey_zone_reason_tr": null,
+      "limits_tr": [],
+      "obligations": [
+        {
+          "article": "Art. 9",
+          "duty": "Establish, document and maintain a risk-management system across the lifecycle.",
+          "duty_tr": "Yaşam döngüsü boyunca bir risk yönetim sistemi kurun, belgeleyin ve sürdürün.",
+          "evidence_source": "euact.dossier"
+        },
+        {
+          "article": "Art. 10",
+          "duty": "Data governance: relevance, representativeness, and examination for bias in training, validation and testing data.",
+          "duty_tr": "Veri yönetişimi: eğitim, doğrulama ve test verilerinde ilgililik, temsil edicilik ve önyargı incelemesi.",
+          "evidence_source": "rag.bias + rag.quality"
+        },
+        {
+          "article": "Art. 11 + Annex IV",
+          "duty": "Draw up technical documentation before placing on the market and keep it up to date.",
+          "duty_tr": "Piyasaya sürmeden önce teknik dokümantasyonu hazırlayın ve güncel tutun.",
+          "evidence_source": "euact.dossier"
+        },
+        {
+          "article": "Art. 12",
+          "duty": "Automatic recording of events (logs) over the system's lifetime.",
+          "duty_tr": "Sistemin ömrü boyunca olayların otomatik olarak kaydedilmesi.",
+          "evidence_source": "core.audit + guard.ledger"
+        },
+        {
+          "article": "Art. 13",
+          "duty": "Design for transparency: instructions for use enabling deployers to interpret output.",
+          "duty_tr": "Şeffaflık için tasarım: dağıtıcıların çıktıyı yorumlamasını sağlayan kullanım talimatları.",
+          "evidence_source": "euact.dossier"
+        },
+        {
+          "article": "Art. 14",
+          "duty": "Enable effective human oversight, including the ability to disregard or reverse output.",
+          "duty_tr": "Çıktıyı göz ardı etme veya geri alma yeteneği dâhil, etkili insan gözetimini mümkün kılın.",
+          "evidence_source": "guard.fallback"
+        },
+        {
+          "article": "Art. 15",
+          "duty": "Appropriate accuracy, robustness and cybersecurity, including resilience to prompt injection and data poisoning.",
+          "duty_tr": "İstem enjeksiyonu ve veri zehirlenmesine dayanıklılık dâhil uygun doğruluk, sağlamlık ve siber güvenlik.",
+          "evidence_source": "guard.injection"
+        },
+        {
+          "article": "Art. 17",
+          "duty": "Quality-management system covering the above.",
+          "duty_tr": "Yukarıdakileri kapsayan bir kalite yönetim sistemi.",
+          "evidence_source": "cicd.gate"
+        },
+        {
+          "article": "Art. 26",
+          "duty": "Deployer duties: use per instructions, ensure input relevance, monitor and retain logs.",
+          "duty_tr": "Dağıtıcı yükümlülükleri: talimatlara uygun kullanım, girdi ilgililiğinin sağlanması, izleme ve kayıtların saklanması.",
+          "evidence_source": "guard.ledger"
+        },
+        {
+          "article": "Art. 27",
+          "duty": "Fundamental-rights impact assessment (public bodies and certain deployers).",
+          "duty_tr": "Temel haklar etki değerlendirmesi (kamu kurumları ve belirli dağıtıcılar).",
+          "evidence_source": "euact.dossier"
+        }
+      ],
+      "gpai_obligations": [],
+      "regulation_version": "EU-2024/1689:2024-07-12",
+      "evidence_basis": "indicator_matched",
+      "limits": []
+    },
+    "vendor": [
+      {
+        "locale": "en",
+        "schema": "atheros.report/v1",
+        "module": "vendor",
+        "subject": "OpenAI",
+        "generated_at": "2026-09-06T15:55:32.656649+00:00",
+        "session_id": "74e2ac92130e4a3f",
+        "degraded": false,
+        "worst_severity": "high",
+        "scores": [
+          {
+            "name": "vendor_score",
+            "value": 83.3,
+            "method": "deterministic",
+            "degraded": false,
+            "threshold": 60.0,
+            "basis": {
+              "certifications": 69.5,
+              "data_protection": 100.0,
+              "retention": 85.5,
+              "security": 90.4,
+              "ai_specific": 61.4,
+              "operations": 82.4,
+              "unknown_criteria": 1,
+              "unknown_penalty_applied": true,
+              "customer_verified": false
+            },
+            "band": "watch",
+            "passed": true
+          }
+        ],
+        "findings": [
+          {
+            "check": "vendor_unknown.iso_42001",
+            "severity": "low",
+            "detail": "ISO/IEC 42001 AI management system certification? — not established",
+            "module": "vendor",
+            "action": "flag",
+            "article": "ISO 42001 §8.5",
+            "evidence": {
+              "criterion": "iso_42001",
+              "group": "certifications",
+              "weight": 8
+            },
+            "remediation": "Ask the vendor directly. The only AI-specific management-system standard. Its absence is normal today and is becoming the differentiator in enterprise procurement.",
+            "params": {
+              "question": "ISO/IEC 42001 AI management system certification?",
+              "question_tr": "ISO/IEC 42001 yapay zekâ yönetim sistemi sertifikası var mı?",
+              "critical": ""
+            },
+            "detail_tr": "ISO/IEC 42001 yapay zekâ yönetim sistemi sertifikası var mı? — tespit edilemedi",
+            "remediation_tr": "Ask the vendor directly. The only AI-specific management-system standard. Its absence is normal today and is becoming the differentiator in enterprise procurement."
+          },
+          {
+            "check": "vendor_partial.zero_data_retention",
+            "severity": "high",
+            "detail": "Zero data retention available AND enabled for this account? — only partially met, on a critical criterion",
+            "module": "vendor",
+            "action": "flag",
+            "article": null,
+            "evidence": {
+              "criterion": "zero_data_retention"
+            },
+            "remediation": "Available and enabled are different facts. Score `partial` when it is offered but not switched on — that is the state most accounts are actually in.",
+            "params": {
+              "question": "Zero data retention available AND enabled for this account?",
+              "question_tr": "Sıfır veri saklama mevcut VE bu hesap için etkin mi?"
+            },
+            "detail_tr": "Sıfır veri saklama mevcut VE bu hesap için etkin mi? — kritik bir ölçütte yalnızca kısmen karşılanıyor",
+            "remediation_tr": "Available and enabled are different facts. Score `partial` when it is offered but not switched on — that is the state most accounts are actually in."
+          },
+          {
+            "check": "dpf_certification_unverified",
+            "severity": "high",
+            "detail": "OpenAI processes in US. Adequacy there depends on the recipient's own Data Privacy Framework certification, which has not been confirmed for this vendor",
+            "module": "vendor",
+            "action": "flag",
+            "article": "GDPR Ch. V",
+            "evidence": {
+              "regions": [
+                "US"
+              ],
+              "dpf_certified": null
+            },
+            "remediation": "Check the vendor on the DPF participant list. If it is not certified, the transfer needs SCCs and a transfer impact assessment.",
+            "params": {
+              "provider": "OpenAI",
+              "regions": "US"
+            },
+            "detail_tr": "OpenAI US bölgesinde işliyor. Oradaki yeterlilik, alıcının kendi Data Privacy Framework sertifikasyonuna bağlıdır ve bu satıcı için doğrulanmamıştır",
+            "remediation_tr": "Satıcıyı DPF katılımcı listesinde kontrol edin. Sertifikalı değilse aktarım, SCC ve aktarım etki değerlendirmesi gerektirir."
+          },
+          {
+            "check": "zdr_not_enabled",
+            "severity": "medium",
+            "detail": "OpenAI supports zero data retention but it is not confirmed enabled for this account",
+            "module": "vendor",
+            "action": "flag",
+            "article": null,
+            "evidence": {
+              "zdr_available": true,
+              "zdr_enabled": null
+            },
+            "remediation": "Enable ZDR, or record the business reason for retaining prompts and the retention period that applies to them.",
+            "params": {
+              "provider": "OpenAI"
+            },
+            "detail_tr": "OpenAI sıfır veri saklamayı destekliyor ancak bu hesap için etkin olduğu doğrulanmadı",
+            "remediation_tr": "ZDR'yi etkinleştirin ya da istemlerin saklanmasına ilişkin iş gerekçesini ve geçerli saklama süresini kayda geçirin."
+          },
+          {
+            "check": "vendor_facts_stale",
+            "severity": "medium",
+            "detail": "the facts used for this assessment are dated 2026-02-01 (217 days old, past the 180-day window)",
+            "module": "vendor",
+            "action": "flag",
+            "article": null,
+            "evidence": {
+              "as_of": "2026-02-01",
+              "age_days": 217
+            },
+            "remediation": "Re-verify with the vendor and pass the answers via `overrides=`. Vendor terms change without notice.",
+            "params": {
+              "as_of": "2026-02-01",
+              "age": " (217 days old, past the 180-day window)",
+              "age_tr": " (217 gün önce, 180 günlük tazelik penceresinin dışında)"
+            },
+            "detail_tr": "bu değerlendirmede kullanılan bilgiler 2026-02-01 tarihli (217 gün önce, 180 günlük tazelik penceresinin dışında)",
+            "remediation_tr": "Satıcıyla yeniden doğrulayın ve yanıtları `overrides=` ile geçirin. Satıcı koşulları haber verilmeksizin değişir."
+          }
+        ],
+        "coverage": {
+          "Certifications and attestations": "partial",
+          "Data protection and transfers": "covered",
+          "Retention and model training": "covered",
+          "Security controls": "covered",
+          "AI-specific transparency": "partial",
+          "Operational maturity": "covered"
+        },
+        "limits": [
+          "Seed facts dated 2026-02-01 were used. They are a prompt for what to verify, not a substitute for verification.",
+          "No customer-verified facts were supplied. This assessment reflects public documentation, which describes what a vendor offers — not what is configured on this account or written into this contract."
+        ],
+        "limits_tr": [
+          "2026-02-01 tarihli başlangıç bilgileri kullanıldı. Bunlar neyin doğrulanacağına dair bir hatırlatmadır, doğrulamanın yerine geçmez.",
+          "Müşteri tarafından doğrulanmış bilgi sağlanmadı. Bu değerlendirme, bir satıcının neyi sunduğunu tarif eden kamuya açık dokümantasyonu yansıtır — bu hesapta neyin yapılandırıldığını ya da bu sözleşmede neyin yazdığını değil."
+        ],
+        "metadata": {
+          "provider_key": "openai",
+          "as_of": "2026-02-01",
+          "stale": true,
+          "required_regions": [
+            "EU"
+          ],
+          "residency_verdict": "requires_scc",
+          "residency_mechanism": "scc",
+          "training_optout_verdict": "enforced",
+          "source": "public trust portal and API data-usage documentation"
+        },
+        "provider": "OpenAI",
+        "as_of": "2026-02-01",
+        "stale": true,
+        "customer_verified": false,
+        "group_scores": {
+          "certifications": 69.5,
+          "data_protection": 100.0,
+          "retention": 85.5,
+          "security": 90.4,
+          "ai_specific": 61.4,
+          "operations": 82.4
+        },
+        "statuses": {
+          "iso_27001": "met",
+          "iso_42001": "unknown",
+          "soc2_type2": "met",
+          "gdpr_dpa": "met",
+          "sccs": "met",
+          "subprocessor_list": "met",
+          "zero_data_retention": "partial",
+          "log_retention_defined": "met",
+          "human_review_optout": "met",
+          "encryption_in_transit": "met",
+          "encryption_at_rest": "met",
+          "tenant_isolation": "met",
+          "pen_test_report": "partial",
+          "vuln_disclosure": "met",
+          "model_card": "partial",
+          "eval_reports": "partial",
+          "incident_history_disclosed": "partial",
+          "deprecation_policy": "met",
+          "sla": "met",
+          "status_page": "met",
+          "support_tier": "met",
+          "exit_plan": "partial",
+          "training_optout": "met",
+          "data_residency_choice": "met"
+        },
+        "unknown_criteria": [
+          "iso_42001"
+        ],
+        "unknown_ratio": 0.042,
+        "residency": {
+          "provider": "OpenAI",
+          "processing_regions": [
+            "US",
+            "EU"
+          ],
+          "required_regions": [
+            "EU"
+          ],
+          "verdict": "requires_scc",
+          "mechanism": "scc",
+          "outside_required": [
+            "US"
+          ],
+          "notes": [
+            "'The US has adequacy' is true of the framework and not of any particular company until its certification is checked.",
+            "These facts are dated 2026-02-01 and are past the 180-day freshness window. Re-verify before relying on this verdict."
+          ]
+        },
+        "training_optout": {
+          "provider": "OpenAI",
+          "available": true,
+          "enabled": true,
+          "contractual": true,
+          "zdr_available": true,
+          "zdr_enabled": null,
+          "verdict": "enforced",
+          "notes": [
+            "Opt-out is both switched on for this account and contractually committed. Re-verify after any change to the vendor's terms — a commitment in a version of the terms you no longer operate under is not a commitment."
+          ]
+        }
+      },
+      {
+        "locale": "en",
+        "schema": "atheros.report/v1",
+        "module": "vendor",
+        "subject": "Mistral AI",
+        "generated_at": "2026-09-06T15:55:32.656794+00:00",
+        "session_id": "553e2fc8636e4bc2",
+        "degraded": false,
+        "worst_severity": "high",
+        "scores": [
+          {
+            "name": "vendor_score",
+            "value": 64.4,
+            "method": "deterministic",
+            "degraded": false,
+            "threshold": 60.0,
+            "basis": {
+              "certifications": 55.2,
+              "data_protection": 90.6,
+              "retention": 59.4,
+              "security": 63.5,
+              "ai_specific": 55.5,
+              "operations": 48.2,
+              "unknown_criteria": 5,
+              "unknown_penalty_applied": true,
+              "customer_verified": false
+            },
+            "band": "poor",
+            "passed": true
+          }
+        ],
+        "findings": [
+          {
+            "check": "vendor_unknown.iso_42001",
+            "severity": "low",
+            "detail": "ISO/IEC 42001 AI management system certification? — not established",
+            "module": "vendor",
+            "action": "flag",
+            "article": "ISO 42001 §8.5",
+            "evidence": {
+              "criterion": "iso_42001",
+              "group": "certifications",
+              "weight": 8
+            },
+            "remediation": "Ask the vendor directly. The only AI-specific management-system standard. Its absence is normal today and is becoming the differentiator in enterprise procurement.",
+            "params": {
+              "question": "ISO/IEC 42001 AI management system certification?",
+              "question_tr": "ISO/IEC 42001 yapay zekâ yönetim sistemi sertifikası var mı?",
+              "critical": ""
+            },
+            "detail_tr": "ISO/IEC 42001 yapay zekâ yönetim sistemi sertifikası var mı? — tespit edilemedi",
+            "remediation_tr": "Ask the vendor directly. The only AI-specific management-system standard. Its absence is normal today and is becoming the differentiator in enterprise procurement."
+          },
+          {
+            "check": "vendor_partial.zero_data_retention",
+            "severity": "high",
+            "detail": "Zero data retention available AND enabled for this account? — only partially met, on a critical criterion",
+            "module": "vendor",
+            "action": "flag",
+            "article": null,
+            "evidence": {
+              "criterion": "zero_data_retention"
+            },
+            "remediation": "Available and enabled are different facts. Score `partial` when it is offered but not switched on — that is the state most accounts are actually in.",
+            "params": {
+              "question": "Zero data retention available AND enabled for this account?",
+              "question_tr": "Sıfır veri saklama mevcut VE bu hesap için etkin mi?"
+            },
+            "detail_tr": "Sıfır veri saklama mevcut VE bu hesap için etkin mi? — kritik bir ölçütte yalnızca kısmen karşılanıyor",
+            "remediation_tr": "Available and enabled are different facts. Score `partial` when it is offered but not switched on — that is the state most accounts are actually in."
+          },
+          {
+            "check": "vendor_unknown.human_review_optout",
+            "severity": "low",
+            "detail": "Can human review of prompts be disabled? — not established",
+            "module": "vendor",
+            "action": "flag",
+            "article": null,
+            "evidence": {
+              "criterion": "human_review_optout",
+              "group": "retention",
+              "weight": 7
+            },
+            "remediation": "Ask the vendor directly. Human review means employees of the vendor read customer prompts. Frequently enabled by default for abuse monitoring.",
+            "params": {
+              "question": "Can human review of prompts be disabled?",
+              "question_tr": "İstemlerin insan tarafından incelenmesi kapatılabiliyor mu?",
+              "critical": ""
+            },
+            "detail_tr": "İstemlerin insan tarafından incelenmesi kapatılabiliyor mu? — tespit edilemedi",
+            "remediation_tr": "Ask the vendor directly. Human review means employees of the vendor read customer prompts. Frequently enabled by default for abuse monitoring."
+          },
+          {
+            "check": "vendor_unknown.pen_test_report",
+            "severity": "low",
+            "detail": "Recent third-party penetration test, summary shareable? — not established",
+            "module": "vendor",
+            "action": "flag",
+            "article": null,
+            "evidence": {
+              "criterion": "pen_test_report",
+              "group": "security",
+              "weight": 5
+            },
+            "remediation": "Ask the vendor directly. An untested claim of security is a claim, not evidence.",
+            "params": {
+              "question": "Recent third-party penetration test, summary shareable?",
+              "question_tr": "Yakın tarihli üçüncü taraf sızma testi var mı, özeti paylaşılabiliyor mu?",
+              "critical": ""
+            },
+            "detail_tr": "Yakın tarihli üçüncü taraf sızma testi var mı, özeti paylaşılabiliyor mu? — tespit edilemedi",
+            "remediation_tr": "Ask the vendor directly. An untested claim of security is a claim, not evidence."
+          },
+          {
+            "check": "vendor_unknown.incident_history_disclosed",
+            "severity": "low",
+            "detail": "Are AI incidents disclosed to customers? — not established",
+            "module": "vendor",
+            "action": "flag",
+            "article": "Art. 73",
+            "evidence": {
+              "criterion": "incident_history_disclosed",
+              "group": "ai_specific",
+              "weight": 6
+            },
+            "remediation": "Ask the vendor directly. A deployer's Art. 73 reporting duty depends on being told by the provider.",
+            "params": {
+              "question": "Are AI incidents disclosed to customers?",
+              "question_tr": "Yapay zekâ olayları müşterilere bildiriliyor mu?",
+              "critical": ""
+            },
+            "detail_tr": "Yapay zekâ olayları müşterilere bildiriliyor mu? — tespit edilemedi",
+            "remediation_tr": "Ask the vendor directly. A deployer's Art. 73 reporting duty depends on being told by the provider."
+          },
+          {
+            "check": "vendor_unknown.exit_plan",
+            "severity": "low",
+            "detail": "Documented data export and deletion on termination? — not established",
+            "module": "vendor",
+            "action": "flag",
+            "article": "GDPR Art. 28(3)(g)",
+            "evidence": {
+              "criterion": "exit_plan",
+              "group": "operations",
+              "weight": 6
+            },
+            "remediation": "Ask the vendor directly. Lock-in is a governance risk, and deletion on termination is a GDPR Art. 28(3)(g) duty.",
+            "params": {
+              "question": "Documented data export and deletion on termination?",
+              "question_tr": "Fesih hâlinde veri dışa aktarımı ve silme belgelenmiş mi?",
+              "critical": ""
+            },
+            "detail_tr": "Fesih hâlinde veri dışa aktarımı ve silme belgelenmiş mi? — tespit edilemedi",
+            "remediation_tr": "Ask the vendor directly. Lock-in is a governance risk, and deletion on termination is a GDPR Art. 28(3)(g) duty."
+          },
+          {
+            "check": "training_optout_not_evidenced",
+            "severity": "high",
+            "detail": "Mistral AI offers a training opt-out, but it is not confirmed as enabled for this account and no contractual commitment recorded",
+            "module": "vendor",
+            "action": "flag",
+            "article": "GDPR Art. 28(3)(a)",
+            "evidence": {
+              "available": true,
+              "enabled": null,
+              "contractual": null
+            },
+            "remediation": "Confirm the setting in the account console, then get the commitment into the DPA. An opt-out that exists and is off protects nothing.",
+            "params": {
+              "provider": "Mistral AI",
+              "missing": "not confirmed as enabled for this account and no contractual commitment recorded",
+              "missing_tr": "bu hesap için etkin olduğu doğrulanmadı ve kayıtlı bir sözleşmesel taahhüt yok"
+            },
+            "detail_tr": "Mistral AI eğitimden çıkma seçeneği sunuyor, ancak bu hesap için etkin olduğu doğrulanmadı ve kayıtlı bir sözleşmesel taahhüt yok",
+            "remediation_tr": "Ayarı hesap konsolunda doğrulayın, ardından taahhüdü veri işleme sözleşmesine yazdırın. Var olan ama kapalı bir çıkma seçeneği hiçbir şeyi korumaz."
+          },
+          {
+            "check": "zdr_not_enabled",
+            "severity": "medium",
+            "detail": "Mistral AI supports zero data retention but it is not confirmed enabled for this account",
+            "module": "vendor",
+            "action": "flag",
+            "article": null,
+            "evidence": {
+              "zdr_available": true,
+              "zdr_enabled": null
+            },
+            "remediation": "Enable ZDR, or record the business reason for retaining prompts and the retention period that applies to them.",
+            "params": {
+              "provider": "Mistral AI"
+            },
+            "detail_tr": "Mistral AI sıfır veri saklamayı destekliyor ancak bu hesap için etkin olduğu doğrulanmadı",
+            "remediation_tr": "ZDR'yi etkinleştirin ya da istemlerin saklanmasına ilişkin iş gerekçesini ve geçerli saklama süresini kayda geçirin."
+          },
+          {
+            "check": "vendor_facts_stale",
+            "severity": "medium",
+            "detail": "the facts used for this assessment are dated 2026-02-01 (217 days old, past the 180-day window)",
+            "module": "vendor",
+            "action": "flag",
+            "article": null,
+            "evidence": {
+              "as_of": "2026-02-01",
+              "age_days": 217
+            },
+            "remediation": "Re-verify with the vendor and pass the answers via `overrides=`. Vendor terms change without notice.",
+            "params": {
+              "as_of": "2026-02-01",
+              "age": " (217 days old, past the 180-day window)",
+              "age_tr": " (217 gün önce, 180 günlük tazelik penceresinin dışında)"
+            },
+            "detail_tr": "bu değerlendirmede kullanılan bilgiler 2026-02-01 tarihli (217 gün önce, 180 günlük tazelik penceresinin dışında)",
+            "remediation_tr": "Satıcıyla yeniden doğrulayın ve yanıtları `overrides=` ile geçirin. Satıcı koşulları haber verilmeksizin değişir."
+          }
+        ],
+        "coverage": {
+          "Certifications and attestations": "partial",
+          "Data protection and transfers": "covered",
+          "Retention and model training": "partial",
+          "Security controls": "partial",
+          "AI-specific transparency": "partial",
+          "Operational maturity": "partial"
+        },
+        "limits": [
+          "Seed facts dated 2026-02-01 were used. They are a prompt for what to verify, not a substitute for verification.",
+          "No customer-verified facts were supplied. This assessment reflects public documentation, which describes what a vendor offers — not what is configured on this account or written into this contract."
+        ],
+        "limits_tr": [
+          "2026-02-01 tarihli başlangıç bilgileri kullanıldı. Bunlar neyin doğrulanacağına dair bir hatırlatmadır, doğrulamanın yerine geçmez.",
+          "Müşteri tarafından doğrulanmış bilgi sağlanmadı. Bu değerlendirme, bir satıcının neyi sunduğunu tarif eden kamuya açık dokümantasyonu yansıtır — bu hesapta neyin yapılandırıldığını ya da bu sözleşmede neyin yazdığını değil."
+        ],
+        "metadata": {
+          "provider_key": "mistral",
+          "as_of": "2026-02-01",
+          "stale": true,
+          "required_regions": [
+            "EU"
+          ],
+          "residency_verdict": "compliant",
+          "residency_mechanism": "adequacy",
+          "training_optout_verdict": "available_not_evidenced",
+          "source": "public documentation and terms of service"
+        },
+        "provider": "Mistral AI",
+        "as_of": "2026-02-01",
+        "stale": true,
+        "customer_verified": false,
+        "group_scores": {
+          "certifications": 55.2,
+          "data_protection": 90.6,
+          "retention": 59.4,
+          "security": 63.5,
+          "ai_specific": 55.5,
+          "operations": 48.2
+        },
+        "statuses": {
+          "iso_27001": "met",
+          "iso_42001": "unknown",
+          "soc2_type2": "partial",
+          "gdpr_dpa": "met",
+          "sccs": "met",
+          "subprocessor_list": "partial",
+          "zero_data_retention": "partial",
+          "log_retention_defined": "partial",
+          "human_review_optout": "unknown",
+          "encryption_in_transit": "met",
+          "encryption_at_rest": "met",
+          "tenant_isolation": "partial",
+          "pen_test_report": "unknown",
+          "vuln_disclosure": "partial",
+          "model_card": "met",
+          "eval_reports": "partial",
+          "incident_history_disclosed": "unknown",
+          "deprecation_policy": "partial",
+          "sla": "partial",
+          "status_page": "met",
+          "support_tier": "partial",
+          "exit_plan": "unknown",
+          "training_optout": "met",
+          "data_residency_choice": "met"
+        },
+        "unknown_criteria": [
+          "iso_42001",
+          "human_review_optout",
+          "pen_test_report",
+          "incident_history_disclosed",
+          "exit_plan"
+        ],
+        "unknown_ratio": 0.208,
+        "residency": {
+          "provider": "Mistral AI",
+          "processing_regions": [
+            "EU"
+          ],
+          "required_regions": [
+            "EU"
+          ],
+          "verdict": "compliant",
+          "mechanism": "adequacy",
+          "outside_required": [],
+          "notes": [
+            "All recorded processing is within the required region(s) EU. Confirm the vendor lets you PIN the region rather than merely offering it — see the `data_residency_choice` criterion."
+          ]
+        },
+        "training_optout": {
+          "provider": "Mistral AI",
+          "available": true,
+          "enabled": null,
+          "contractual": null,
+          "zdr_available": true,
+          "zdr_enabled": null,
+          "verdict": "available_not_evidenced",
+          "notes": []
+        }
+      }
+    ],
+    "guard": {
+      "session_id": "3af8a777232f4029",
+      "calls": 4,
+      "tokens": 93,
+      "degraded_calls": 2,
+      "blocked_calls": 2,
+      "masked_entities": {
+        "CODENAME": 1,
+        "EMAIL": 1,
+        "IBAN": 1,
+        "PHONE": 1
+      },
+      "signatures_triggered": [
+        "instruction_override",
+        "verdict_override"
+      ],
+      "duration_s": 0.0
+    }
+  },
+  "artefacts": []
+}

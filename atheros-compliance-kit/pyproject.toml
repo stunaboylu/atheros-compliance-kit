@@ -1,0 +1,58 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "atheros-compliance-kit"
+version = "1.0.0"
+description = "Enterprise AI-governance toolkit: RAG data-quality & bias evaluation, third-party LLM guardrails, EU AI Act classification, and vendor/ISO 42001 assessment — in your codebase and your CI."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "LicenseRef-AtherosAI-Commercial" }
+authors = [{ name = "AtherosAI B.V." }]
+keywords = ["eu-ai-act", "iso-42001", "ai-governance", "llm-guardrails", "rag-evaluation", "compliance", "pii", "prompt-injection"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Security",
+  "Topic :: Software Development :: Quality Assurance",
+]
+
+# The core is stdlib-only, on purpose: `pip install atheros-compliance-kit` in a CI
+# image must not pull a vector-store driver, an LLM SDK, or a PDF engine. Every
+# capability that needs one is an extra with a lazy import and a named error.
+dependencies = []
+
+[project.optional-dependencies]
+rag  = ["numpy>=1.24", "chromadb>=0.5; python_version>='3.10'", "pgvector>=0.3", "psycopg2-binary>=2.9"]
+llm  = ["google-genai>=1.0.0", "openai>=1.40.0", "PyYAML>=6.0"]
+pdf  = ["jinja2>=3.1.4", "weasyprint>=62.0"]
+yaml = ["PyYAML>=6.0"]
+all  = ["atheros-compliance-kit[rag,llm,pdf,yaml]"]
+dev  = ["pytest>=8.0", "pytest-cov>=5.0", "ruff>=0.6"]
+
+[project.scripts]
+atheros-kit = "atheros_kit.cli:main"
+
+[project.urls]
+Homepage = "https://atheros.ai/compliance-kit"
+Documentation = "https://docs.atheros.ai/compliance-kit"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/atheros_kit"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.atheros]
+# Default CI gate config; `atheros.yml` in the repo root overrides it.
+audit_file = ".atheros/audit_trail.jsonl"
+report_dir = ".atheros/reports"

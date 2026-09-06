@@ -1,0 +1,51 @@
+# ── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Build artefacts. The wheel is published to PyPI by the release workflow, which
+# builds it from a clean checkout — a wheel committed here would be a second,
+# unverifiable copy of something the pipeline already attests to.
+dist/
+dist_build/
+build/
+
+# ── Node / Expo ──────────────────────────────────────────────────────────────
+node_modules/
+.expo/
+web-build/
+*.tsbuildinfo
+
+# ── Generated output ─────────────────────────────────────────────────────────
+# Reports and the audit chain belong to whoever RAN the tool. Committing a run's
+# output would put one machine's assessment in everyone's checkout and, worse,
+# make the hash chain look like a shared artefact when it is per-installation.
+.atheros/
+site/dist/
+
+# The Console's bundled sample IS committed (console/data/) — it is the demo, it
+# is regenerable via scripts/generate_console_fixtures.py, and the site needs it.
+
+# ── Secrets ──────────────────────────────────────────────────────────────────
+# .env.example files are templates and are tracked; anything real is not.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+signing_key*
+licence.jwt
+license.jwt
+
+# ── OS / editor ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

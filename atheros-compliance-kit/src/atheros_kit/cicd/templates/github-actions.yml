@@ -1,0 +1,67 @@
+# .github/workflows/atheros-compliance.yml
+#
+# Compliance & safety regression tests on every push and pull request.
+# The gate writes .atheros/reports/atheros-summary.md and fails the build on a
+# threshold breach — including when a check could not be MEASURED, which is
+# deliberate: a gate that goes green when the measurement breaks is worse than
+# no gate.
+name: AI compliance gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write     # only for the summary comment below
+
+jobs:
+  compliance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # the gate compares against the baseline snapshot in the repo
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The core is stdlib-only, so this installs in seconds and pulls no vector
+      # store, LLM SDK, or PDF engine into the CI image.
+      - run: pip install atheros-compliance-kit
+
+      - name: Run the compliance gate
+        id: gate
+        run: atheros-kit ci gate --config atheros.yml
+        # No API key is needed: every check has a deterministic path. Set
+        # GEMINI_API_KEY / OPENAI_API_KEY only to enable the narrative layer.
+        env:
+          ATHEROS_AUDIT_FILE: .atheros/audit_trail.jsonl
+
+      - name: Comment the summary on the PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = '.atheros/reports/atheros-summary.md';
+            if (!fs.existsSync(path)) return;
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: fs.readFileSync(path, 'utf8'),
+            });
+
+      # Upload even on failure — the report is most useful exactly when the gate
+      # went red, and an artefact that only exists on success is an artefact
+      # nobody reads.
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atheros-compliance-evidence
+          path: .atheros/
+          retention-days: 90     # ISO/IEC 42001 §9.1 wants records, not screenshots
