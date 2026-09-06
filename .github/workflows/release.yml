@@ -43,12 +43,21 @@ jobs:
 
       - name: Build sdist and wheel
         working-directory: atheros-compliance-kit
-        # Reproducible: the mtime baked into the archive comes from the commit,
+        # Reproducible: the mtime baked into the archive comes from the COMMIT,
         # so two builds of one commit are byte-identical and the attestation
         # below describes something a third party can rebuild.
-        env:
-          SOURCE_DATE_EPOCH: ${{ github.event.repository.pushed_at }}
-        run: python -m build
+        #
+        # Not `github.event.repository.pushed_at`: that field is a Unix epoch on
+        # a `push` event and an ISO-8601 string on `workflow_dispatch`, so the
+        # build succeeded on a tag and died on a manual run with
+        # `ValueError: invalid literal for int()`. The commit's own timestamp is
+        # the same integer under every trigger — and it is the more correct
+        # source anyway, since the artefact should be reproducible from the
+        # commit rather than from when somebody happened to push it.
+        run: |
+          export SOURCE_DATE_EPOCH="$(git -C "$GITHUB_WORKSPACE" log -1 --pretty=%ct)"
+          echo "SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH"
+          python -m build
 
       - uses: actions/upload-artifact@v4
         with:
