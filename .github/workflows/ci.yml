@@ -210,7 +210,8 @@ jobs:
 
       - name: Measure the product (the site states no hand-written numbers)
         run: |
-          pip install -e atheros-compliance-kit
+          # The [dev] extra, because the count comes from pytest itself.
+          pip install -e 'atheros-compliance-kit[dev]'
           python scripts/collect_facts.py --print
 
       - name: Build the site (fails on banned phrasing or a missing canonical)

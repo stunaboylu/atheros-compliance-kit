@@ -41,9 +41,19 @@ def count_tests() -> int:
         [_python(), "-m", "pytest", "--collect-only", "-q"],
         cwd=PKG, capture_output=True, text=True, check=False,
     )
-    match = re.search(r"(\d+) tests? collected", proc.stdout)
+    combined = proc.stdout + proc.stderr
+    if "No module named pytest" in combined:
+        sys.exit(
+            "pytest is not installed for "
+            f"{_python()}, so the test count cannot be measured.\n"
+            "Install it:  pip install -e 'atheros-compliance-kit[dev]'\n"
+            "Refusing to fall back to a hand-written number — a figure nobody measured "
+            "is exactly what this script exists to remove."
+        )
+    match = re.search(r"(\d+) tests? collected", combined)
     if not match:
-        sys.exit(f"could not read a test count from pytest:\n{proc.stdout[-800:]}")
+        sys.exit("could not read a test count from pytest "
+                 f"(exit {proc.returncode}):\n{combined[-1200:]}")
     return int(match.group(1))
 
 
