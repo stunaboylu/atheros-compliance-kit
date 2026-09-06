@@ -75,7 +75,7 @@ def test_vendor_residency_breach_fails(tmp_path):
 
 
 def test_artefacts_are_written(tmp_path, balanced_corpus):
-    result = gate.run(_cfg(tmp_path), rag_audit=RAGAuditEngine(chunks=balanced_corpus).run())
+    gate.run(_cfg(tmp_path), rag_audit=RAGAuditEngine(chunks=balanced_corpus).run())
     report = json.loads((tmp_path / "reports" / "atheros-report.json").read_text())
     assert report["schema"] == "atheros.gate/v1"
     assert (tmp_path / "reports" / "atheros-summary.md").exists()

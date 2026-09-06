@@ -1,14 +1,15 @@
 """`assess()` — the whole of Module 4 in one call."""
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Any, Sequence
+from typing import Any
 
 from ..core import i18n, license
 from ..core.audit import AuditTrail, default_trail, new_session_id
 from ..core.findings import Action, Coverage, Finding, Method, Score, Severity
 from ..core.report import Report
-from .criteria import CRITERIA, CRITERIA_BY_KEY, GROUPS, STATUS_WEIGHT, group_weights
+from .criteria import CRITERIA, GROUPS, STATUS_WEIGHT, group_weights
 from .optout import OptOutResult, enforce
 from .registry import STALENESS_DAYS, ProviderEntry, lookup
 from .residency import ResidencyResult, verify

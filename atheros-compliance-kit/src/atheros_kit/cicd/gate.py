@@ -24,7 +24,6 @@ from typing import Any
 from ..core import i18n, license
 from ..core.audit import AuditTrail, default_trail, new_session_id
 from ..core.config import Config
-from ..core.findings import Severity
 
 EXIT_OK, EXIT_FAIL, EXIT_ERROR = 0, 1, 2
 

@@ -58,7 +58,7 @@ def enforce(entry: ProviderEntry, contract_flags: dict[str, Any] | None = None) 
         enabled=flags.get("training_optout_enabled"),
         contractual=flags.get("training_optout_contractual"),
         zdr_available=entry.get("zdr_available"),
-        zdr_enabled=flags.get("zdr_enabled", entry.get("zdr_default") if entry.get("zdr_default") else None),
+        zdr_enabled=flags.get("zdr_enabled", entry.get("zdr_default") or None),
         verdict="unknown",
     )
 

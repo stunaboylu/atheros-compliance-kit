@@ -18,8 +18,19 @@ model key. Where a model was configured and did not answer, the result says
     classify(SystemSpec("TalentFlow", "hr", ["cv screening"])).tier   # "high"
 """
 from .core import (
-    Action, AtherosError, AuditTrail, Config, Coverage, Finding, Method, Report,
-    Score, Severity, default_trail, resolve, warn_on_floating,
+    Action,
+    AtherosError,
+    AuditTrail,
+    Config,
+    Coverage,
+    Finding,
+    Method,
+    Report,
+    Score,
+    Severity,
+    default_trail,
+    resolve,
+    warn_on_floating,
 )
 from .euact import RiskTier, SystemSpec, classify, generate_dossier, watermark
 from .guard import CustomEntity, GuardedClient, GuardPolicy

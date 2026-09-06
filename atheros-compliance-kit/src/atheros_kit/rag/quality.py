@@ -24,10 +24,18 @@ Everything here is deterministic. No model call, no key, no network.
 from __future__ import annotations
 
 import statistics
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
-from typing import Iterable, Iterator
 
-from ..core.findings import Action, Finding, Method, Score, Severity, harmonic_mean, score_from_ratio
+from ..core.findings import (
+    Action,
+    Finding,
+    Method,
+    Score,
+    Severity,
+    harmonic_mean,
+    score_from_ratio,
+)
 from ..guard.pii import detect_categories
 from .connectors import Chunk
 

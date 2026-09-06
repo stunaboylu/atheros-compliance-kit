@@ -11,8 +11,8 @@ you must evidence it", never "you are fine".
 """
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Sequence
 
 from ..core.findings import Action, Finding, Severity
 from .registry import ADEQUACY_COUNTRIES, CONDITIONAL_ADEQUACY, EEA, ProviderEntry

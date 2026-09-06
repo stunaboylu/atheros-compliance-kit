@@ -91,7 +91,7 @@ def test_the_free_tier_never_needs_activation():
 
 def _token(payload: dict) -> tuple[str, str]:
     """Sign a token exactly the way the licence service does."""
-    crypto = pytest.importorskip("cryptography", reason="signing is a server-side concern")
+    pytest.importorskip("cryptography", reason="signing is a server-side concern")
     from cryptography.hazmat.primitives import serialization
     from cryptography.hazmat.primitives.asymmetric import ed25519
 

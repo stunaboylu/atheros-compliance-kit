@@ -13,11 +13,12 @@ recipe so the order is inspectable rather than asserted.
 """
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Any, Iterable
+from typing import Any
 
 from ..core import i18n
-from ..core.findings import Finding, Severity
+from ..core.findings import Finding
 
 
 @dataclass
@@ -217,7 +218,7 @@ def _for_finding(f: Finding) -> Recipe | None:
             rationale=(f"'{dim}' could not be scored. That is an open question, not a pass — the "
                        f"corpus either does not discuss it or discusses it in vocabulary the "
                        f"lexicon does not carry."),
-            steps=[f"Read a sample of chunks and decide which of the two is true.",
+            steps=["Read a sample of chunks and decide which of the two is true.",
                    "If the vocabulary is wrong, pass `extra_dimensions=` with your domain terms.",
                    "If the dimension genuinely does not apply, record that decision so the gap "
                    "is not re-litigated every quarter."],

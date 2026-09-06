@@ -22,9 +22,10 @@ import json
 import os
 import threading
 import uuid
+from collections.abc import Iterator
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 from . import i18n
 from .errors import LedgerViolation
@@ -140,19 +141,18 @@ class AuditTrail:
             "payload": payload,
         }
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        with _LOCAL_LOCK:
-            with self.path.open("a+b") as fh:
-                _lock(fh)
-                try:
-                    prev = _last_hash(fh)
-                    entry["hash"] = _sha256(_chained_payload(entry), prev)
-                    entry["previous_hash"] = prev
-                    fh.seek(0, os.SEEK_END)
-                    fh.write((json.dumps(entry, ensure_ascii=False) + "\n").encode("utf-8"))
-                    fh.flush()
-                    os.fsync(fh.fileno())
-                finally:
-                    _unlock(fh)
+        with _LOCAL_LOCK, self.path.open("a+b") as fh:
+            _lock(fh)
+            try:
+                prev = _last_hash(fh)
+                entry["hash"] = _sha256(_chained_payload(entry), prev)
+                entry["previous_hash"] = prev
+                fh.seek(0, os.SEEK_END)
+                fh.write((json.dumps(entry, ensure_ascii=False) + "\n").encode("utf-8"))
+                fh.flush()
+                os.fsync(fh.fileno())
+            finally:
+                _unlock(fh)
         return entry
 
     # ── read ─────────────────────────────────────────────────────────────────

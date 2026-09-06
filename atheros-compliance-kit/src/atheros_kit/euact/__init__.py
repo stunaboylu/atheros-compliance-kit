@@ -11,7 +11,8 @@
 from . import decision_tree, dossier, transparency, vocabulary
 from .classifier import RiskClassification, RiskTier, SystemSpec, classify
 from .decision_tree import QUESTIONS, Question, relevant_questions, to_spec
-from .dossier import Dossier, generate as generate_dossier
+from .dossier import Dossier
+from .dossier import generate as generate_dossier
 from .transparency import metadata_block, verify_watermark, watermark
 from .vocabulary import REGULATION_VERSION
 

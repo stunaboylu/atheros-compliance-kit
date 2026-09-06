@@ -16,9 +16,10 @@ from __future__ import annotations
 
 import hashlib
 import math
+from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Iterable, Iterator, Protocol, Sequence
+from typing import Any, Protocol
 
 from ..core.errors import MissingDependencyError
 
@@ -83,7 +84,7 @@ class InMemoryConnector:
 
     @classmethod
     def from_texts(cls, texts: Iterable[str], *, vectors: Sequence[Sequence[float]] | None = None,
-                   metadatas: Sequence[dict] | None = None, prefix: str = "doc") -> "InMemoryConnector":
+                   metadatas: Sequence[dict] | None = None, prefix: str = "doc") -> InMemoryConnector:
         docs = []
         for i, text in enumerate(texts):
             docs.append(Chunk(

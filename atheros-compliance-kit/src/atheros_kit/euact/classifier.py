@@ -70,7 +70,7 @@ class SystemSpec:
         )
 
     @classmethod
-    def from_dict(cls, d: dict[str, Any]) -> "SystemSpec":
+    def from_dict(cls, d: dict[str, Any]) -> SystemSpec:
         known = {f for f in cls.__dataclass_fields__}
         return cls(**{k: v for k, v in d.items() if k in known})
 

@@ -7,12 +7,13 @@ only wants the bias scan should not have to run the rest.
 """
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Any, Sequence
+from typing import Any
 
 from ..core import i18n, license
 from ..core.audit import AuditTrail, default_trail, new_session_id
-from ..core.findings import Coverage, Score
+from ..core.findings import Coverage
 from ..core.report import Report
 from . import bias as bias_mod
 from . import drift as drift_mod
@@ -79,7 +80,7 @@ class RAGAuditEngine:
         self.trail = trail or default_trail()
 
     @classmethod
-    def from_store(cls, kind: str, *, subject: str | None = None, **config: Any) -> "RAGAuditEngine":
+    def from_store(cls, kind: str, *, subject: str | None = None, **config: Any) -> RAGAuditEngine:
         """`RAGAuditEngine.from_store("chroma", collection_name="regulations")`."""
         connector = get_connector(kind, **config)
         return cls(connector, subject=subject or f"{kind}:{config.get('collection_name') or config.get('table') or config.get('index_name') or 'corpus'}")

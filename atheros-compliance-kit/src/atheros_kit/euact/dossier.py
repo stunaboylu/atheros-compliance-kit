@@ -18,8 +18,8 @@ from datetime import datetime, timezone
 from typing import Any
 
 from ..core import i18n, license
-from ..core.findings import Coverage, Finding, Severity, Action
-from .classifier import RiskClassification, RiskTier
+from ..core.findings import Action, Coverage, Finding, Severity
+from .classifier import RiskClassification
 
 #: Annex IV, points 1–9. Titles are paraphrased for readability; `annex_ref`
 #: carries the citation so the mapping to the legal text stays checkable.
@@ -304,7 +304,7 @@ def generate(
         else:
             sec.coverage = Coverage.MISSING
             sec.gap_note = (
-                f"Nothing has been supplied for this section."
+                "Nothing has been supplied for this section."
                 + (f" The Kit can evidence part of it via {', '.join(sources)}." if sources
                    else " No Kit module produces this; it requires human authorship.")
             )

@@ -12,10 +12,11 @@ prevent, and "the caller should have redacted it" is not a control.
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from . import i18n
 from .errors import MissingDependencyError
@@ -90,18 +91,18 @@ class Report:
     limits_tr: list[str] = field(default_factory=list)
 
     # ── assembly ─────────────────────────────────────────────────────────────
-    def add(self, *findings: Finding) -> "Report":
+    def add(self, *findings: Finding) -> Report:
         self.findings.extend(findings)
         return self
 
-    def add_score(self, *scores: Score) -> "Report":
+    def add_score(self, *scores: Score) -> Report:
         for s in scores:
             self.scores.append(s)
             if s.degraded:
                 self.degraded = True
         return self
 
-    def note_limit(self, text: str, text_tr: str | None = None) -> "Report":
+    def note_limit(self, text: str, text_tr: str | None = None) -> Report:
         """Record something this run could NOT establish.
 
         Printed in every rendering. The difference between 'we checked and found

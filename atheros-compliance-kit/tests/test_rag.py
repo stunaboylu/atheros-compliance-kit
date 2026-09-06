@@ -1,7 +1,7 @@
 import random
 
 from atheros_kit.core.findings import harmonic_mean
-from atheros_kit.rag import Chunk, RAGAuditEngine, assess_chunks, detect, recommend, score_corpus
+from atheros_kit.rag import Chunk, RAGAuditEngine, assess_chunks, detect, score_corpus
 
 
 # ── quality ───────────────────────────────────────────────────────────────────

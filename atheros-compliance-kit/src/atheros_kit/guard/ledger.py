@@ -12,7 +12,7 @@ so no future caller can pass it "just this once for debugging".
 from __future__ import annotations
 
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import date
 from typing import Any
 
@@ -29,7 +29,7 @@ class TokenUsage:
     def total(self) -> int:
         return self.prompt_tokens + self.completion_tokens
 
-    def __add__(self, other: "TokenUsage") -> "TokenUsage":
+    def __add__(self, other: TokenUsage) -> TokenUsage:
         return TokenUsage(
             self.prompt_tokens + other.prompt_tokens,
             self.completion_tokens + other.completion_tokens,
@@ -59,6 +59,15 @@ class InvocationRecord:
     signatures: list[str]
     degraded: bool
     fallback_reason: str | None
+    #: WHICH path actually produced the answer: primary | retry | secondary | static.
+    #:
+    #: The trigger says why a fallback happened; this says what answered. They are
+    #: different questions and only one of them was being recorded. "degraded,
+    #: provider_error" could mean a second model answered or a canned string did —
+    #: for a compliance record those are not the same event, and the product's
+    #: claim to answer "which model produced this" depends on the distinction.
+    answered_by: str = "primary"
+    attempts: int = 1
     error: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
@@ -78,6 +87,8 @@ class InvocationRecord:
             "signatures": self.signatures,
             "degraded": self.degraded,
             "fallback_reason": self.fallback_reason,
+            "answered_by": self.answered_by,
+            "attempts": self.attempts,
             "error": self.error,
         }
 
@@ -127,12 +138,12 @@ class GuardLedger:
         """
         if policy.max_calls_per_session is not None and self.call_count >= policy.max_calls_per_session:
             return "max_calls_per_session"
-        if policy.max_tokens_per_session is not None:
-            if self.usage.total + projected_tokens > policy.max_tokens_per_session:
-                return "max_tokens_per_session"
-        if policy.max_tokens_per_day is not None:
-            if self.daily_total() + projected_tokens > policy.max_tokens_per_day:
-                return "max_tokens_per_day"
+        if (policy.max_tokens_per_session is not None
+                and self.usage.total + projected_tokens > policy.max_tokens_per_session):
+            return "max_tokens_per_session"
+        if (policy.max_tokens_per_day is not None
+                and self.daily_total() + projected_tokens > policy.max_tokens_per_day):
+            return "max_tokens_per_day"
         return None
 
     def enforce_budget(self, policy, projected_tokens: int = 0) -> str | None:
@@ -157,15 +168,19 @@ class GuardLedger:
     def summary(self) -> dict[str, Any]:
         masked: dict[str, int] = {}
         signatures: set[str] = set()
+        answered: dict[str, int] = {}
         for r in self.records:
             for k, v in r.masked_entities.items():
                 masked[k] = masked.get(k, 0) + v
             signatures.update(r.signatures)
+            answered[r.answered_by] = answered.get(r.answered_by, 0) + 1
         return {
             "session_id": self.session_id,
             "calls": self.call_count,
             "tokens": self.usage.total,
             "degraded_calls": sum(1 for r in self.records if r.degraded),
+            "answered_by": dict(sorted(answered.items())),
+            "retries": sum(r.attempts - 1 for r in self.records),
             "blocked_calls": sum(1 for r in self.records if r.input_action == "block"),
             "masked_entities": dict(sorted(masked.items())),
             "signatures_triggered": sorted(signatures),

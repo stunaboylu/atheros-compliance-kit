@@ -8,9 +8,10 @@ is the unit of evidence this product sells; it gets one definition.
 """
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass, field
 from enum import Enum
-from typing import Any, Iterable
+from typing import Any
 
 from . import i18n
 

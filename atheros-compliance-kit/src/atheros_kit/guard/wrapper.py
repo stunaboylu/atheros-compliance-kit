@@ -27,8 +27,9 @@ Order of operations, and why:
 from __future__ import annotations
 
 import time
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
-from typing import Any, Callable, Sequence
+from typing import Any
 
 from ..core.errors import BudgetExceeded, GuardBlocked
 from ..core.findings import Action, Finding, Severity, worst
@@ -48,6 +49,9 @@ class GuardResult:
     masked_entities: dict[str, int] = field(default_factory=dict)
     degraded: bool = False
     fallback_trigger: str | None = None
+    #: primary | retry | secondary | static — what produced `text`.
+    answered_by: str = "primary"
+    attempts: int = 1
     usage: TokenUsage = field(default_factory=TokenUsage)
     latency_ms: float = 0.0
     session_id: str = "-"
@@ -70,6 +74,8 @@ class GuardResult:
             "blocked": self.blocked,
             "degraded": self.degraded,
             "fallback_trigger": self.fallback_trigger,
+            "answered_by": self.answered_by,
+            "attempts": self.attempts,
             "masked_entities": self.masked_entities,
             "findings": [f.to_dict() for f in self.findings],
             "tokens": self.usage.total,
@@ -167,7 +173,8 @@ class GuardedClient:
         except BudgetExceeded:
             self._record(findings, masked_counts, signatures, TokenUsage(), True,
                          (time.perf_counter() - started) * 1000, "pass", "block",
-                         True, fb.Trigger.BUDGET_EXCEEDED.value, error="budget exceeded")
+                         True, fb.Trigger.BUDGET_EXCEEDED.value, error="budget exceeded",
+                         answered_by="static", attempts=0)
             raise
         if breach and self.policy.on_budget_exceeded == "fallback":
             return self._fallback_result(
@@ -203,6 +210,11 @@ class GuardedClient:
         if text is None:
             text = self.policy.static_fallback or DEFAULT_FALLBACK_TEXT
             source = "static"
+        elif source == "primary" and degraded:
+            # The provider answered, but the OUTPUT gate rejected it and a
+            # fallback took its place — recording that as "primary" would say a
+            # model produced text it did not produce.
+            source = "static"
 
         # 8. Unmask last, so the output gate never handled real identities.
         if self.policy.unmask_response and not degraded:
@@ -220,11 +232,12 @@ class GuardedClient:
         latency = (time.perf_counter() - started) * 1000
         self._record(findings, masked_counts, signatures, usage, estimated, latency,
                      input_action.value, self._decide(findings).value, degraded,
-                     trigger.value if trigger else None)
+                     trigger.value if trigger else None, answered_by=source, attempts=attempts)
 
         return GuardResult(
             text=text, findings=findings, masked_entities=masked_counts,
             degraded=degraded, fallback_trigger=trigger.value if trigger else None,
+            answered_by=source, attempts=attempts,
             usage=usage, latency_ms=latency, session_id=self.session_id,
         )
 
@@ -291,7 +304,8 @@ class GuardedClient:
     def _blocked(self, prompt, findings, masked, signatures, started) -> GuardResult:
         latency = (time.perf_counter() - started) * 1000
         self._record(findings, masked, signatures, TokenUsage(estimate_tokens(prompt), 0),
-                     True, latency, "block", "block", True, fb.Trigger.INPUT_BLOCKED.value)
+                     True, latency, "block", "block", True, fb.Trigger.INPUT_BLOCKED.value,
+                     answered_by="static", attempts=0)
         blockers = [f for f in findings if f.action is Action.BLOCK]
         if self.policy.on_block == "raise":
             raise GuardBlocked(
@@ -312,15 +326,17 @@ class GuardedClient:
             remediation="The answer is a fallback, not a model response. Do not treat it as one.",
         ))
         self._record(findings, masked, signatures, TokenUsage(), True, latency,
-                     "pass", "flag", True, trigger.value)
+                     "pass", "flag", True, trigger.value, answered_by="static", attempts=0)
         return GuardResult(
             text=self.policy.static_fallback or DEFAULT_FALLBACK_TEXT,
             findings=findings, masked_entities=masked, degraded=True,
-            fallback_trigger=trigger.value, latency_ms=latency, session_id=self.session_id,
+            fallback_trigger=trigger.value, answered_by="static", attempts=0,
+            latency_ms=latency, session_id=self.session_id,
         )
 
     def _record(self, findings, masked, signatures, usage, estimated, latency,
-                input_action, output_action, degraded, trigger, error=None) -> None:
+                input_action, output_action, degraded, trigger, error=None,
+                answered_by="primary", attempts=1) -> None:
         self.ledger.record(
             InvocationRecord(
                 session_id=self.session_id,
@@ -335,6 +351,8 @@ class GuardedClient:
                 signatures=sorted(set(signatures)),
                 degraded=degraded,
                 fallback_reason=trigger,
+                answered_by=answered_by,
+                attempts=attempts,
                 error=error,
             ),
             log=self.policy.log_to_ledger,

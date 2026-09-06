@@ -20,7 +20,7 @@ import base64
 import binascii
 import re
 from dataclasses import dataclass, field
-from typing import Pattern
+from re import Pattern
 
 from ..core.findings import Action, Finding, Severity
 

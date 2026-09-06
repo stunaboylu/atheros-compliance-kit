@@ -6,8 +6,9 @@ identifiable leaves this process" (strict). Anything else is a field edit.
 """
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Callable, Literal
+from typing import Literal
 
 from .pii import CustomEntity
 
@@ -61,7 +62,7 @@ class GuardPolicy:
     log_to_ledger: bool = True
 
     @classmethod
-    def observe(cls) -> "GuardPolicy":
+    def observe(cls) -> GuardPolicy:
         """Measure, never interfere. For the first week in a live system.
 
         Nothing is blocked and nothing is masked — but every detection is on the
@@ -74,12 +75,12 @@ class GuardPolicy:
         )
 
     @classmethod
-    def standard(cls) -> "GuardPolicy":
+    def standard(cls) -> GuardPolicy:
         """Mask, block the critical signatures, fall back rather than fail."""
         return cls(on_block="fallback", static_fallback=DEFAULT_FALLBACK_TEXT)
 
     @classmethod
-    def strict(cls) -> "GuardPolicy":
+    def strict(cls) -> GuardPolicy:
         """Maximum isolation: irreversible masking, raise on anything suspicious.
 
         `reversible=False` drops the vault, so masked values are unrecoverable by

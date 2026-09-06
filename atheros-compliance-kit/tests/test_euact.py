@@ -2,7 +2,12 @@ import pytest
 
 from atheros_kit.euact import REGULATION_VERSION, SystemSpec, classify, generate_dossier
 from atheros_kit.euact.decision_tree import missing_required, to_spec
-from atheros_kit.euact.transparency import metadata_block, strip_watermark, verify_watermark, watermark
+from atheros_kit.euact.transparency import (
+    metadata_block,
+    strip_watermark,
+    verify_watermark,
+    watermark,
+)
 
 
 @pytest.mark.parametrize("spec,tier", [

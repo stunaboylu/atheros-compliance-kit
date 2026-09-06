@@ -10,7 +10,7 @@
     a.optout.verdict         # enforced | available_not_evidenced | not_available | unknown
 """
 from .assess import VendorAssessment, assess
-from .criteria import CRITERIA, CRITERIA_BY_KEY, GROUPS, Criterion, STATUS_WEIGHT
+from .criteria import CRITERIA, CRITERIA_BY_KEY, GROUPS, STATUS_WEIGHT, Criterion
 from .optout import OptOutResult, enforce
 from .registry import PROVIDERS, ProviderEntry, known_providers, lookup
 from .residency import ResidencyResult, verify

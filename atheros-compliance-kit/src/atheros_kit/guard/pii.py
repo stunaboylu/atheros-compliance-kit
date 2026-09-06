@@ -22,8 +22,9 @@ level rather than in a comment nobody reads.
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Iterable, Pattern
+from re import Pattern
 
 # ── Built-in detectors ────────────────────────────────────────────────────────
 # Ordered: longer/more specific shapes first, so an AWS key is not shredded by

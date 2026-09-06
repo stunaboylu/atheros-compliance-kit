@@ -130,7 +130,7 @@ class Config:
     source: str = "defaults"
 
     @classmethod
-    def load(cls, path: str | Path | None = None, **overrides: Any) -> "Config":
+    def load(cls, path: str | Path | None = None, **overrides: Any) -> Config:
         values = dict(_DEFAULTS)
         sources = ["defaults"]
 

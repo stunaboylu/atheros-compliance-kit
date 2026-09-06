@@ -32,12 +32,19 @@ excellent on geography and catastrophic on gender does not average out to "fine"
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
-from typing import Iterable, Sequence
 
 from ..core import i18n
 from ..core.findings import (
-    Action, Finding, Method, Score, Severity, harmonic_mean, score_from_diff, score_from_ratio,
+    Action,
+    Finding,
+    Method,
+    Score,
+    Severity,
+    harmonic_mean,
+    score_from_diff,
+    score_from_ratio,
 )
 from .connectors import Chunk
 
@@ -128,7 +135,7 @@ _NEGATIVE = {
     # Turkish. Inflected forms are listed rather than stemmed: the sentiment
     # lexicon is matched against a context WINDOW, where a wrong match is a wrong
     # score rather than a missed mention, so precision matters more than recall.
-    "riskli", "risk", "dolandırıcı", "dolandirici", "sahte", "suçlu", "suclu", "suç",
+    "riskli", "dolandırıcı", "dolandirici", "sahte", "suçlu", "suclu", "suç",
     "şüpheli", "supheli", "tehdit", "tehlikeli", "tehlike", "sorunlu", "sorun",
     "başarısız", "basarisiz", "zayıf", "zayif", "kötü", "kotu", "güvenilmez",
     "guvenilmez", "yetersiz", "niteliksiz", "reddedildi", "reddedilen", "red",
@@ -144,7 +151,7 @@ _POSITIVE = {
     "mükemmel", "mukemmel", "güçlü", "guclu", "başarılı", "basarili", "başarı",
     "onaylandı", "onaylandi", "uygun", "değerli", "degerli", "lider", "liderlik",
     "yenilikçi", "yenilikci", "sorumlu", "istikrarlı", "istikrarli", "çalışkan",
-    "caliskan", "dürüst", "durust", "olumlu", "yetenek", "istikrarlı",
+    "caliskan", "dürüst", "durust", "olumlu", "yetenek",
 }
 
 #: Window of words around a group mention that counts as "context".

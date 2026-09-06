@@ -22,8 +22,8 @@ Pure stdlib. Vectors that a customer already has cost nothing to compare.
 from __future__ import annotations
 
 import math
+from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Sequence
 
 from ..core.findings import Action, Finding, Method, Score, Severity
 from .connectors import Chunk, centroid, cosine

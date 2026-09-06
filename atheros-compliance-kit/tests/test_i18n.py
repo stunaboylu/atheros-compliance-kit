@@ -13,7 +13,7 @@ from atheros_kit.core import i18n
 from atheros_kit.core.findings import Action, Finding, Severity
 from atheros_kit.euact import SystemSpec, classify, generate_dossier
 from atheros_kit.euact.vocabulary import GPAI_OBLIGATIONS, OBLIGATIONS
-from atheros_kit.rag import RAGAuditEngine, Chunk
+from atheros_kit.rag import RAGAuditEngine
 from atheros_kit.vendor import CRITERIA, assess
 from atheros_kit.vendor.criteria import QUESTIONS_TR
 
@@ -166,7 +166,7 @@ def test_no_view_mixes_languages(skewed_corpus):
     checks for — the headings are the first thing read.
     """
     md = RAGAuditEngine(chunks=skewed_corpus).run().report.to_markdown(locale="tr")
-    headings = re.findall(r"^## (.+)$", md, re.M)
+    headings = re.findall(r"^## (.+)$", md, re.MULTILINE)
     assert headings
     for heading in headings:
         assert heading in ("Skorlar", "Bulgular", "Kapsam", "Bu değerlendirmenin sınırları"), heading

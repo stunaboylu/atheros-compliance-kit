@@ -8,15 +8,24 @@
     audit.bias.unassessable       # what could NOT be measured — read this one
     print(audit.remediation_markdown())
 """
-from .bias import BiasReport, DIMENSIONS, DimensionResult, score_corpus
+from .bias import DIMENSIONS, BiasReport, DimensionResult, score_corpus
 from .connectors import (
-    Chunk, ChromaConnector, InMemoryConnector, MilvusConnector, PgVectorConnector,
-    PineconeConnector, VectorStoreConnector, centroid, cosine, get_connector,
+    ChromaConnector,
+    Chunk,
+    InMemoryConnector,
+    MilvusConnector,
+    PgVectorConnector,
+    PineconeConnector,
+    VectorStoreConnector,
+    centroid,
+    cosine,
+    get_connector,
 )
 from .drift import DriftReport, detect, js_divergence, psi
 from .engine import RAGAuditEngine, RAGAuditReport
 from .quality import QualityReport, assess_chunks
-from .remediation import Recipe, recommend, to_markdown as remediation_markdown
+from .remediation import Recipe, recommend
+from .remediation import to_markdown as remediation_markdown
 
 __all__ = [
     "RAGAuditEngine", "RAGAuditReport",

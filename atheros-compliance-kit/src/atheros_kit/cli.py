@@ -17,11 +17,10 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from .core.audit import AuditTrail, default_trail, set_default_trail
 from .core import i18n
+from .core.audit import AuditTrail, default_trail, set_default_trail
 from .core.config import Config
 from .core.errors import AtherosError
-from .core.findings import Severity
 
 _COLOR = sys.stdout.isatty() and not os.environ.get("NO_COLOR")
 _C = {"red": "\033[31m", "green": "\033[32m", "yellow": "\033[33m", "blue": "\033[34m",
@@ -81,7 +80,7 @@ def _t(args, key: str, **kw) -> str:
 
 # ── commands ──────────────────────────────────────────────────────────────────
 def cmd_euact_classify(args) -> int:
-    from .euact import classify, SystemSpec
+    from .euact import SystemSpec, classify
     _apply_global(args)
     spec = SystemSpec.from_dict(_load_json(args.spec)) if args.spec else SystemSpec(
         name=args.name or "unnamed-system", sector=args.sector or "",
@@ -118,7 +117,7 @@ def cmd_euact_classify(args) -> int:
 
 
 def cmd_euact_dossier(args) -> int:
-    from .euact import classify, SystemSpec, generate_dossier
+    from .euact import SystemSpec, classify, generate_dossier
     _apply_global(args)
     result = classify(SystemSpec.from_dict(_load_json(args.spec)))
     evidence = _load_json(args.evidence) if args.evidence else {}
@@ -145,7 +144,7 @@ def cmd_euact_questions(args) -> int:
 
 
 def cmd_rag_audit(args) -> int:
-    from .rag import RAGAuditEngine, Chunk
+    from .rag import Chunk, RAGAuditEngine
     cfg = _apply_global(args)
     if args.chunks:
         raw = _load_json(args.chunks)
@@ -452,13 +451,17 @@ def build_parser() -> argparse.ArgumentParser:
         dest="cmd", required=True)
     ec = e.add_parser("classify", parents=[common], help="classify a system")
     ec.add_argument("--spec", help="JSON file describing the system")
-    ec.add_argument("--name"); ec.add_argument("--sector"); ec.add_argument("--description")
+    ec.add_argument("--name")
+    ec.add_argument("--sector")
+    ec.add_argument("--description")
     ec.add_argument("--use-case", action="append", help="repeatable")
     ec.add_argument("--json", action="store_true")
     ec.set_defaults(func=cmd_euact_classify)
     ed = e.add_parser("dossier", parents=[common], help="generate Annex IV technical documentation")
-    ed.add_argument("--spec", required=True); ed.add_argument("--evidence")
-    ed.add_argument("--out"); ed.set_defaults(func=cmd_euact_dossier)
+    ed.add_argument("--spec", required=True)
+    ed.add_argument("--evidence")
+    ed.add_argument("--out")
+    ed.set_defaults(func=cmd_euact_dossier)
     eq = e.add_parser("questions", parents=[common], help="print the intake question tree as JSON")
     eq.set_defaults(func=cmd_euact_questions)
 
@@ -470,7 +473,9 @@ def build_parser() -> argparse.ArgumentParser:
     ra.add_argument("--store-config", help="JSON file of connector kwargs")
     ra.add_argument("--chunks", help="JSON array of {id,text,vector} — no store needed")
     ra.add_argument("--baseline", help="JSON array for drift comparison")
-    ra.add_argument("--subject"); ra.add_argument("--out"); ra.add_argument("--json", action="store_true")
+    ra.add_argument("--subject")
+    ra.add_argument("--out")
+    ra.add_argument("--json", action="store_true")
     ra.set_defaults(func=cmd_rag_audit)
 
     # vendor
@@ -490,16 +495,21 @@ def build_parser() -> argparse.ArgumentParser:
     a = sub.add_parser("audit", help="the hash-chained ledger").add_subparsers(
         dest="cmd", required=True)
     av = a.add_parser("verify", parents=[common], help="recompute every digest")
-    av.add_argument("--file"); av.set_defaults(func=cmd_audit_verify)
+    av.add_argument("--file")
+    av.set_defaults(func=cmd_audit_verify)
     ash = a.add_parser("show", parents=[common], help="print entries")
-    ash.add_argument("--file"); ash.add_argument("--module"); ash.add_argument("--json", action="store_true")
+    ash.add_argument("--file")
+    ash.add_argument("--module")
+    ash.add_argument("--json", action="store_true")
     ash.set_defaults(func=cmd_audit_show)
 
     # ci
     ci = sub.add_parser("ci", help="the regression gate").add_subparsers(dest="cmd", required=True)
     cg = ci.add_parser("gate", parents=[common], help="evaluate thresholds and set the exit code")
-    cg.add_argument("--rag-report"); cg.add_argument("--euact-report")
-    cg.add_argument("--out"); cg.add_argument("--markdown", action="store_true")
+    cg.add_argument("--rag-report")
+    cg.add_argument("--euact-report")
+    cg.add_argument("--out")
+    cg.add_argument("--markdown", action="store_true")
     cg.set_defaults(func=cmd_ci_gate)
 
     # init / doctor

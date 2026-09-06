@@ -101,7 +101,7 @@ class ModelRef:
         return f"{self.provider}:{self.model}"
 
     @classmethod
-    def parse(cls, spec: str) -> "ModelRef":
+    def parse(cls, spec: str) -> ModelRef:
         """`"openai:gpt-5-2025-08-07"` → ModelRef. A bare name means gemini, historically."""
         if ":" in spec:
             provider, _, model = spec.partition(":")
