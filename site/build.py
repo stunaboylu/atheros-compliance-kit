@@ -218,6 +218,18 @@ def substitute(text: str, facts: dict, where: str) -> str:
     return _PLACEHOLDER.sub(one, text)
 
 
+def head_date() -> str:
+    """The repository's own last commit date.
+
+    A build-time fact rather than a product one, which is why it is derived here
+    instead of being stored in facts.json — a file that recorded the SHA of the
+    commit containing it could never be verified as current.
+    """
+    proc = subprocess.run(["git", "log", "-1", "--format=%cs"], cwd=REPO,
+                          capture_output=True, text=True, check=False)
+    return proc.stdout.strip() or date.today().isoformat()
+
+
 def last_modified(path: pathlib.Path) -> str:
     """The content file's own last commit date.
 
@@ -603,7 +615,7 @@ def write_llms_txt(facts: dict, pages: list[tuple[str, str, str]]) -> str:
 > {facts['runtime_dependencies']} runtime dependencies.
 
 Publisher: {ORG['name']} ({ORG['country']}) · Version {facts['version']} ·
-Measured {facts['measured_on']} · Languages: English, Türkçe
+Measured {head_date()} · Languages: English, Türkçe
 
 ## What it does
 
@@ -743,7 +755,7 @@ def main() -> int:
     print(f"built {len(pages)} pages + sitemap/robots/llms.txt → {OUT}")
     print(f"  canonical base: {SITE_URL}")
     print(f"  facts: {facts['tests']} tests · {facts['modules']} modules · "
-          f"v{facts['version']} · measured {facts['measured_on']}")
+          f"v{facts['version']} · measured {head_date()}")
 
     if problems:
         print("\nBUILD FAILED:", file=sys.stderr)

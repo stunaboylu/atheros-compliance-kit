@@ -117,13 +117,14 @@ def collect() -> dict:
         "runtime_dependencies": 0,
         "languages": 2,
         **introspect(),
-        "measured_on": subprocess.run(
-            ["git", "log", "-1", "--format=%cs"], cwd=ROOT,
-            capture_output=True, text=True, check=False).stdout.strip(),
-        "commit": subprocess.run(
-            ["git", "rev-parse", "--short", "HEAD"], cwd=ROOT,
-            capture_output=True, text=True, check=False).stdout.strip(),
     }
+    # Deliberately NOT recorded here: the commit SHA and the build date.
+    #
+    # They describe the build rather than the product, and including them made
+    # this file impossible to keep fresh — it cannot record the SHA of the commit
+    # that contains it, so the CI staleness gate failed on every push whether or
+    # not anything about the product had changed. The site derives both from git
+    # at render time instead.
     return facts
 
 
