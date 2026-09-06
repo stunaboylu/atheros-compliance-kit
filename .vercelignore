@@ -7,6 +7,9 @@
 # therefore exclude site/content/**/*.md — the entire source of the site — and
 # produce an empty build. Directories are named explicitly instead.
 
+# The Python package is not needed to build the site: site/facts.json is
+# committed, and CI fails if it goes stale. Shipping ~1 MB of product source to a
+# static-site build container would widen the surface for nothing.
 atheros-compliance-kit/
 services/
 artifacts/

@@ -33,7 +33,10 @@ def run(cmd: list[str], cwd: pathlib.Path) -> None:
     subprocess.run(cmd, cwd=cwd, check=True)
 
 
-def main(site_only: bool = False) -> int:
+def main(site_only: bool = False, out: str | None = None) -> int:
+    global OUT
+    if out:
+        OUT = pathlib.Path(out).resolve()
     if OUT.exists():
         shutil.rmtree(OUT)
     OUT.mkdir(parents=True)
@@ -41,7 +44,20 @@ def main(site_only: bool = False) -> int:
     # ── measured facts → the site's numbers ──────────────────────────────────
     # Before the site, not after: build.py refuses to publish a page carrying an
     # unresolved placeholder, and every figure on those pages comes from here.
-    run([sys.executable, "scripts/collect_facts.py"], ROOT)
+    #
+    # site/facts.json is COMMITTED, so a deploy that does not ship the Python
+    # package (the hosting build only needs the site and the console) still
+    # publishes measured numbers. Where the package IS present the file is
+    # regenerated, and CI fails if the committed copy has gone stale — the same
+    # arrangement SELF_ASSESSMENT.md uses.
+    if (ROOT / "atheros-compliance-kit" / "src").is_dir():
+        run([sys.executable, "scripts/collect_facts.py"], ROOT)
+    elif (ROOT / "site" / "facts.json").exists():
+        print("note: the Python package is not in this checkout; using the committed "
+              "site/facts.json rather than remeasuring.", flush=True)
+    else:
+        sys.exit("neither the package nor site/facts.json is present — the site states "
+                 "measured numbers and will not publish guessed ones")
 
     # ── marketing site → / ───────────────────────────────────────────────────
     run([sys.executable, "site/build.py"], ROOT)
@@ -93,4 +109,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--site-only", action="store_true",
                     help="skip the console (no npm install needed)")
+    ap.add_argument("--out", help="output directory (default: <repo>/public). Hosting "
+                                  "providers run the build from their own working "
+                                  "directory and expect the output beside it.")
     raise SystemExit(main(**vars(ap.parse_args())))

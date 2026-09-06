@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "python3 scripts/build_public.py",
+  "buildCommand": "python3 \"$(git rev-parse --show-toplevel)/scripts/build_public.py\" --out \"$PWD/public\"",
   "outputDirectory": "public",
-  "installCommand": "echo 'dependencies are installed by scripts/build_public.py'",
+  "installCommand": "echo 'npm install runs inside scripts/build_public.py'",
   "framework": null,
   "cleanUrls": false,
   "trailingSlash": false,

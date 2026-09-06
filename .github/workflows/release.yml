@@ -25,8 +25,8 @@ jobs:
     outputs:
       version: ${{ steps.meta.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - run: pip install build
@@ -59,7 +59,7 @@ jobs:
           echo "SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH"
           python -m build
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: dist
           path: atheros-compliance-kit/dist/
@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     container: python:3.12-slim
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: dist
           path: dist
@@ -111,7 +111,7 @@ jobs:
     permissions:
       id-token: write        # Trusted Publishing — no stored token
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: dist
           path: dist
@@ -128,7 +128,7 @@ jobs:
       attestations: write
       contents: read
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: dist
           path: dist
@@ -138,7 +138,7 @@ jobs:
         # which commit and which workflow produced the artefact they are running.
         # We ask exactly this of the vendors we assess (`incident_history_disclosed`,
         # `model_card`); asking it of ourselves is the cheap part.
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@v3
         with:
           subject-path: "dist/*"
 
@@ -150,8 +150,8 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - run: pip install cyclonedx-bom
@@ -163,7 +163,7 @@ jobs:
         run: |
           pip install '.[all]'
           cyclonedx-py environment -o ../sbom-atheros-compliance-kit.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: sbom
           path: sbom-atheros-compliance-kit.json

@@ -29,8 +29,8 @@ jobs:
           - python-version: "3.12"
             os: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install
@@ -49,8 +49,8 @@ jobs:
     # a single convenience import in a future PR would silently break it.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Install with NO extras
@@ -100,8 +100,8 @@ jobs:
     # stops being able to assess the Kit, nothing else in this repo matters.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - working-directory: atheros-compliance-kit
@@ -111,7 +111,7 @@ jobs:
         # The committed report must match what the code produces now. A stale
         # self-assessment is a claim about a version that no longer exists.
         run: git diff --exit-code -- SELF_ASSESSMENT.md
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: self-assessment
@@ -123,8 +123,8 @@ jobs:
     # differently on a re-run cannot be used as evidence.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - working-directory: atheros-compliance-kit
@@ -155,8 +155,8 @@ jobs:
   console:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: "20"
           cache: npm
@@ -198,11 +198,11 @@ jobs:
     # than as a red build on a hosting dashboard nobody is watching.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: "20"
           cache: npm
@@ -213,6 +213,12 @@ jobs:
           # The [dev] extra, because the count comes from pytest itself.
           pip install -e 'atheros-compliance-kit[dev]'
           python scripts/collect_facts.py --print
+
+      - name: Fail if the committed facts are stale
+        # site/facts.json is committed so the hosting build can render the site
+        # without the Python package. That only works while the committed copy is
+        # true, and nothing else would notice if it drifted.
+        run: git diff --exit-code -- site/facts.json
 
       - name: Build the site (fails on banned phrasing or a missing canonical)
         run: python site/build.py
@@ -279,7 +285,7 @@ jobs:
                    if problems else 0)
           PY
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: public
           path: public/

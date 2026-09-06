@@ -83,3 +83,35 @@ version is not comparable to one produced under another.
       `TRUSTED_KEYS`, and `ENFORCED` flipped to `True` — until all three,
       `atheros-kit doctor` correctly reports that enforcement is off
 - [ ] Legal sign-off on `LICENSE`, the report footer, and the banned-phrase list
+
+---
+
+## Vercel
+
+The public site (marketing at `/`, console demo at `/demo`) deploys from this
+repository. `vercel.json` carries the build command, the output directory and the
+headers, so the only thing to set in the dashboard is:
+
+| Setting | Value | Why |
+|---|---|---|
+| **Root Directory** | `./` (the repository root) | Vercel auto-detected `atheros-compliance-kit/` — the Python package — and ran the build from there, so `scripts/build_public.py` was not found. The build command now locates the repo root itself, but the output directory is still resolved relative to this setting. |
+| Framework Preset | Other | There is no root `package.json`; the build is a Python script. |
+| `SITE_URL` (env var) | the domain that actually serves the site | Canonicals and the sitemap are absolute. Pointing them at a domain that does not resolve tells every engine to attribute the content to a 404. The build prints a warning when this is unset. |
+
+The build needs neither the Python package nor an installed toolchain beyond
+Python 3 and Node: `site/facts.json` is committed, and CI fails if it goes stale.
+`.vercelignore` therefore excludes the package, the services and the internal
+artifacts — roughly 78 files that a static-site build container has no reason to
+receive.
+
+To verify the exact output locally before pushing:
+
+```bash
+python scripts/build_public.py     # → public/
+cd public && python3 -m http.server 8099
+```
+
+CI builds the same output on every push and asserts it is servable: every
+internal link resolves, no console asset kept an absolute path, the three
+crawler files exist, and every page carries a canonical, an x-default hreflang,
+JSON-LD and Open Graph.
