@@ -192,15 +192,66 @@ jobs:
     # The copy lint applied to marketing. Nobody writes "guaranteed compliant" into
     # a finding; everybody is tempted to write it into a hero, and the hero is the
     # page a regulator would read first.
+    #
+    # This job also builds the COMBINED public output — exactly what Vercel runs.
+    # Verifying it here means a broken deploy shows up on the pull request rather
+    # than as a red build on a hosting dashboard nobody is watching.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: console/package-lock.json
+
       - name: Build the site (fails on banned phrasing, EN or TR)
         run: python site/build.py
+
+      - name: Build the public output (site + console demo) — the Vercel build
+        run: python scripts/build_public.py
+
+      - name: Assert the deployment is actually servable
+        run: |
+          python3 - <<'PY'
+          import pathlib, re, sys
+
+          out = pathlib.Path("public")
+          problems = []
+
+          # Every page the site links to must exist, and the demo must be reachable
+          # from it — the link was added the moment a demo URL existed, and a
+          # 404 there is the first thing a prospect would hit.
+          for page in (out / "en").glob("*.html"):
+              for href in re.findall(r'href="([^"#]+)"', page.read_text()):
+                  if href.startswith(("http", "mailto:")):
+                      continue
+                  target = (out if href.startswith("/") else page.parent) / href.lstrip("/")
+                  if target.is_dir():
+                      target = target / "index.html"
+                  if not target.exists():
+                      problems.append(f"{page.name} -> {href}")
+
+          # A static export written for `/` carries absolute asset paths. Serving
+          # it from /demo without rebasing 404s on every script, and the page
+          # still returns 200 — so nothing notices but the browser.
+          for page in (out / "demo").rglob("*.html"):
+              for asset in re.findall(r'(?:src|href)="(/(?:_expo|assets)/[^"]*)"', page.read_text()):
+                  problems.append(f"{page.name}: un-rebased {asset}")
+
+          for required in ["index.html", "en/index.html", "tr/index.html",
+                           "demo/index.html", "demo/risk.html"]:
+              if not (out / required).exists():
+                  problems.append(f"missing {required}")
+
+          sys.exit("public build is not servable:\n  " + "\n  ".join(problems)
+                   if problems else 0)
+          PY
+
       - uses: actions/upload-artifact@v4
         with:
-          name: site
-          path: site/dist/
+          name: public
+          path: public/
