@@ -96,6 +96,11 @@ PAGE_TYPE = {
 
 LANG_NAME = {"en": "English", "tr": "Türkçe"}
 
+#: Pages that need the full column. Prose reads better at 760px, but three
+#: side-by-side cards do not fit there — they wrap to two-and-one, which is the
+#: layout a reader has to work around rather than read.
+WIDE_PAGES = {"index", "pricing"}
+
 FOOTER = {
     "en": "AtherosAI B.V. · The Kit assesses and evidences. It does not certify.",
     "tr": "AtherosAI B.V. · Kit değerlendirir ve kanıtlar. Belgelendirme yapmaz.",
@@ -129,7 +134,7 @@ EXEMPT_REQUIRES = {
 CSS = """
 :root{--bg:#FBFBFD;--surface:#fff;--surface-2:#F3F4F8;--surface-3:#EAECF2;--border:#DFE2EA;
 --border-strong:#C3C8D4;--text:#111726;--muted:#525A6B;--faint:#7A8296;--accent:#2563EB;
---accent-subtle:rgba(37,99,235,.08);--good:#22C55E;--watch:#EAB308;--poor:#F97316;
+--accent-hover:#1D4ED8;--accent-subtle:rgba(37,99,235,.08);--good:#22C55E;--watch:#EAB308;--poor:#F97316;
 --critical:#DC2626;--unmeasured:#6B7488;--degraded:#A855F7;
 --mono:ui-monospace,SFMono-Regular,"JetBrains Mono",Menlo,monospace;
 --sans:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -194,8 +199,13 @@ padding:28px 24px;text-align:center}
 .eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--accent-subtle);
 border:1px solid var(--accent-border);border-radius:999px;padding:6px 14px;color:var(--accent);
 font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px}
-.tiers{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-margin:32px 0 8px;align-items:start}
+/* Three explicit columns, and `stretch` rather than `start`: the tiers are read
+   by comparison, so unequal card heights make the rows stop lining up and the
+   eye has to re-find each feature. `1fr` keeps them identical in width whatever
+   the longest line is. */
+.tiers{display:grid;gap:20px;grid-template-columns:repeat(3,1fr);
+margin:36px 0 8px;align-items:stretch}
+@media(max-width:900px){.tiers{grid-template-columns:1fr;max-width:420px;margin-inline:auto}}
 .tier{position:relative;display:flex;flex-direction:column;background:var(--surface);
 border:1px solid var(--border);border-radius:16px;padding:28px 24px}
 .tier.featured{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-subtle)}
@@ -203,11 +213,13 @@ border:1px solid var(--border);border-radius:16px;padding:28px 24px}
 background:var(--accent);color:#fff;font-size:10px;font-weight:800;text-transform:uppercase;
 letter-spacing:.14em;padding:5px 12px;border-radius:999px;white-space:nowrap}
 .tier h3{margin:0 0 4px;font-size:17px}
-.tier .who{color:var(--faint);font-size:13px;min-height:34px;margin:0 0 16px}
+.tier .who{color:var(--faint);font-size:13px;line-height:1.5;margin:0 0 18px}
+@media(min-width:901px){.tier .who{min-height:60px}}
 .tier .price{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;margin-bottom:4px}
-.tier .amount{font-size:36px;font-weight:800;letter-spacing:-.03em;line-height:1.05}
+.tier .amount{font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
 .tier .unit{color:var(--muted);font-size:13px}
-.tier .sub{color:var(--faint);font-size:12px;min-height:32px;margin:0 0 18px}
+.tier .sub{color:var(--faint);font-size:12px;line-height:1.5;margin:0 0 20px}
+@media(min-width:901px){.tier .sub{min-height:36px}}
 .tier ul{list-style:none;padding:0;margin:0 0 22px;flex:1}
 .tier li{position:relative;padding-left:24px;margin-bottom:9px;font-size:13.5px;
 line-height:1.5;color:var(--text)}
@@ -215,11 +227,15 @@ line-height:1.5;color:var(--text)}
 font-weight:700;font-size:13px}
 .tier li.no{color:var(--faint)}
 .tier li.no::before{content:"–";color:var(--faint)}
-.tier .cta{display:block;text-align:center;padding:11px 16px;border-radius:10px;
-font-weight:600;font-size:14px;border:1px solid var(--accent);color:var(--accent)}
-.tier .cta:hover{text-decoration:none;background:var(--accent-subtle)}
+/* `background` is reset explicitly: the hero `.cta` class sets a solid accent
+   fill, and this rule only overrode the colour — so the outlined button rendered
+   accent text on an accent fill and the label disappeared. */
+.tier .cta{display:block;text-align:center;padding:12px 16px;border-radius:10px;
+font-weight:600;font-size:14px;border:1px solid var(--accent);color:var(--accent);
+background:transparent;margin:0}
+.tier .cta:hover{text-decoration:none;background:var(--accent-subtle);color:var(--accent)}
 .tier.featured .cta{background:var(--accent);color:#fff;border-color:var(--accent)}
-.tier.featured .cta:hover{opacity:.92;background:var(--accent)}
+.tier.featured .cta:hover{background:var(--accent-hover);color:#fff;opacity:.94}
 .tier code{background:var(--surface-2);font-size:.85em}
 .note{background:var(--surface-2);border-radius:12px;padding:16px 20px;margin:24px 0;
 color:var(--muted);font-size:14px;line-height:1.6}
@@ -527,7 +543,7 @@ def page(slug: str, locale: str, title: str, body: str, description: str,
   <nav>{nav}</nav>
   <a class="lang" href="../{other}/{slug}.html" hreflang="{other}">{LANG_NAME[other]}</a>
 </div></header>
-<main class="{'narrow' if slug != 'index' else ''}">
+<main class="{'' if slug in WIDE_PAGES else 'narrow'}">
 {body}
 <p class="updated"><time datetime="{modified}">{updated}: {modified}</time> ·
 <span>{ORG['name']}</span></p>
