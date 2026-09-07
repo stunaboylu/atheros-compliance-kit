@@ -10,8 +10,13 @@
 # The Python package is not needed to build the site: site/facts.json is
 # committed, and CI fails if it goes stale. Shipping ~1 MB of product source to a
 # static-site build container would widen the surface for nothing.
-atheros-compliance-kit/
-services/
+# Both forms: a bare directory name and an explicit glob. The trailing-slash
+# form alone left `src/` in the checkout while removing pyproject.toml, which is
+# a half-present tree — the worst of the three possible states.
+atheros-compliance-kit
+atheros-compliance-kit/**
+services
+services/**
 artifacts/
 .github/
 .atheros/

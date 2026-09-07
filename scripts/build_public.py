@@ -28,6 +28,20 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "public"
 
 
+def package_present() -> bool:
+    """Whether the Python package is complete enough to be measured.
+
+    Every file `collect_facts.py` opens, not just the directory it lives in. A
+    hosting provider's ignore rules removed `pyproject.toml` while leaving `src/`
+    behind, so a check for the directory alone said yes and the collector then
+    died on the missing file — a guard that passes on a half-present tree is
+    worse than none, because it turns a clean fallback into a crash.
+    """
+    pkg = ROOT / "atheros-compliance-kit"
+    return all((pkg / part).exists() for part in
+               ("pyproject.toml", "src/atheros_kit/__init__.py", "tests"))
+
+
 def run(cmd: list[str], cwd: pathlib.Path) -> None:
     print(f"$ {' '.join(cmd)}  (in {cwd.relative_to(ROOT)})", flush=True)
     subprocess.run(cmd, cwd=cwd, check=True)
@@ -50,9 +64,14 @@ def main(site_only: bool = False, out: str | None = None) -> int:
     # publishes measured numbers. Where the package IS present the file is
     # regenerated, and CI fails if the committed copy has gone stale — the same
     # arrangement SELF_ASSESSMENT.md uses.
-    if (ROOT / "atheros-compliance-kit" / "src").is_dir():
+    committed = ROOT / "site" / "facts.json"
+    if package_present():
+        # The package is here, so the numbers must come from it. A measurement
+        # that fails while the source is available is a real breakage, not a
+        # reason to reach for the committed copy — falling back there would let
+        # a broken collector ship stale figures indefinitely.
         run([sys.executable, "scripts/collect_facts.py"], ROOT)
-    elif (ROOT / "site" / "facts.json").exists():
+    elif committed.exists():
         print("note: the Python package is not in this checkout; using the committed "
               "site/facts.json rather than remeasuring.", flush=True)
     else:
