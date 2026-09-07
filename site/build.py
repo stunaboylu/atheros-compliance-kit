@@ -189,6 +189,41 @@ text-transform:uppercase;padding:2px 8px;border-radius:999px;border:1px solid cu
 .pill.critical{color:var(--critical)}.pill.degraded{color:var(--degraded)}
 footer.site{border-top:1px solid var(--border);color:var(--faint);font-size:13px;
 padding:28px 24px;text-align:center}
+
+/* ── pricing ─────────────────────────────────────────────────────────────── */
+.eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--accent-subtle);
+border:1px solid var(--accent-border);border-radius:999px;padding:6px 14px;color:var(--accent);
+font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px}
+.tiers{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+margin:32px 0 8px;align-items:start}
+.tier{position:relative;display:flex;flex-direction:column;background:var(--surface);
+border:1px solid var(--border);border-radius:16px;padding:28px 24px}
+.tier.featured{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-subtle)}
+.tier .flag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+background:var(--accent);color:#fff;font-size:10px;font-weight:800;text-transform:uppercase;
+letter-spacing:.14em;padding:5px 12px;border-radius:999px;white-space:nowrap}
+.tier h3{margin:0 0 4px;font-size:17px}
+.tier .who{color:var(--faint);font-size:13px;min-height:34px;margin:0 0 16px}
+.tier .price{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.tier .amount{font-size:36px;font-weight:800;letter-spacing:-.03em;line-height:1.05}
+.tier .unit{color:var(--muted);font-size:13px}
+.tier .sub{color:var(--faint);font-size:12px;min-height:32px;margin:0 0 18px}
+.tier ul{list-style:none;padding:0;margin:0 0 22px;flex:1}
+.tier li{position:relative;padding-left:24px;margin-bottom:9px;font-size:13.5px;
+line-height:1.5;color:var(--text)}
+.tier li::before{content:"✓";position:absolute;left:0;top:0;color:var(--good);
+font-weight:700;font-size:13px}
+.tier li.no{color:var(--faint)}
+.tier li.no::before{content:"–";color:var(--faint)}
+.tier .cta{display:block;text-align:center;padding:11px 16px;border-radius:10px;
+font-weight:600;font-size:14px;border:1px solid var(--accent);color:var(--accent)}
+.tier .cta:hover{text-decoration:none;background:var(--accent-subtle)}
+.tier.featured .cta{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tier.featured .cta:hover{opacity:.92;background:var(--accent)}
+.tier code{background:var(--surface-2);font-size:.85em}
+.note{background:var(--surface-2);border-radius:12px;padding:16px 20px;margin:24px 0;
+color:var(--muted);font-size:14px;line-height:1.6}
+@media print{.tier{break-inside:avoid}}
 .updated{margin-top:48px;padding-top:16px;border-top:1px solid var(--border);
 color:var(--faint);font-size:13px}
 header.site .brand{color:var(--text);text-decoration:none}
@@ -311,7 +346,14 @@ def render_markdown(src: str) -> str:
         elif line.startswith("# "):
             out.append(f"<h1>{render_inline(line[2:])}</h1>")
         elif line.startswith(":::"):
-            out.append(line[3:])                    # raw HTML block, used sparingly
+            out.append(line[3:])                    # explicit raw-HTML escape
+        elif line.startswith("<"):
+            # A line that opens with a tag IS markup. Requiring the `:::` prefix
+            # meant a forgotten one escaped the tag into the page as visible
+            # text — which is how `<p class="lead">…</p>` appeared verbatim on
+            # the landing and pricing pages. No prose line in this content set
+            # starts with `<`, and the check below catches it if one ever does.
+            out.append(line)
         elif line.strip():
             out.append(f"<p>{render_inline(line)}</p>")
         i += 1
@@ -743,6 +785,10 @@ def main() -> int:
                     problems.append(f"{locale}/{slug}: missing {label}")
             if "{{" in rendered:
                 problems.append(f"{locale}/{slug}: unresolved placeholder")
+            # Markup that reached the page as visible text. Cheap to detect and
+            # invisible to everyone who is not looking at that exact paragraph.
+            for leaked in re.findall(r"&lt;/?[a-z][a-z0-9]*[^&]{0,60}&gt;", rendered):
+                problems.append(f"{locale}/{slug}: escaped markup in the page — {leaked}")
             if slug == "faq" and not faq:
                 problems.append(f"{locale}/{slug}: FAQPage with no parsed questions")
 
