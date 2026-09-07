@@ -75,10 +75,56 @@ code. It gets its own section in the changelog under **Regulation**, and the
 release notes must state it plainly: an assessment produced under one regulation
 version is not comparable to one produced under another.
 
+## Decided: the order is PyPI first, then a public repository
+
+The repository stays **private until the package is published**, and goes public
+immediately after. The sequence matters only because it should read as one
+release rather than two half-ones: `pip install atheros-compliance-kit` starts
+working and the source becomes browsable on the same day.
+
+**Making the repository public does not expose the source — publishing does.**
+The wheel is 40 readable `.py` files: any customer who installs the package has
+the complete source, including the comments. That is inherent to a pure-Python
+distribution and it is not being worked around:
+
+- Compiling with Cython or Nuitka would produce platform-specific wheels and end
+  the "pure Python, zero runtime dependencies, runs anywhere" property that the
+  `no-hidden-dependencies` CI gate exists to defend.
+- Obfuscating would contradict the product's own argument. A compliance tool an
+  auditor cannot inspect is one an auditor cannot accept, and the honesty page
+  promises that every number says what it was computed from.
+
+What protects the business is the licence (no redistribution, no sublicensing,
+no hosted service), the regulation-vocabulary maintenance that has to keep
+happening, and the support and SLA commitments — none of which a reader of the
+source acquires.
+
+A public repository under a commercial licence is a normal arrangement, and it
+is what the GEO audit asks for: `external_corroboration` currently scores 0, and
+engines cite a repository far more readily than a vendor's own marketing page.
+
+**Before flipping it public** (already verified once, re-run at the time):
+
+```bash
+git log --all --full-history -p | grep -inE \
+  "^\+.*(BEGIN [A-Z ]*PRIVATE KEY|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{30,}|sk-[A-Za-z0-9]{32,})"
+git log --all --diff-filter=A --name-only --pretty=format: | sort -u \
+  | grep -E "\.env$|\.pem$|\.key$|signing_key"
+```
+
+A secret that was ever committed stays readable in a public repository even after
+it is deleted. As of the scan above the history is clean: no keys, no tokens, no
+`.env` files, and the only addresses in the tree are synthetic test fixtures.
+
+Then: rename the repository to `atheros-compliance-kit` (the underscore form is a
+sixth spelling of a product that should have one name) and add topics —
+`eu-ai-act`, `iso-42001`, `ai-governance`, `llm-guardrails`, `rag-evaluation`.
+
 ## Not yet done
 
 - [ ] PyPI + TestPyPI trusted publishers registered (above)
 - [ ] `pypi` environment with a required reviewer
+- [ ] Tag `v1.0.0`, then make the repository public and rename it
 - [ ] Licence service deployed, its public key added to `core/license.py`
       `TRUSTED_KEYS`, and `ENFORCED` flipped to `True` — until all three,
       `atheros-kit doctor` correctly reports that enforcement is off
