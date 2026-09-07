@@ -65,6 +65,18 @@ Uygulamanız ile harici model arasındaki yalıtım katmanı. Sağlayıcıdan ba
 
 İki kural: **ölçülmemiş bir kontrol asla geçmez** ve **atlanan her kontrol yazılır**. Sessiz kısmi kapsam, tam kapsam gibi okunur.
 
+## `atheros_kit.iso` — ISO/IEC 42001 kanıt paketi
+
+```
+atheros-kit iso export --lang tr --out ./kanit
+```
+
+Zincir özetli defteri, bir denetçinin okuyabileceği tek bir belgede toplar: kayıtlar kanıtladıkları maddenin altında gruplanmış, zincir doğrulaması, **hiç** kaydı olmayan maddeler ve aracın kapsamadıklarının tam listesi. Hiçbir şey üretmez — her satır, özeti üzerinden bir defter satırına kadar izlenir.
+
+Belgeyi pazarlama değil kanıt yapan üç özellik var. Yalnızca **defterin bir fonksiyonudur**: üretim zaman damgası ya da koşu kimliği yoktur, dolayısıyla belgeden şüphelenen denetçi komutu yeniden çalıştırıp farkı alır. **Kırık zincir kanıtın altında değil üstünde** bildirilir ve komut 1 ile çıkar — bunu susturacak bir bayrak yoktur, çünkü uyarıyı bastıran bir bayrak, uyarının bastırılma yolu hâline gelir. Ve **boş defter başarılı bir dışa aktarım değildir**: hiç kanıt içermeyen bir paketi yeşil çıkış koduyla üreten komut, operatörü tam da önemli olduğu anda yanıltmıştır.
+
+6.1.2 maddesi geçtiği her yerde *yalnızca girdi* olarak etiketlenir. EU AI Act sınıflandırması düzenleyici bir kategorilendirmedir; madde ise sizin kendi risk ölçütlerinizi, analizinizi ve değerlendirmenizi ister. Bkz. [bu araç size neyi söylemez](honesty.html).
+
 ## `atheros_kit.core` — temeller
 
 Yalnızca standart kütüphane. Zincir özetli denetim defteri, katmanlı yapılandırma, model kademe soyutlaması, paylaşılan bulgu sözlüğü ve — maskeleme çağıranlara bırakılmayıp serileştirmede uygulanarak — İngilizce ve Türkçe rapor üretimi.

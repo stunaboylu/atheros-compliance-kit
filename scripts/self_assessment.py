@@ -32,6 +32,7 @@ from atheros_kit import __version__                                   # noqa: E4
 from atheros_kit.cicd import gate                                     # noqa: E402
 from atheros_kit.core import models                                   # noqa: E402
 from atheros_kit.core.audit import AuditTrail, set_default_trail      # noqa: E402
+from atheros_kit.iso import build_pack                                # noqa: E402
 from atheros_kit.core.config import Config                            # noqa: E402
 from atheros_kit.euact import SystemSpec, classify, generate_dossier  # noqa: E402
 from atheros_kit.guard import GuardedClient, GuardPolicy              # noqa: E402
@@ -300,6 +301,16 @@ def main(check: bool = False) -> int:
           f"grey_zone={classification.grey_zone}")
     print(f"  dossier completeness={dossier.completeness}% gaps={len(dossier.gaps)}")
     print(f"  chain intact={intact}")
+
+    # The evidence pack, built from the ledger this run just produced. It is
+    # exercised rather than committed: every record carries a real timestamp, so
+    # a committed copy would differ on every run and the staleness gate that
+    # protects the rest of this file would have to be weakened to accommodate it.
+    # Running it here still proves the command works on a real chain, which is
+    # the part a smoke test cannot fake.
+    pack = build_pack(trail)
+    print(f"  iso pack: {pack.evidenced}/{len(pack.coverage)} clauses hold records, "
+          f"{pack.total_entries} entries, fit_to_hand_over={pack.fit_to_hand_over}")
     for o in result.outcomes:
         print(f"  {o.status:11} {o.name:28} {o.actual}")
 
@@ -314,6 +325,11 @@ def main(check: bool = False) -> int:
             return 1
         if not intact:
             print("\nERROR: our own audit chain does not verify.", file=sys.stderr)
+            return 1
+        if not pack.fit_to_hand_over:
+            print("\nERROR: the evidence pack built from our own ledger is not fit to hand "
+                  "over. The command that produces our customers' audit artefact cannot "
+                  "produce ours.", file=sys.stderr)
             return 1
     return 0
 

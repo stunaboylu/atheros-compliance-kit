@@ -115,6 +115,21 @@ sağlam  8 kayıt: .atheros/audit_trail.jsonl
 
 O dosyanın bir baytını değiştirip yeniden çalıştırın. Demo bundan ibarettir.
 
+## 7. Defteri denetçiye teslim edin
+
+```
+atheros-kit iso export --lang tr --out ./kanit
+```
+
+```
+yazıldı: kanit/iso-42001-evidence.md, kanit/iso-42001-evidence.json
+5 maddenin 4 tanesinde kayıt var · 8 defter kaydı
+```
+
+Tek belge: her kayıt kanıtladığı ISO/IEC 42001 maddesinin altında, zincir doğrulaması, **hiç** kaydı olmayan maddeler ve aracın kapsamadıklarının tam listesi. Zincirde zaten bulunmayan hiçbir şey yazmaz.
+
+Paket yalnızca defterin bir fonksiyonudur — üretim zaman damgası yoktur — dolayısıyla değişmemiş bir defterde yeniden çalıştırmak bayt bayt aynı dosyayı üretir. Okuyucu belgeye güvenmeden bu şekilde doğrular. Önce zinciri kırın: komut 1 ile çıkar ve uyarı kanıtın altında değil üstünde belirir.
+
 ## Sonraki adım
 
 - [Bu aracın size söylemediği şeyler](honesty.html) — herhangi bir skora göre hareket etmeden önce okuyun

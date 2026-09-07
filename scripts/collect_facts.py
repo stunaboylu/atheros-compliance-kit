@@ -63,7 +63,7 @@ def count_source() -> tuple[int, int]:
     return len(files), lines
 
 
-def introspect() -> dict[str, int]:
+def introspect() -> dict:
     """Ask the package, rather than counting entries in a file by eye."""
     code = (
         "import sys, json; sys.path.insert(0, 'src')\n"
@@ -73,6 +73,7 @@ def introspect() -> dict[str, int]:
         "from atheros_kit.euact.vocabulary import ANNEX_III_CATEGORIES, REGULATION_VERSION\n"
         "from atheros_kit.euact.dossier import SECTIONS\n"
         "from atheros_kit.rag.connectors import _REGISTRY\n"
+        "from atheros_kit.iso.clauses import CLAUSES, NOT_COVERED, TR\n"
         "print(json.dumps({\n"
         "  'vendor_criteria': len(CRITERIA),\n"
         "  'injection_signatures': len(injection.SIGNATURES),\n"
@@ -81,6 +82,10 @@ def introspect() -> dict[str, int]:
         "  'annex_iv_sections': len(SECTIONS),\n"
         "  'vector_stores': len(_REGISTRY) - 1,\n"
         "  'regulation_version': REGULATION_VERSION,\n"
+        "  'iso_clause_count': len(CLAUSES),\n"
+        "  'iso_clauses': [{'number': c.number, 'kind': c.kind, 'title': c.title,\n"
+        "                   'title_tr': TR[c.number][0]} for c in CLAUSES],\n"
+        "  'iso_not_covered': {k: list(v) for k, v in NOT_COVERED.items()},\n"
         "}))\n"
     )
     proc = subprocess.run([_python(), "-c", code], cwd=PKG,

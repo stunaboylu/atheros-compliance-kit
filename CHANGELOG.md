@@ -12,6 +12,36 @@ adds one section type of its own:
 
 ## [Unreleased]
 
+### Added
+
+- `atheros-kit iso export` — collects the hash-chained ledger into one ISO/IEC 42001
+  evidence pack: every record under the clause it evidences, the chain verification, the
+  clauses holding no records, and the full list of what the Kit does not cover. Markdown
+  and JSON, English and Turkish. Team tier (`iso.export`).
+
+  The pack is a pure function of the ledger — no generation timestamp, no run id — so an
+  auditor who doubts it re-runs the command and diffs the result. A chain that does not
+  verify is reported above the evidence and exits 1, with no flag to silence it; an empty
+  ledger exits 1 as well, because a green exit on an evidence pack containing no evidence
+  fails the operator at the moment it matters.
+
+### Fixed
+
+- **The product contradicted itself about ISO/IEC 42001 scope.** `AuditTrail.CLAUSES`
+  tagged `euact` entries with clause 6.1.2 while the documentation said clauses 4-7 were
+  out of scope. Both could not be true. Resolved as `kind="input"`: an EU AI Act risk
+  classification is an input to clause 6.1.2, not a discharge of it, and every surface now
+  labels it that way.
+
+- **The original brief's "automated ISO/IEC 42001 assessment" was never built and is now
+  gone from the documentation.** What exists is narrower and real, and is stated by clause
+  rather than by standard name.
+
+- The clause list and the not-covered list are measured into `site/facts.json` from
+  `atheros_kit.iso.clauses` rather than hand-written on four pages in two languages, where
+  a fifth clause would have left every copy still saying "four".
+
+
 ## [1.0.0] — 2026-09-06
 
 First release.

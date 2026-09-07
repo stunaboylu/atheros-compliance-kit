@@ -1,8 +1,8 @@
 {
   "version": "1.0.0",
-  "tests": 177,
-  "modules": 40,
-  "source_lines": 8843,
+  "tests": 203,
+  "modules": 43,
+  "source_lines": 9459,
   "runtime_dependencies": 0,
   "languages": 2,
   "vendor_criteria": 24,
@@ -11,5 +11,62 @@
   "annex_iii_categories": 8,
   "annex_iv_sections": 9,
   "vector_stores": 4,
-  "regulation_version": "EU-2024/1689:2024-07-12"
+  "regulation_version": "EU-2024/1689:2024-07-12",
+  "iso_clause_count": 5,
+  "iso_clauses": [
+    {
+      "number": "6.1.2",
+      "kind": "input",
+      "title": "AI risk assessment",
+      "title_tr": "Yapay zek\u00e2 risk de\u011ferlendirmesi"
+    },
+    {
+      "number": "8.3",
+      "kind": "records",
+      "title": "Operational controls",
+      "title_tr": "Operasyonel kontroller"
+    },
+    {
+      "number": "8.4",
+      "kind": "records",
+      "title": "Data for AI systems",
+      "title_tr": "Yapay zek\u00e2 sistemleri i\u00e7in veri"
+    },
+    {
+      "number": "8.5",
+      "kind": "records",
+      "title": "Third-party and customer relationships",
+      "title_tr": "\u00dc\u00e7\u00fcnc\u00fc taraf ve m\u00fc\u015fteri ili\u015fkileri"
+    },
+    {
+      "number": "9.1",
+      "kind": "records",
+      "title": "Monitoring, measurement, analysis and evaluation",
+      "title_tr": "\u0130zleme, \u00f6l\u00e7me, analiz ve de\u011ferlendirme"
+    }
+  ],
+  "iso_not_covered": {
+    "en": [
+      "Clause 4 \u2014 context of the organisation and the scope of the AI management system",
+      "Clause 5 \u2014 leadership, the AI policy, and assigned roles and responsibilities",
+      "Clause 6.1.3, 6.1.4 and 6.2 \u2014 risk treatment, the AI system impact assessment, and the AI objectives",
+      "Clause 7 \u2014 competence, awareness, communication and control of documented information",
+      "Clause 9.2 \u2014 the internal audit programme",
+      "Clause 9.3 \u2014 management review",
+      "Clause 10 \u2014 nonconformity, corrective action and continual improvement",
+      "The Statement of Applicability",
+      "The Annex A controls, as controls: the Kit evidences the operation of a few of them, and selects, justifies and documents none"
+    ],
+    "tr": [
+      "Madde 4 \u2014 kurulu\u015fun ba\u011flam\u0131 ve yapay zek\u00e2 y\u00f6netim sisteminin kapsam\u0131",
+      "Madde 5 \u2014 liderlik, yapay zek\u00e2 politikas\u0131, atanm\u0131\u015f rol ve sorumluluklar",
+      "Madde 6.1.3, 6.1.4 ve 6.2 \u2014 risk i\u015fleme, yapay zek\u00e2 sistemi etki de\u011ferlendirmesi ve yapay zek\u00e2 ama\u00e7lar\u0131",
+      "Madde 7 \u2014 yeterlilik, fark\u0131ndal\u0131k, ileti\u015fim ve belgelenmi\u015f bilginin kontrol\u00fc",
+      "Madde 9.2 \u2014 i\u00e7 denetim program\u0131",
+      "Madde 9.3 \u2014 y\u00f6netim g\u00f6zden ge\u00e7irmesi",
+      "Madde 10 \u2014 uygunsuzluk, d\u00fczeltici faaliyet ve s\u00fcrekli iyile\u015ftirme",
+      "Uygulanabilirlik Bildirimi",
+      "Ek A kontrolleri, kontrol olarak: ara\u00e7 bunlar\u0131n birka\u00e7\u0131n\u0131n i\u015fledi\u011fine dair kan\u0131t \u00fcretir; hi\u00e7birini se\u00e7mez, gerek\u00e7elendirmez ve belgelemez"
+    ]
+  }
 }

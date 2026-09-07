@@ -65,6 +65,18 @@ Compares what you measured to configured thresholds, writes `atheros-report.json
 
 Two rules: **an unmeasured check never passes**, and **every skipped check is printed**. Silent partial coverage reads as full coverage.
 
+## `atheros_kit.iso` — the ISO/IEC 42001 evidence pack
+
+```
+atheros-kit iso export --out ./evidence
+```
+
+Collects the hash-chained ledger into one document an auditor can read: the records grouped under the clause each one evidences, the chain verification, the clauses that hold **no** records, and the full list of what the Kit does not cover. It generates nothing — every row traces back to a ledger line by its digest.
+
+Three properties make it usable as evidence rather than as marketing. It is a **pure function of the ledger**: no generation timestamp, no run id, so an auditor who doubts the document re-runs the command and diffs it. A **broken chain is reported above the evidence**, not beneath it, and the command exits 1 — there is no flag to silence that, because a flag to suppress the warning becomes the way the warning is suppressed. And an **empty ledger is not a successful export**: a command that exits green while producing a pack with no evidence has failed the operator at the moment it mattered.
+
+Clause 6.1.2 is labelled *input only* wherever it appears. An EU AI Act classification is a regulatory categorisation; the clause asks for your own risk criteria, analysis and evaluation. See [what this tool does not tell you](honesty.html).
+
 ## `atheros_kit.core` — the foundations
 
 Stdlib-only. Hash-chained audit ledger, layered config, the model-tier abstraction, the shared finding vocabulary, and report rendering in English and Turkish with redaction enforced at serialisation rather than left to callers.

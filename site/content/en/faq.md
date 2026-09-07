@@ -51,16 +51,17 @@ Each obligation names the module that produces its evidence.
 
 ### Which ISO/IEC 42001 clauses does this cover?
 
-Four, and the toolkit is explicit about which. It produces **evidence toward** specific clauses — it does not automate an internal audit of the standard, and nothing here should be read as covering it end to end.
+{{iso_clause_count}}, and the Kit is explicit about which. It produces **evidence toward** named clauses — it does not automate an internal audit of the standard, and nothing here should be read as covering it end to end.
 
-| Clause | What it asks for | Produced by |
-|---|---|---|
-| 8.3 Operational controls | Controls over the AI system in operation | `guard` — injection gate, masking, fallback |
-| 8.4 Data for AI systems | Data used by the system is examined | `rag` — corpus quality and bias |
-| 8.5 Third-party relationships | Suppliers are assessed | `vendor` — third-party due diligence |
-| 9.1 Monitoring and measurement | Records of monitoring | `core.audit` — the hash-chained ledger |
+{{iso_clause_table}}
 
-**Not covered:** clauses 4–7 (context, leadership, planning, support) and 10 (improvement), the clause 9.2 internal audit programme, the clause 9.3 management review, the Statement of Applicability, and the 38 Annex A controls. Those are management-system work that a tool inside your CI cannot do for you, and a report that implied otherwise would be the failure this product exists to prevent.
+Clause 6.1.2 is listed as an input, not a discharge. An EU AI Act risk classification is a regulatory categorisation; the clause asks for your own AI risk criteria, analysis and evaluation. `atheros-kit iso export` prints that distinction on the clause itself, so an auditor is never handed the more flattering reading.
+
+**Not covered:**
+
+{{iso_not_covered}}
+
+Those are management-system work that a tool running inside your CI cannot do for you, and a report that implied otherwise would be the failure this product exists to prevent.
 
 ### Does it work without an API key or a network connection?
 

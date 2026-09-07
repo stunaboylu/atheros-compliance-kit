@@ -115,6 +115,21 @@ intact  8 entries in .atheros/audit_trail.jsonl
 
 Edit one byte of that file and run it again. That is the whole demo.
 
+## 7. Hand the ledger to an auditor
+
+```
+atheros-kit iso export --out ./evidence
+```
+
+```
+wrote evidence/iso-42001-evidence.md, evidence/iso-42001-evidence.json
+4 of 5 clauses hold records · 8 ledger entries
+```
+
+One document: every record under the ISO/IEC 42001 clause it evidences, the chain verification, the clauses holding **no** records, and the full list of what the Kit does not cover. It writes nothing that was not already in the chain.
+
+The pack is a function of the ledger alone — no generation timestamp — so re-running it on an unchanged ledger produces a byte-identical file. That is how a reader checks it without trusting it. Break the chain first and the command exits 1 with the warning above the evidence, not beneath it.
+
 ## Next
 
 - [What this tool does not tell you](honesty.html) — read before acting on any score

@@ -242,6 +242,49 @@ def cmd_audit_show(args) -> int:
     return 0
 
 
+def cmd_iso_export(args) -> int:
+    """Collect the ledger into one ISO/IEC 42001 evidence pack.
+
+    Exit 1 means the pack is not fit to hand to an auditor — a chain that does
+    not verify, or a ledger with nothing in it. Both are states an operator must
+    not discover after the document has already been sent.
+    """
+    from .iso import build_pack
+    from .iso.export import write_pack
+
+    cfg = _apply_global(args)
+    lo = args.locale
+    trail = AuditTrail(args.file) if args.file else default_trail()
+    pack = build_pack(trail)
+
+    if args.stdout:
+        print(pack.to_markdown(lo))
+    else:
+        formats = ("md", "json") if args.format == "both" else (args.format,)
+        out = args.out or cfg.get("report_dir", ".atheros/reports")
+        written = write_pack(pack, out, lo, formats=formats)
+        print(("yazıldı: " if lo == "tr" else "wrote ") + ", ".join(str(w) for w in written))
+
+    total = len(pack.coverage)
+    if lo == "tr":
+        print(f"{total} maddenin {c(str(pack.evidenced), 'green' if pack.evidenced else 'yellow')} "
+              f"tanesinde kayıt var · {pack.total_entries} defter kaydı")
+    else:
+        print(f"{c(str(pack.evidenced), 'green' if pack.evidenced else 'yellow')} of {total} "
+              f"clauses hold records · {pack.total_entries} ledger entries")
+
+    if not pack.chain_intact:
+        print(c(i18n.ui("chain.violated", lo), "red") + "  "
+              + ("kanıt paketi teslim edilebilir durumda değil"
+                 if lo == "tr" else "this pack is not fit to hand over"))
+        return 1
+    if pack.total_entries == 0:
+        print(c("defter boş — paket hiçbir kanıt içermiyor" if lo == "tr"
+                else "the ledger is empty — the pack contains no evidence", "yellow"))
+        return 1
+    return 0
+
+
 def cmd_ci_gate(args) -> int:
     from .cicd import gate
     cfg = _apply_global(args)
@@ -502,6 +545,18 @@ def build_parser() -> argparse.ArgumentParser:
     ash.add_argument("--module")
     ash.add_argument("--json", action="store_true")
     ash.set_defaults(func=cmd_audit_show)
+
+    # iso
+    iso = sub.add_parser("iso", help="ISO/IEC 42001 evidence export").add_subparsers(
+        dest="cmd", required=True)
+    ix = iso.add_parser("export", parents=[common],
+                        help="collect the ledger into one auditor-facing evidence pack")
+    ix.add_argument("--file", help="ledger to read (default: the configured trail)")
+    ix.add_argument("--out", help="output directory (default: report_dir from the config)")
+    ix.add_argument("--format", choices=["md", "json", "both"], default="both")
+    ix.add_argument("--stdout", action="store_true",
+                    help="print the Markdown instead of writing files")
+    ix.set_defaults(func=cmd_iso_export)
 
     # ci
     ci = sub.add_parser("ci", help="the regression gate").add_subparsers(dest="cmd", required=True)

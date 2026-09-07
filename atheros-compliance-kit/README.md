@@ -233,9 +233,35 @@ to use.
 
 ---
 
+## The ISO/IEC 42001 evidence pack
+
+```console
+$ atheros-kit iso export --out ./evidence
+wrote evidence/iso-42001-evidence.md, evidence/iso-42001-evidence.json
+4 of 5 clauses hold records · 8 ledger entries
+```
+
+One document for an auditor: every ledger record filed under the ISO/IEC 42001 clause it
+evidences, the chain verification, the clauses that hold **no** records, and the full list
+of what this product does not cover. Nothing is generated — each row traces back to a
+ledger line by its digest.
+
+It is a pure function of the ledger. No generation timestamp, no run id: re-running it
+against an unchanged ledger produces a byte-identical file, so a reader checks the document
+by reproducing it rather than by trusting it. A chain that does not verify is reported
+*above* the evidence and exits 1, with no flag to silence it. An empty ledger exits 1 too.
+
+Five clauses, and one of them is qualified. Clause 6.1.2 is labelled **input only**: an EU
+AI Act risk classification is a regulatory categorisation, while the clause asks for your
+own AI risk criteria, analysis and evaluation. The pack says so on the clause itself.
+
 ## What it deliberately does not do
 
 - Give legal advice, certify, or perform a conformity assessment.
+- Cover ISO/IEC 42001 as a standard. It produces records for five named clauses; the
+  management-system clauses — 4 to 7, 10, the 9.2 internal audit programme, the 9.3
+  management review, the Statement of Applicability and the Annex A controls — are yours,
+  and every evidence pack says so in writing.
 - Train, fine-tune, or de-bias anything. It recommends remediation; a human runs it.
 - Mutate your corpus, your prompts, or your vendor contracts.
 - Store your data anywhere. Reports are files you own.

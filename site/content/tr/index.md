@@ -1,5 +1,5 @@
 # İhtiyacı olan sistemin kendisinin ürettiği uyum kanıtı
-> EU AI Act kanıtlarını ve ISO/IEC 42001 madde 8-9 kayıtlarını kendi kod tabanınızın ve CI'nızın içinden üreten kurumsal bir Python araç seti — önyargı skorları, kişisel veri maskeleme kayıtları, risk sınıflandırmaları, üçüncü taraf satıcı değerlendirmeleri.
+> EU AI Act kanıtlarını ve {{iso_clause_count}} adı konmuş ISO/IEC 42001 maddesi için kayıtları kendi kod tabanınızın ve CI'nızın içinden üreten kurumsal bir Python araç seti — önyargı skorları, kişisel veri maskeleme kayıtları, risk sınıflandırmaları, üçüncü taraf satıcı değerlendirmeleri.
 
 # İhtiyacı olan sistemin kendisinin ürettiği uyum kanıtı
 

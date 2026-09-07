@@ -38,9 +38,10 @@ FREE_CAPABILITIES = frozenset({"core", "guard", "euact.classify", "audit"})
 #: What each tier unlocks beyond the free set.
 TIERS: dict[str, frozenset[str]] = {
     "free": frozenset(),
-    "team": frozenset({"rag", "vendor", "cicd", "euact.dossier", "export.pdf"}),
+    "team": frozenset({"rag", "vendor", "cicd", "euact.dossier", "export.pdf",
+                       "iso.export"}),
     "enterprise": frozenset({"rag", "vendor", "cicd", "euact.dossier", "export.pdf",
-                             "airgap", "custom_connector", "sso"}),
+                             "iso.export", "airgap", "custom_connector", "sso"}),
 }
 
 #: Ed25519 public key for licence tokens, compiled into the package.
