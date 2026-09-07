@@ -115,6 +115,8 @@ Kendi ürünümüzü kendi aracımızla değerlendirip sonucu yayımlıyoruz —
 
 Bunu yapmak, kendi yerleşim mantığımızda gerçek bir hata buldu; değişiklik günlüğünde kendi başlığı altında duruyor.
 
+Okuyun: [kendi uyum raporumuz](self-assessment.html) — her CI derlemesinde yeniden üretilip bayatlık kontrolünden geçiyor, yani sayfa artık var olmayan bir sürümü sessizce tarif edemez.
+
 ## AtherosAI Compliance Kit neyi yapmaz?
 
 <p class="lead">Sınırlar, açıkça.</p>

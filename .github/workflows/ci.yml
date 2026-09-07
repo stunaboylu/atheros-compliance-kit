@@ -107,10 +107,14 @@ jobs:
       - working-directory: atheros-compliance-kit
         run: pip install -e .
       - run: python scripts/self_assessment.py --check
-      - name: Fail if SELF_ASSESSMENT.md is stale
-        # The committed report must match what the code produces now. A stale
-        # self-assessment is a claim about a version that no longer exists.
-        run: git diff --exit-code -- SELF_ASSESSMENT.md
+      - name: Fail if the committed self-assessment is stale
+        # The committed report must match what the code produces now — a stale
+        # self-assessment is a claim about a version that no longer exists. This
+        # covers the published pages too: they are the copy the public reads.
+        run: |
+          git diff --exit-code -- SELF_ASSESSMENT.md \
+            site/content/en/self-assessment.md \
+            site/content/tr/self-assessment.md
       - uses: actions/upload-artifact@v5
         if: always()
         with:

@@ -69,9 +69,11 @@ PRODUCT = "AtherosAI Compliance Kit"
 NAV = {
     "en": [("index", "Home"), ("quickstart", "Quickstart"), ("modules", "Modules"),
            ("ci", "CI gate"), ("honesty", "Honesty"), ("faq", "FAQ"),
+           ("self-assessment", "Our own report"),
            ("privacy", "Privacy"), ("pricing", "Pricing")],
     "tr": [("index", "Ana sayfa"), ("quickstart", "Hızlı başlangıç"), ("modules", "Modüller"),
            ("ci", "CI kapısı"), ("honesty", "Dürüstlük"), ("faq", "SSS"),
+           ("self-assessment", "Kendi raporumuz"),
            ("privacy", "Gizlilik"), ("pricing", "Fiyatlandırma")],
 }
 
@@ -87,6 +89,9 @@ PAGE_TYPE = {
     "privacy": "TechArticle",
     "pricing": "Offer",
     "faq": "FAQPage",
+    # A dated report about a named product, authored by its publisher — a Report
+    # rather than an article, so an engine can tell it is primary data.
+    "self-assessment": "Report",
 }
 
 LANG_NAME = {"en": "English", "tr": "Türkçe"}
@@ -402,7 +407,7 @@ def json_ld(slug: str, locale: str, title: str, description: str, modified: str,
     # schema.org has no page type for "this page IS the product", so the landing
     # page is a WebPage whose mainEntity is the software. That is the shape an
     # engine answering "which tool does X" actually looks for.
-    doc_type = {"FAQPage": "FAQPage", "HowTo": "HowTo",
+    doc_type = {"FAQPage": "FAQPage", "HowTo": "HowTo", "Report": "Report",
                 "SoftwareApplication": "WebPage", "Offer": "WebPage"}.get(kind, "TechArticle")
     doc = {
         "@type": doc_type,

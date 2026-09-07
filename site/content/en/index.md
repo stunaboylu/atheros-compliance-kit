@@ -115,6 +115,8 @@ We assess our own product with our own tool and publish the result — including
 
 Doing it found a real bug in our own residency logic, which is in the changelog under its own heading.
 
+Read it: [our own compliance report](self-assessment.html) — regenerated and staleness-checked on every CI build, so the page cannot quietly describe a version that no longer exists.
+
 ## What does the AtherosAI Compliance Kit not do?
 
 <p class="lead">The limits, stated plainly.</p>
