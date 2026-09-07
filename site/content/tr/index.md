@@ -1,5 +1,5 @@
 # İhtiyacı olan sistemin kendisinin ürettiği uyum kanıtı
-> EU AI Act ve ISO/IEC 42001 kanıtlarını kendi kod tabanınızın ve CI'nızın içinden üreten kurumsal bir Python araç seti — önyargı skorları, kişisel veri maskeleme kayıtları, risk sınıflandırmaları, satıcı değerlendirmeleri.
+> EU AI Act kanıtlarını ve ISO/IEC 42001 madde 8-9 kayıtlarını kendi kod tabanınızın ve CI'nızın içinden üreten kurumsal bir Python araç seti — önyargı skorları, kişisel veri maskeleme kayıtları, risk sınıflandırmaları, üçüncü taraf satıcı değerlendirmeleri.
 
 # İhtiyacı olan sistemin kendisinin ürettiği uyum kanıtı
 
@@ -44,7 +44,7 @@ atheros-kit init --ci github
 | M1 | `atheros_kit.rag` | Bilgi tabanımız önyargılı, yinelenmiş, kaymış ya da kişisel veri dolu mu? |
 | M2 | `atheros_kit.guard` | Üçüncü taraf bir LLM'e ne gidiyor, geriye ne geliyor? |
 | M3 | `atheros_kit.euact` | EU AI Act seviyemiz, savunulabilir biçimde nedir — ve Annex IV'te daha ne eksik? |
-| M4 | `atheros_kit.vendor` | Bu tedarikçi kullanılabilir mi ve eğitimden çıkma gerçekten uygulanıyor mu? |
+| M4 | `atheros_kit.vendor` | **Üçüncü taraf / satıcı riski** — bu tedarikçi kullanılabilir mi ve eğitimden çıkma gerçekten uygulanıyor mu? |
 | | `atheros_kit.cicd` | Yukarıdakilerden biri gerilediğinde derlemeyi başarısız kıl. |
 
 Her modül kanıtladığı yükümlülüğü adlandırır; böylece hukuki bir görev, bir mühendisin çalıştırabileceği bir komuta eşlenir. Bunların dört ayrı ürün değil tek bir ürün olmasının nedeni bu eşlemedir.

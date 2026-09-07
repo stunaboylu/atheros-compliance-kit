@@ -39,6 +39,9 @@ Tespit ettiği kişisel veriyi saklayan bir uyum kaydı, tam da önlemek için v
 **10. Kit değerlendirir ve kanıtlar. Belgelendirme yapmaz.**
 Üründe değil, dokümantasyonda değil, bu web sitesinde değil. Bir lint, üretilen hiçbir çıktının ve hiçbir pazarlama sayfasının — İngilizce ya da Türkçe — yasaklı ifadeleri içermediğini doğrular. CI'da çalışır. İyi niyet bir kontrol değildir.
 
+**11. Bir çerçeve, numarasıyla değil kapsanan maddeleriyle anılır.**
+"ISO/IEC 42001 uyumluluğu" demek, aynı sahte güvencenin başka bir tonda söylenmesi olurdu. Araç dört madde için kayıt üretir — 8.3 operasyonel kontroller (`guard`), 8.4 yapay zekâ sistemleri için veri (`rag`), 8.5 üçüncü taraf ilişkileri (`vendor`), 9.1 izleme ve ölçme (`core.audit`). 4–7. ve 10. maddeleri, 9.2 iç denetim programını, 9.3 yönetim gözden geçirmesini, Uygulanabilirlik Bildirimi'ni ve Ek A'nın 38 kontrolünü kapsamaz. Bunlar yönetim sistemi işidir ve bir CI hattının içindeki hiçbir araç onları yapmaz. Aynısı Yönetmelik için de geçerlidir: araç yükümlülükleri kanıtlar, uygunluğu belirlemez ve onaylanmış kuruluş değildir.
+
 ## Sayılar nereden gelir ve nerede durur
 
 ### Adillik Skoru

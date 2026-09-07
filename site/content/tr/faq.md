@@ -47,6 +47,19 @@ Her yükümlülük, kanıtını üreten modülü adlandırır.
 | Art. 50 | Üretken sistemler için şeffaflık | `euact.transparency` |
 | ISO/IEC 42001 §9.1 | İzleme kayıtları | `core.audit` |
 
+### Bu, ISO/IEC 42001'in hangi maddelerini kapsıyor?
+
+Dört madde, ve araç hangileri olduğunu açıkça söylüyor. Belirli maddeler **için kanıt üretir** — standardın iç denetimini otomatikleştirmez, ve buradaki hiçbir şey standardı uçtan uca kapsıyormuş gibi okunmamalıdır.
+
+| Madde | Ne ister | Üreten |
+|---|---|---|
+| 8.3 Operasyonel kontroller | Çalışan sistem üzerindeki kontroller | `guard` — enjeksiyon kapısı, maskeleme, yedek |
+| 8.4 Yapay zekâ sistemleri için veri | Sistemin kullandığı verinin incelenmesi | `rag` — külliyat kalitesi ve önyargı |
+| 8.5 Üçüncü taraf ilişkileri | Tedarikçilerin değerlendirilmesi | `vendor` — üçüncü taraf inceleme |
+| 9.1 İzleme ve ölçme | İzleme kayıtları | `core.audit` — zincir özetli defter |
+
+**Kapsanmayan:** 4–7. maddeler (bağlam, liderlik, planlama, destek) ve 10 (iyileştirme), 9.2 iç denetim programı, 9.3 yönetim gözden geçirmesi, Uygulanabilirlik Bildirimi ve Ek A'nın 38 kontrolü. Bunlar, CI'nızın içindeki bir aracın sizin yerinize yapamayacağı yönetim sistemi işleridir; aksini ima eden bir rapor, bu ürünün önlemek için var olduğu başarısızlık olurdu.
+
 ### API anahtarı ve internet bağlantısı olmadan çalışır mı?
 
 Evet, ve bu düşürülmüş bir mod değil, desteklenen varsayılandır. Her modülün deterministik bir

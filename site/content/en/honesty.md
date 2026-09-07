@@ -39,6 +39,9 @@ A compliance record that stores the personal data it detected is the failure it 
 **10. The Kit assesses and evidences. It does not certify.**
 Not in the product, not in the documentation, not on this website. A lint asserts that no generated artefact and no marketing page contains "certified", "fully compliant", "guaranteed compliant" or "no further action required" — in English or in Turkish. It runs in CI. Good intentions are not a control.
 
+**11. A framework is named by the clauses covered, not by its number.**
+"ISO/IEC 42001 compliance" would be the same false assurance in a different register. The Kit produces records for four clauses — 8.3 operational controls (`guard`), 8.4 data for AI systems (`rag`), 8.5 third-party relationships (`vendor`), 9.1 monitoring and measurement (`core.audit`). It does not cover clauses 4–7 or 10, the clause 9.2 internal audit programme, the clause 9.3 management review, the Statement of Applicability, or the 38 Annex A controls. Those are management-system work, and no tool inside a CI pipeline performs them. The same holds under the Act: the Kit evidences obligations, it does not determine conformity, and it is not a notified body.
+
 ## Where the numbers come from, and where they stop
 
 ### Fairness Score

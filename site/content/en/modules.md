@@ -47,7 +47,7 @@ Three presets: `observe()` measures and blocks nothing; `standard()` masks and b
 
 **Where it stops:** it is a rule engine reading a description you wrote. It evaluates none of Art. 5's narrow exemptions and does not determine Art. 2 territorial scope.
 
-## M4 · `atheros_kit.vendor` — supplier risk
+## M4 · `atheros_kit.vendor` — third-party and vendor risk
 
 | Capability | Detail |
 |---|---|

@@ -47,7 +47,7 @@ Uygulamanız ile harici model arasındaki yalıtım katmanı. Sağlayıcıdan ba
 
 **Nerede durur:** sizin yazdığınız bir açıklamayı okuyan bir kural motorudur. Art. 5'in dar istisnalarını değerlendirmez ve Art. 2 ülkesel kapsamını belirlemez.
 
-## M4 · `atheros_kit.vendor` — tedarikçi riski
+## M4 · `atheros_kit.vendor` — üçüncü taraf ve satıcı riski
 
 | Yetenek | Ayrıntı |
 |---|---|
