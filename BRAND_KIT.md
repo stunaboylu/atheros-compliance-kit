@@ -1,6 +1,6 @@
 # AtherosAI Compliance Kit — Brand Kit
 
-> Phase 2. Consumes `artifacts/positioning.md`. Feeds the Expo console (`console/`), the CLI's
+> Feeds the Expo console (`console/`), the CLI's
 > terminal output, and every generated report (Markdown/HTML/PDF).
 >
 > **Relationship to the AtherosAI Platform brand kit.** Same house. Identical semantic layer —

@@ -43,7 +43,7 @@ run. That mapping is why these are one product rather than four.
 
 > A gate that goes green when the measurement breaks is worse than no gate.
 
-The full contract is [`PLAYBOOK.md` §7](PLAYBOOK.md). Every clause is enforced in code and covered
+The full contract is [`PLAYBOOK.md` §4](PLAYBOOK.md). Every clause is enforced in code and covered
 by a test.
 
 **It does not certify.** The Kit assesses and evidences — enforced by a lint over generated
@@ -66,8 +66,7 @@ construction, are in [`CHANGELOG.md`](CHANGELOG.md) under their own heading.
 | [`console/`](console/) | Expo Router universal app that reads the emitted reports (Argon design system) |
 | [`site/`](site/) | Landing page and docs, EN + TR, with a copy lint |
 | [`services/license-api/`](services/license-api/) | Ed25519 licence service — the Kit verifies offline |
-| [`scripts/`](scripts/) | Self-assessment and console-fixture generators |
-| [`artifacts/`](artifacts/) | Positioning, product spec, backend plan, pricing, manifest |
+| [`scripts/`](scripts/) | Self-assessment, console fixtures, the public site build |
 | [`PLAYBOOK.md`](PLAYBOOK.md) | **Start here.** How to run it, the defining decisions, metrics, failure modes |
 
 ## Develop

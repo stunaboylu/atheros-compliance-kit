@@ -72,7 +72,7 @@ ORG = {
     "legal": "AtherosAI B.V.",
     "country": "NL",
     "email": "info@atherosai.com",
-    "repo": "https://github.com/stunaboylu/atherosai_compliance_kit",
+    "repo": "https://github.com/stunaboylu/atheros-compliance-kit",
     "pypi": "https://pypi.org/project/atheros-compliance-kit/",
 }
 PRODUCT = "AtherosAI Compliance Kit"

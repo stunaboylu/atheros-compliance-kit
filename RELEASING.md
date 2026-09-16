@@ -26,7 +26,7 @@ a tag push will reach the publish step and fail there.
    | Field | Value |
    |---|---|
    | Owner | `stunaboylu` |
-   | Repository | `atherosai_compliance_kit` |
+   | Repository | `atheros-compliance-kit` |
    | Workflow | `release.yml` |
    | Environment | `testpypi` (on TestPyPI) / `pypi` (on PyPI) |
 
@@ -75,12 +75,15 @@ code. It gets its own section in the changelog under **Regulation**, and the
 release notes must state it plainly: an assessment produced under one regulation
 version is not comparable to one produced under another.
 
-## Decided: the order is PyPI first, then a public repository
+## Decided: the repository is public before the package is published
 
-The repository stays **private until the package is published**, and goes public
-immediately after. The sequence matters only because it should read as one
-release rather than two half-ones: `pip install atheros-compliance-kit` starts
-working and the source becomes browsable on the same day.
+It went public on 2026-09-16, as a fresh repository with a rewritten history:
+the internal planning documents (`artifacts/`, the GEO audit, the business
+sections of the playbook) were removed from every commit first and live outside
+the repository. The reason to go public *before* publishing is the `pypi`
+environment's required reviewer — GitHub offers that gate on public repositories
+without a paid plan, and a wheel on PyPI cannot be replaced, so the last step
+before it is permanent should be a person.
 
 **Making the repository public does not expose the source — publishing does.**
 The wheel is 40 readable `.py` files: any customer who installs the package has
@@ -103,7 +106,8 @@ A public repository under a commercial licence is a normal arrangement, and it
 is what the GEO audit asks for: `external_corroboration` currently scores 0, and
 engines cite a repository far more readily than a vendor's own marketing page.
 
-**Before flipping it public** (already verified once, re-run at the time):
+**Before any further history-affecting change**, re-run the scan that was run
+before going public:
 
 ```bash
 git log --all --full-history -p | grep -inE \
@@ -116,15 +120,15 @@ A secret that was ever committed stays readable in a public repository even afte
 it is deleted. As of the scan above the history is clean: no keys, no tokens, no
 `.env` files, and the only addresses in the tree are synthetic test fixtures.
 
-Then: rename the repository to `atheros-compliance-kit` (the underscore form is a
-sixth spelling of a product that should have one name) and add topics —
-`eu-ai-act`, `iso-42001`, `ai-governance`, `llm-guardrails`, `rag-evaluation`.
+Topics on the repository: `eu-ai-act`, `iso-42001`, `ai-governance`,
+`llm-guardrails`, `rag-evaluation`.
 
 ## Not yet done
 
 - [ ] PyPI + TestPyPI trusted publishers registered (above)
 - [ ] `pypi` environment with a required reviewer
-- [ ] Tag `v1.0.0`, then make the repository public and rename it
+- [x] Repository public, under the product's one name
+- [ ] Tag `v1.0.0`
 - [ ] Legal sign-off on `LICENSE`, the report footer, and the banned-phrase list
 
 ### Stage 2 — the paid tiers (deferred until Stripe goes live on atherosai.com)

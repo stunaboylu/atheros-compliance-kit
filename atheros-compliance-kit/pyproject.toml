@@ -40,8 +40,8 @@ atheros-kit = "atheros_kit.cli:main"
 [project.urls]
 Homepage = "https://atherosai.com/compliance-kit"
 Documentation = "https://atherosai.com/compliance-kit/en/quickstart"
-Repository = "https://github.com/stunaboylu/atherosai_compliance_kit"
-Changelog = "https://github.com/stunaboylu/atherosai_compliance_kit/blob/main/CHANGELOG.md"
+Repository = "https://github.com/stunaboylu/atheros-compliance-kit"
+Changelog = "https://github.com/stunaboylu/atheros-compliance-kit/blob/main/CHANGELOG.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/atheros_kit"]
