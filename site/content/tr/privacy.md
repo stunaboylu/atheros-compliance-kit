@@ -64,4 +64,4 @@ Lisans ve telemetri servisleri için: bir konteyner barındırıcısı ve yönet
 
 ## İletişim
 
-`privacy@atheros.ai`
+`info@atherosai.com`

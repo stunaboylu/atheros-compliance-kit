@@ -64,4 +64,4 @@ For the licence and telemetry services: a container host and a managed Postgres 
 
 ## Contact
 
-`privacy@atheros.ai`
+`info@atherosai.com`

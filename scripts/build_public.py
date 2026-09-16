@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
-"""Build the public deployment: marketing site at `/`, console demo at `/demo`.
+"""Build the public deployment: marketing site, console demo beside it at `demo/`.
 
-One output tree, one domain, one deploy. The console is the demo rather than a
-separate product surface, so a relative link from the site reaches it and there
-is no second certificate, second domain, or second thing to forget to renew.
+One output tree, served as a path under the company domain —
+`atherosai.com/compliance-kit/` — by the same Firebase Hosting site as the rest
+of atherosai.com. That site's build copies this output into place; nothing here
+deploys. The console is the demo rather than a separate product surface, so a
+relative link from the site reaches it and there is no second certificate,
+second domain, or second thing to forget to renew.
+
+Everything in the tree links relatively, so it can be served from any path. The
+two things that cannot be relative — the console's asset and router base, and
+robots.txt — are derived from `SITE_URL` (see site/build.py), so one variable
+moves the whole deployment.
 
 Everything published here is static and synthetic:
 
@@ -19,13 +27,25 @@ Everything published here is static and synthetic:
 from __future__ import annotations
 
 import argparse
+import importlib.util
+import os
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "public"
+
+
+def base_path() -> str:
+    """The path the output is served from — site/build.py's BASE_PATH, read from
+    the same file rather than re-derived, so the two cannot disagree."""
+    spec = importlib.util.spec_from_file_location("site_build", ROOT / "site" / "build.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.BASE_PATH
 
 
 def package_present() -> bool:
@@ -42,9 +62,9 @@ def package_present() -> bool:
                ("pyproject.toml", "src/atheros_kit/__init__.py", "tests"))
 
 
-def run(cmd: list[str], cwd: pathlib.Path) -> None:
+def run(cmd: list[str], cwd: pathlib.Path, env: dict[str, str] | None = None) -> None:
     print(f"$ {' '.join(cmd)}  (in {cwd.relative_to(ROOT)})", flush=True)
-    subprocess.run(cmd, cwd=cwd, check=True)
+    subprocess.run(cmd, cwd=cwd, check=True, env=env)
 
 
 def main(site_only: bool = False, out: str | None = None) -> int:
@@ -89,31 +109,38 @@ def main(site_only: bool = False, out: str | None = None) -> int:
         print(f"\nsite only → {OUT}")
         return 0
 
-    # ── console demo → /demo ─────────────────────────────────────────────────
+    # ── console demo → demo/ ─────────────────────────────────────────────────
     console = ROOT / "console"
+    demo_base = f"{base_path()}/demo"
     # `npm ci` rather than `npm install`: the lockfile is the deployment's
     # contract, and a build that silently resolves a different tree than the one
     # tested is a build whose output nobody has actually seen.
     run(["npm", "ci", "--no-audit", "--no-fund"], console)
-    run(["npx", "expo", "export", "--platform", "web"], console)
+    # A static export is written for one base URL: every script tag and every
+    # `router.push` is prefixed with it. Rewriting the asset paths afterwards
+    # (the previous approach) fixed the scripts and left the router pushing to
+    # `/risk` from a page served at `/demo/` — a click that navigated off the
+    # site. `experiments.baseUrl` (console/app.config.js) fixes both at source.
+    run(["npx", "expo", "export", "--platform", "web"], console,
+        env={**os.environ, "CONSOLE_BASE_URL": demo_base})
 
     console_dist = console / "dist"
     if not console_dist.is_dir():
         sys.exit("expo export produced no dist/")
     shutil.copytree(console_dist, OUT / "demo", dirs_exist_ok=True)
 
-    # A static export written for `/` has absolute asset paths, so serving it
-    # from `/demo` would 404 on every script and stylesheet. Rewrite them.
-    rewritten = 0
+    # Trust, then verify: an export whose base did not take would still return
+    # 200 for every page and 404 for every script, and only the browser notices.
+    stray = []
     for page in (OUT / "demo").rglob("*.html"):
-        text = page.read_text(encoding="utf-8")
-        fixed = text.replace('="/_expo/', '="/demo/_expo/').replace('="/assets/', '="/demo/assets/')
-        if fixed != text:
-            page.write_text(fixed, encoding="utf-8")
-            rewritten += 1
+        for asset in re.findall(r'(?:src|href)="(/[^"]*)"', page.read_text(encoding="utf-8")):
+            if not asset.startswith(demo_base + "/"):
+                stray.append(f"{page.relative_to(OUT)}: {asset}")
+    if stray:
+        sys.exit(f"console export is not based under {demo_base}/:\n  " + "\n  ".join(stray))
 
     pages = sorted(p.relative_to(OUT) for p in OUT.rglob("*.html"))
-    print(f"\nbuilt {len(pages)} pages → {OUT}  ({rewritten} rebased under /demo)")
+    print(f"\nbuilt {len(pages)} pages → {OUT}  (console based under {demo_base}/)")
     for name in ("robots.txt", "sitemap.xml", "llms.txt"):
         if not (OUT / name).exists():
             sys.exit(f"{name} is missing from the deployment — an engine that cannot find "
@@ -128,7 +155,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--site-only", action="store_true",
                     help="skip the console (no npm install needed)")
-    ap.add_argument("--out", help="output directory (default: <repo>/public). Hosting "
-                                  "providers run the build from their own working "
-                                  "directory and expect the output beside it.")
+    ap.add_argument("--out", help="output directory (default: <repo>/public). The "
+                                  "atherosai.com build points this at its own "
+                                  "compliance-kit/ folder.")
     raise SystemExit(main(**vars(ap.parse_args())))

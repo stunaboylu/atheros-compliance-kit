@@ -202,7 +202,7 @@ def parse(token: str, *, keys: tuple[str, ...] = TRUSTED_KEYS) -> Licence:
         return Licence(
             tier="free", expires=expires, account=payload.get("account"), verified=True,
             reason=f"{tier} licence expired on {expires} — free tier until renewed. "
-                   f"Run `atheros-kit licence activate` or contact sales@atheros.ai.",
+                   f"Run `atheros-kit licence activate` or contact info@atherosai.com.",
         )
     return lic
 
@@ -254,7 +254,7 @@ def require(capability: str) -> None:
         f"'{capability}' requires a {' or '.join(covering) or 'paid'} licence. "
         f"Current: {lic.tier} ({lic.reason}). "
         f"The free tier covers {', '.join(sorted(FREE_CAPABILITIES))} with no activation. "
-        f"See https://atheros.ai/compliance-kit/pricing"
+        f"See https://atherosai.com/pricing"
     )
 
 

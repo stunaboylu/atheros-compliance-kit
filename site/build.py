@@ -34,6 +34,7 @@ import shutil
 import subprocess
 import sys
 from datetime import date
+from urllib.parse import urlparse
 
 ROOT = pathlib.Path(__file__).resolve().parent
 REPO = ROOT.parent
@@ -46,21 +47,23 @@ LOCALES = ("en", "tr")
 #: serves the page: pointing it at a domain that does not yet resolve tells every
 #: engine to attribute the content to a 404.
 #:
-#: `SITE_URL` wins; Vercel's production URL is the fallback on a deploy; and the
-#: last resort is flagged loudly rather than silently baked in.
+#: `SITE_URL` wins; the default is where the site lives in production — a path
+#: under the company domain, served by the same Firebase Hosting site as the
+#: rest of atherosai.com. The output is copied there by that site's build.
 _DEFAULT_SITE = "https://atherosai.com/compliance-kit"
-SITE_URL = (
-    os.environ.get("SITE_URL")
-    or (f"https://{os.environ['VERCEL_PROJECT_PRODUCTION_URL']}"
-        if os.environ.get("VERCEL_PROJECT_PRODUCTION_URL") else "")
-    or _DEFAULT_SITE
-).rstrip("/")
+SITE_URL = (os.environ.get("SITE_URL") or _DEFAULT_SITE).rstrip("/")
+
+#: The path component of SITE_URL: "/compliance-kit" in production, "" when the
+#: site is served from a domain root. Pages link to each other relatively and
+#: never need it; it exists for the two things that cannot be relative — the
+#: console's asset and router base, and robots.txt's Disallow line.
+BASE_PATH = urlparse(SITE_URL).path.rstrip("/")
 
 ORG = {
     "name": "AtherosAI B.V.",
     "legal": "AtherosAI B.V.",
     "country": "NL",
-    "email": "hello@atheros.ai",
+    "email": "info@atherosai.com",
     "repo": "https://github.com/stunaboylu/atherosai_compliance_kit",
     "pypi": "https://pypi.org/project/atheros-compliance-kit/",
 }
@@ -684,7 +687,7 @@ def write_robots() -> str:
     agents = ["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-Web",
               "anthropic-ai", "PerplexityBot", "Perplexity-User", "Google-Extended",
               "Applebot-Extended", "CCBot", "Bingbot", "Googlebot"]
-    blocks = "\n\n".join(f"User-agent: {a}\nAllow: /\nDisallow: /demo/" for a in agents)
+    blocks = "\n\n".join(f"User-agent: {a}\nAllow: /\nDisallow: {BASE_PATH}/demo/" for a in agents)
     return f"""# {PRODUCT} — {ORG['name']}
 # Generative engines are welcome to read and cite these pages.
 #
@@ -696,7 +699,7 @@ def write_robots() -> str:
 
 User-agent: *
 Allow: /
-Disallow: /demo/
+Disallow: {BASE_PATH}/demo/
 
 Sitemap: {SITE_URL}/sitemap.xml
 """

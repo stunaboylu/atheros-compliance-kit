@@ -132,32 +132,51 @@ sixth spelling of a product that should have one name) and add topics —
 
 ---
 
-## Vercel
+## The site: a path on atherosai.com
 
-The public site (marketing at `/`, console demo at `/demo`) deploys from this
-repository. `vercel.json` carries the build command, the output directory and the
-headers, so the only thing to set in the dashboard is:
+The public site (marketing, docs, console demo) is served at
+**`https://atherosai.com/compliance-kit/`** by the same Firebase Hosting site as
+the rest of atherosai.com — repository `aetheros-trinity-hub`, Firebase project
+`atherosaiweb`. Nothing in this repository deploys; that site's build copies
+this output into place:
+
+```bash
+# in aetheros-trinity-hub
+npm run build:firebase      # runs scripts/build-compliance-kit.mjs, which calls
+                            # ../…/atherosai-compliance-kit/scripts/build_public.py
+                            # --out dist/static/client/compliance-kit
+firebase deploy --only hosting
+```
+
+Why a path and not a subdomain or a second host: purchase happens on
+atherosai.com, the pricing card there links here, and a product page that
+inherits the company domain's history is cited sooner than a fresh subdomain.
+A path can only be served by the host that serves the domain — so Firebase, not
+a second provider.
+
+What the output needs from the host — all in `aetheros-trinity-hub/firebase.json`:
 
 | Setting | Value | Why |
 |---|---|---|
-| **Root Directory** | `./` (the repository root) | Vercel auto-detected `atheros-compliance-kit/` — the Python package — and ran the build from there, so `scripts/build_public.py` was not found. The build command now locates the repo root itself, but the output directory is still resolved relative to this setting. |
-| Framework Preset | Other | There is no root `package.json`; the build is a Python script. |
-| `SITE_URL` (env var) | the domain that actually serves the site | Canonicals and the sitemap are absolute. Pointing them at a domain that does not resolve tells every engine to attribute the content to a 404. The build prints a warning when this is unset. |
-
-The build needs neither the Python package nor an installed toolchain beyond
-Python 3 and Node: `site/facts.json` is committed, and CI fails if it goes stale.
-`.vercelignore` therefore excludes the package, the services and the internal
-artifacts — roughly 78 files that a static-site build container has no reason to
-receive.
+| `SITE_URL` | `https://atherosai.com/compliance-kit` (the default in `site/build.py`) | Canonicals, the sitemap, the console's asset and router base, and the robots `Disallow` all derive from it. |
+| Headers on `/compliance-kit/**` | CSP `default-src 'self'; connect-src 'self'` (+ Google Fonts), HSTS, nosniff, referrer and permissions policies | `connect-src 'self'` is the privacy page enforced by the browser: the console makes no network calls, and devtools can confirm it. |
+| `X-Robots-Tag: noindex, nofollow` on `/compliance-kit/demo/**` only | | The demo is synthetic findings for an invented company; indexed, they read as real. The rest of the site must be indexable — an earlier config put `noindex` on everything. |
+| Root `robots.txt` | `Disallow: /compliance-kit/demo/` and `Sitemap: https://atherosai.com/compliance-kit/sitemap.xml` | A robots file is only honoured at the domain root, so the one this build writes is documentation; the effective one is the company site's. |
+| Cache | `immutable` on `/compliance-kit/demo/_expo/static/**`; `max-age=0, must-revalidate` on HTML | Content-hashed bundle vs. pages that change on every release. |
 
 To verify the exact output locally before pushing:
 
 ```bash
 python scripts/build_public.py     # → public/
-cd public && python3 -m http.server 8099
+mkdir -p /tmp/kit-preview && ln -sfn "$PWD/public" /tmp/kit-preview/compliance-kit
+cd /tmp/kit-preview && python3 -m http.server 8099   # http://localhost:8099/compliance-kit/
 ```
 
+The console must be previewed under the path — served from `/`, its scripts and
+its router both point at `/compliance-kit/demo/` and 404. That is by design: the
+export is built for the one place it is served.
+
 CI builds the same output on every push and asserts it is servable: every
-internal link resolves, no console asset kept an absolute path, the three
-crawler files exist, and every page carries a canonical, an x-default hreflang,
-JSON-LD and Open Graph.
+internal link resolves, every root-absolute reference in the demo sits under
+`/compliance-kit/demo/`, the three crawler files exist, and every page carries a
+canonical, an x-default hreflang, JSON-LD and Open Graph.

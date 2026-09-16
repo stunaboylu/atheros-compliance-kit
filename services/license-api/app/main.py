@@ -113,7 +113,7 @@ async def activate(
     if licence.expired:
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
-            f"Licence expired on {licence.expires}. Renew at sales@atheros.ai — the free "
+            f"Licence expired on {licence.expires}. Renew at info@atherosai.com — the free "
             f"tier continues to work with no activation.",
         )
 
@@ -126,7 +126,7 @@ async def activate(
                 status.HTTP_409_CONFLICT,
                 f"This licence has activated on {len(seen)} machines, above the {ceiling} "
                 f"allowed for {licence.seats} seats. If these are CI runners rather than "
-                f"people, contact support@atheros.ai and we will raise it — we would rather "
+                f"people, contact info@atherosai.com and we will raise it — we would rather "
                 f"raise a ceiling than block a release.",
             )
         seen.add(fingerprint)

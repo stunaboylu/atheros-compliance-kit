@@ -197,9 +197,10 @@ jobs:
     # a finding; everybody is tempted to write it into a hero, and the hero is the
     # page a regulator would read first.
     #
-    # This job also builds the COMBINED public output — exactly what Vercel runs.
-    # Verifying it here means a broken deploy shows up on the pull request rather
-    # than as a red build on a hosting dashboard nobody is watching.
+    # This job also builds the COMBINED public output — exactly what the
+    # atherosai.com build copies under /compliance-kit/. Verifying it here means
+    # a broken deploy shows up on the pull request rather than as a 404 on the
+    # company site.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -227,7 +228,7 @@ jobs:
       - name: Build the site (fails on banned phrasing or a missing canonical)
         run: python site/build.py
 
-      - name: Build the public output (site + console demo) — the Vercel build
+      - name: Build the public output (site + console demo) — what atherosai.com serves
         run: python scripts/build_public.py
 
       - name: Assert the deployment is actually servable
@@ -251,12 +252,18 @@ jobs:
                   if not target.exists():
                       problems.append(f"{page.name} -> {href}")
 
-          # A static export written for `/` carries absolute asset paths. Serving
-          # it from /demo without rebasing 404s on every script, and the page
-          # still returns 200 — so nothing notices but the browser.
+          # The console is exported for the path it will be served from
+          # (/compliance-kit/demo, from SITE_URL). An export whose base did not
+          # take still returns 200 for every page and 404 for every script, so
+          # nothing notices but the browser. Every root-absolute reference in the
+          # demo must start with that base — build_public.py checks the same.
+          demo_base = "/compliance-kit/demo/"
           for page in (out / "demo").rglob("*.html"):
-              for asset in re.findall(r'(?:src|href)="(/(?:_expo|assets)/[^"]*)"', page.read_text()):
-                  problems.append(f"{page.name}: un-rebased {asset}")
+              for asset in re.findall(r'(?:src|href)="(/[^"]*)"', page.read_text()):
+                  if not asset.startswith(demo_base):
+                      problems.append(f"{page.name}: {asset} is not under {demo_base}")
+          if not (out / "robots.txt").read_text().count(f"Disallow: {demo_base}"):
+              problems.append("robots.txt does not disallow the demo at its served path")
 
           for required in ["index.html", "en/index.html", "tr/index.html",
                            "demo/index.html", "demo/risk.html",
