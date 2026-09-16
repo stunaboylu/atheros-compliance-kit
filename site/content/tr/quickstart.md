@@ -48,7 +48,7 @@ client = GuardedClient(
     model_name="gpt-5-2025-08-07",
 )
 
-result = client.invoke("ali@acme.com için özetle, IBAN NL91ABNA0417164300")
+result = client.invoke("ali@example.com için özetle, IBAN NL91ABNA0417164300")
 result.text              # çıkışta maskelenir, dönüşte geri konur
 result.degraded          # bir şey yedeğe düştüyse True — asla sessiz değil
 result.masked_entities   # {"EMAIL": 1, "IBAN": 1} — sınıf ve sayı, asla değer

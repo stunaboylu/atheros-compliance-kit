@@ -1,7 +1,7 @@
 [
   {
-    "timestamp": "2026-09-06T16:59:25.987216+00:00",
-    "session_id": "a6a1820bea2f44aa",
+    "timestamp": "2026-09-16T17:04:09.385323+00:00",
+    "session_id": "cf6222ac63ad441c",
     "module": "rag",
     "event_type": "corpus_audit",
     "iso_42001_clause": "8.4 — Data for AI systems (and Art. 10 EU AI Act)",
@@ -27,12 +27,12 @@
         "extend_lexicon_socioeconomic"
       ]
     },
-    "hash": "037c6cf1613b49edf83a03219a4356d32b5278fdf7b2a2c2b4e4f209da3631df",
+    "hash": "5c9800e22d5401468c30f81ac15aecdbe3a8f0cecd7d67b56a0774565fe84898",
     "previous_hash": "GENESIS"
   },
   {
-    "timestamp": "2026-09-06T16:59:25.987671+00:00",
-    "session_id": "93b077c25cca4ec5",
+    "timestamp": "2026-09-16T17:04:09.386181+00:00",
+    "session_id": "b186b979e96b49c9",
     "module": "guard",
     "event_type": "llm_invocation",
     "iso_42001_clause": "8.3 — Operational controls / AI system operation",
@@ -45,7 +45,7 @@
         "total": 39,
         "estimated": true
       },
-      "latency_ms": 0.09,
+      "latency_ms": 0.19,
       "input_action": "pass",
       "output_action": "pass",
       "masked_entities": {
@@ -59,12 +59,12 @@
       "attempts": 1,
       "error": null
     },
-    "hash": "5e4ee1c37101574806f9b8ffd76f0ca4121ce0a7c0998c521e8b6171d56843fa",
-    "previous_hash": "037c6cf1613b49edf83a03219a4356d32b5278fdf7b2a2c2b4e4f209da3631df"
+    "hash": "8c6842417fd66852039715522163ab93c8ad6526d2fe1fa8e79941a9501cefc0",
+    "previous_hash": "5c9800e22d5401468c30f81ac15aecdbe3a8f0cecd7d67b56a0774565fe84898"
   },
   {
-    "timestamp": "2026-09-06T16:59:25.987934+00:00",
-    "session_id": "93b077c25cca4ec5",
+    "timestamp": "2026-09-16T17:04:09.386583+00:00",
+    "session_id": "b186b979e96b49c9",
     "module": "guard",
     "event_type": "llm_invocation",
     "iso_42001_clause": "8.3 — Operational controls / AI system operation",
@@ -77,7 +77,7 @@
         "total": 31,
         "estimated": true
       },
-      "latency_ms": 0.1,
+      "latency_ms": 0.15,
       "input_action": "pass",
       "output_action": "pass",
       "masked_entities": {
@@ -91,12 +91,12 @@
       "attempts": 1,
       "error": null
     },
-    "hash": "fd961e30b69a95b7a0a32c2e431ab3ba77201e06c39a0951a928a6225d302b5e",
-    "previous_hash": "5e4ee1c37101574806f9b8ffd76f0ca4121ce0a7c0998c521e8b6171d56843fa"
+    "hash": "c28f5a96d09991019e2629f1fbddabc45be78d9e28d3755f96bf04526c10585a",
+    "previous_hash": "8c6842417fd66852039715522163ab93c8ad6526d2fe1fa8e79941a9501cefc0"
   },
   {
-    "timestamp": "2026-09-06T16:59:25.988100+00:00",
-    "session_id": "93b077c25cca4ec5",
+    "timestamp": "2026-09-16T17:04:09.386890+00:00",
+    "session_id": "b186b979e96b49c9",
     "module": "guard",
     "event_type": "llm_invocation",
     "iso_42001_clause": "8.3 — Operational controls / AI system operation",
@@ -109,7 +109,7 @@
         "total": 17,
         "estimated": true
       },
-      "latency_ms": 0.06,
+      "latency_ms": 0.12,
       "input_action": "block",
       "output_action": "block",
       "masked_entities": {},
@@ -123,12 +123,12 @@
       "attempts": 0,
       "error": null
     },
-    "hash": "1d1b16d17cfb64addb00e6f33ddbbabe6ebe4d1b83dcf94b50f44e1432fe65e6",
-    "previous_hash": "fd961e30b69a95b7a0a32c2e431ab3ba77201e06c39a0951a928a6225d302b5e"
+    "hash": "81ebda4ba7e93cab735d7f732d2d0b0705c97ab32c12d6e44c852d92a24c4e1e",
+    "previous_hash": "c28f5a96d09991019e2629f1fbddabc45be78d9e28d3755f96bf04526c10585a"
   },
   {
-    "timestamp": "2026-09-06T16:59:25.988235+00:00",
-    "session_id": "93b077c25cca4ec5",
+    "timestamp": "2026-09-16T17:04:09.387142+00:00",
+    "session_id": "b186b979e96b49c9",
     "module": "guard",
     "event_type": "llm_invocation",
     "iso_42001_clause": "8.3 — Operational controls / AI system operation",
@@ -141,7 +141,7 @@
         "total": 6,
         "estimated": true
       },
-      "latency_ms": 0.04,
+      "latency_ms": 0.08,
       "input_action": "block",
       "output_action": "block",
       "masked_entities": {},
@@ -154,12 +154,12 @@
       "attempts": 0,
       "error": null
     },
-    "hash": "dd1a1c346ad418cd71e1b3864d45a14abece513b96203a8be7a88ffd42ba3fd1",
-    "previous_hash": "1d1b16d17cfb64addb00e6f33ddbbabe6ebe4d1b83dcf94b50f44e1432fe65e6"
+    "hash": "104124a6443853ad7a59d69d36ce9203935c18ae99c51fe38fc8d5928e9eea09",
+    "previous_hash": "81ebda4ba7e93cab735d7f732d2d0b0705c97ab32c12d6e44c852d92a24c4e1e"
   },
   {
-    "timestamp": "2026-09-06T16:59:25.988377+00:00",
-    "session_id": "e12227c6fcc447f2",
+    "timestamp": "2026-09-16T17:04:09.387438+00:00",
+    "session_id": "be0e50e7364545a5",
     "module": "vendor",
     "event_type": "vendor_assessment",
     "iso_42001_clause": "8.5 — Third-party and customer relationships",
@@ -180,12 +180,12 @@
       "stale": true,
       "worst_severity": "high"
     },
-    "hash": "459318ec92192901a013482a098f4c5e13f3d568a5529cb3b63942960f95d9c0",
-    "previous_hash": "dd1a1c346ad418cd71e1b3864d45a14abece513b96203a8be7a88ffd42ba3fd1"
+    "hash": "feac3a5d6c55305d365637c565899a0e57724faa3533c9885e8a16d2f703583d",
+    "previous_hash": "104124a6443853ad7a59d69d36ce9203935c18ae99c51fe38fc8d5928e9eea09"
   },
   {
-    "timestamp": "2026-09-06T16:59:25.988535+00:00",
-    "session_id": "0d0ee6985a9744bd",
+    "timestamp": "2026-09-16T17:04:09.388548+00:00",
+    "session_id": "b5df32f0e7c44595",
     "module": "vendor",
     "event_type": "vendor_assessment",
     "iso_42001_clause": "8.5 — Third-party and customer relationships",
@@ -206,12 +206,12 @@
       "stale": true,
       "worst_severity": "high"
     },
-    "hash": "92134e2907dea93f6381f6bac79a8b2a25e38e8327f4cb66d0a5031bf8126bd0",
-    "previous_hash": "459318ec92192901a013482a098f4c5e13f3d568a5529cb3b63942960f95d9c0"
+    "hash": "f0e3bfa05eaaa8142f30b65db79fe147b2895d043f52ca3278d0d56b69f5fc7c",
+    "previous_hash": "feac3a5d6c55305d365637c565899a0e57724faa3533c9885e8a16d2f703583d"
   },
   {
-    "timestamp": "2026-09-06T16:59:25.989904+00:00",
-    "session_id": "59d7ae20945c41b3",
+    "timestamp": "2026-09-16T17:04:09.391562+00:00",
+    "session_id": "5f2be9c0c09947e6",
     "module": "cicd",
     "event_type": "gate_run",
     "iso_42001_clause": "9.1 — Monitoring, measurement, analysis and evaluation",
@@ -231,7 +231,7 @@
         "audit_chain": "pass"
       }
     },
-    "hash": "480409e8dfb97dae8a15ba2d9cdb866987a546780aad796d22ea46eedf00f46f",
-    "previous_hash": "92134e2907dea93f6381f6bac79a8b2a25e38e8327f4cb66d0a5031bf8126bd0"
+    "hash": "270fd0b96924212d19c7a11bc60ec5f96b030efd2122c068070b8a3f6a0b776d",
+    "previous_hash": "f0e3bfa05eaaa8142f30b65db79fe147b2895d043f52ca3278d0d56b69f5fc7c"
   }
 ]

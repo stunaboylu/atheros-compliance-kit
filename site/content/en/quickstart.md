@@ -48,7 +48,7 @@ client = GuardedClient(
     model_name="gpt-5-2025-08-07",
 )
 
-result = client.invoke("Summarise for ali@acme.com, IBAN NL91ABNA0417164300")
+result = client.invoke("Summarise for ali@example.com, IBAN NL91ABNA0417164300")
 result.text              # PII masked outbound, restored inbound
 result.degraded          # True if anything fell back — never silent
 result.masked_entities   # {"EMAIL": 1, "IBAN": 1} — classes and counts, never values

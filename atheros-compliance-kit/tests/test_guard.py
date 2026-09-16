@@ -15,19 +15,19 @@ from atheros_kit.guard import (
 # ── masking ───────────────────────────────────────────────────────────────────
 def test_placeholders_are_stable_per_value():
     a = Anonymizer()
-    out = a.mask("write to x@y.io and again to x@y.io, but not z@y.io").text
+    out = a.mask("write to x@example.com and again to x@example.com, but not z@example.com").text
     assert out.count("⟦EMAIL_1⟧") == 2 and "⟦EMAIL_2⟧" in out
 
 
 def test_masking_round_trips():
     a = Anonymizer()
-    text = "ali@acme.com, NL91ABNA0417164300, 4539578763621486"
+    text = "ali@example.com, NL91ABNA0417164300, 4111111111111111"
     assert a.unmask(a.mask(text).text) == text
 
 
 def test_irreversible_policy_keeps_no_vault():
     a = Anonymizer(reversible=False)
-    masked = a.mask("ali@acme.com").text
+    masked = a.mask("ali@example.com").text
     assert a.unmask(masked) == masked          # unrecoverable by construction
 
 
@@ -43,14 +43,14 @@ def test_custom_entities_win_over_generic_rules():
 
 
 def test_report_payload_never_carries_values():
-    payload = Anonymizer().mask("ali@acme.com").log_payload()
+    payload = Anonymizer().mask("ali@example.com").log_payload()
     assert payload["entities"] == {"EMAIL": 1}
-    assert "ali@acme.com" not in str(payload)
+    assert "ali@example.com" not in str(payload)
 
 
 def test_hallucinated_placeholders_are_not_resolved():
     a = Anonymizer()
-    a.mask("ali@acme.com")
+    a.mask("ali@example.com")
     assert a.leaked_placeholders("see ⟦EMAIL_9⟧") == ["⟦EMAIL_9⟧"]
     assert a.unmask("see ⟦EMAIL_9⟧") == "see ⟦EMAIL_9⟧"
 
@@ -88,8 +88,8 @@ def test_findings_never_store_the_payload():
 # ── wrapper ───────────────────────────────────────────────────────────────────
 def test_clean_call_passes_through_and_restores():
     client = GuardedClient(call=lambda p: f"summary of {p}", policy=GuardPolicy.standard())
-    result = client.invoke("about ali@acme.com")
-    assert result.ok and "ali@acme.com" in result.text and not result.degraded
+    result = client.invoke("about ali@example.com")
+    assert result.ok and "ali@example.com" in result.text and not result.degraded
 
 
 def test_blocked_input_spends_no_tokens_and_still_records():
@@ -159,7 +159,7 @@ def test_every_invocation_lands_on_the_chain(isolated_trail):
 
 
 def test_detect_categories_is_shared_not_duplicated():
-    assert detect_categories("a@b.io 10.0.0.1") == ["EMAIL", "IPV4"]
+    assert detect_categories("a@example.com 10.0.0.1") == ["EMAIL", "IPV4"]
 
 
 # ── Turkish injection ─────────────────────────────────────────────────────────

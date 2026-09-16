@@ -1,7 +1,7 @@
 {
   "schema": "atheros.gate/v1",
   "locale": "en",
-  "session_id": "59d7ae20945c41b3",
+  "session_id": "5f2be9c0c09947e6",
   "passed": false,
   "exit_code": 1,
   "checks": [
@@ -90,8 +90,8 @@
       "schema": "atheros.report/v1",
       "module": "rag",
       "subject": "hiring-knowledge-base",
-      "generated_at": "2026-09-06T16:59:25.987026+00:00",
-      "session_id": "a6a1820bea2f44aa",
+      "generated_at": "2026-09-16T17:04:09.385050+00:00",
+      "session_id": "cf6222ac63ad441c",
       "degraded": false,
       "worst_severity": "high",
       "scores": [
@@ -456,7 +456,7 @@
           "max": 136.0,
           "mean": 126.3,
           "median": 136.0,
-          "stdev": 20.5
+          "stdev": 20.4
         },
         "outliers_short": 0,
         "outliers_long": 0,
@@ -1040,8 +1040,8 @@
         "schema": "atheros.report/v1",
         "module": "vendor",
         "subject": "OpenAI",
-        "generated_at": "2026-09-06T16:59:25.988350+00:00",
-        "session_id": "e12227c6fcc447f2",
+        "generated_at": "2026-09-16T17:04:09.387381+00:00",
+        "session_id": "be0e50e7364545a5",
         "degraded": false,
         "worst_severity": "high",
         "scores": [
@@ -1148,21 +1148,21 @@
           {
             "check": "vendor_facts_stale",
             "severity": "medium",
-            "detail": "the facts used for this assessment are dated 2026-02-01 (217 days old, past the 180-day window)",
+            "detail": "the facts used for this assessment are dated 2026-02-01 (227 days old, past the 180-day window)",
             "module": "vendor",
             "action": "flag",
             "article": null,
             "evidence": {
               "as_of": "2026-02-01",
-              "age_days": 217
+              "age_days": 227
             },
             "remediation": "Re-verify with the vendor and pass the answers via `overrides=`. Vendor terms change without notice.",
             "params": {
               "as_of": "2026-02-01",
-              "age": " (217 days old, past the 180-day window)",
-              "age_tr": " (217 gün önce, 180 günlük tazelik penceresinin dışında)"
+              "age": " (227 days old, past the 180-day window)",
+              "age_tr": " (227 gün önce, 180 günlük tazelik penceresinin dışında)"
             },
-            "detail_tr": "bu değerlendirmede kullanılan bilgiler 2026-02-01 tarihli (217 gün önce, 180 günlük tazelik penceresinin dışında)",
+            "detail_tr": "bu değerlendirmede kullanılan bilgiler 2026-02-01 tarihli (227 gün önce, 180 günlük tazelik penceresinin dışında)",
             "remediation_tr": "Satıcıyla yeniden doğrulayın ve yanıtları `overrides=` ile geçirin. Satıcı koşulları haber verilmeksizin değişir."
           }
         ],
@@ -1273,8 +1273,8 @@
         "schema": "atheros.report/v1",
         "module": "vendor",
         "subject": "Mistral AI",
-        "generated_at": "2026-09-06T16:59:25.988511+00:00",
-        "session_id": "0d0ee6985a9744bd",
+        "generated_at": "2026-09-16T17:04:09.388502+00:00",
+        "session_id": "b5df32f0e7c44595",
         "degraded": false,
         "worst_severity": "high",
         "scores": [
@@ -1465,21 +1465,21 @@
           {
             "check": "vendor_facts_stale",
             "severity": "medium",
-            "detail": "the facts used for this assessment are dated 2026-02-01 (217 days old, past the 180-day window)",
+            "detail": "the facts used for this assessment are dated 2026-02-01 (227 days old, past the 180-day window)",
             "module": "vendor",
             "action": "flag",
             "article": null,
             "evidence": {
               "as_of": "2026-02-01",
-              "age_days": 217
+              "age_days": 227
             },
             "remediation": "Re-verify with the vendor and pass the answers via `overrides=`. Vendor terms change without notice.",
             "params": {
               "as_of": "2026-02-01",
-              "age": " (217 days old, past the 180-day window)",
-              "age_tr": " (217 gün önce, 180 günlük tazelik penceresinin dışında)"
+              "age": " (227 days old, past the 180-day window)",
+              "age_tr": " (227 gün önce, 180 günlük tazelik penceresinin dışında)"
             },
-            "detail_tr": "bu değerlendirmede kullanılan bilgiler 2026-02-01 tarihli (217 gün önce, 180 günlük tazelik penceresinin dışında)",
+            "detail_tr": "bu değerlendirmede kullanılan bilgiler 2026-02-01 tarihli (227 gün önce, 180 günlük tazelik penceresinin dışında)",
             "remediation_tr": "Satıcıyla yeniden doğrulayın ve yanıtları `overrides=` ile geçirin. Satıcı koşulları haber verilmeksizin değişir."
           }
         ],
@@ -1585,7 +1585,7 @@
       }
     ],
     "guard": {
-      "session_id": "93b077c25cca4ec5",
+      "session_id": "b186b979e96b49c9",
       "calls": 4,
       "tokens": 93,
       "degraded_calls": 2,

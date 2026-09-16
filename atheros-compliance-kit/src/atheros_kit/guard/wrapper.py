@@ -7,7 +7,7 @@ has a different client object and they all change; `str -> str` does not.
         return openai_client.responses.create(...).output_text
 
     client = GuardedClient(call=call, policy=GuardPolicy.strict())
-    result = client.invoke("Summarise the case for ali@acme.com")
+    result = client.invoke("Summarise the case for ali@example.com")
 
 Order of operations, and why:
 

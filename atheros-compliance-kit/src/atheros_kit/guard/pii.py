@@ -2,7 +2,7 @@
 
 Design decisions worth stating, because each has a cheaper wrong version:
 
-**Stable placeholders, not blanket redaction.** `ali@acme.com` becomes
+**Stable placeholders, not blanket redaction.** `ali@example.com` becomes
 `⟦EMAIL_1⟧` and stays `⟦EMAIL_1⟧` for the whole session. Replacing every email
 with `[EMAIL]` destroys the model's ability to tell two people apart, which
 silently degrades every summarisation and extraction task the customer bought

@@ -3,7 +3,7 @@
     from atheros_kit.guard import GuardedClient, GuardPolicy, CustomEntity
 
     client = GuardedClient(call=my_llm_call, policy=GuardPolicy.strict())
-    result = client.invoke("Summarise the case for ali@acme.com")
+    result = client.invoke("Summarise the case for ali@example.com")
     result.text          # safe to use
     result.degraded      # True if a fallback ran — never silent
     client.summary()     # token governance + what was masked, values excluded

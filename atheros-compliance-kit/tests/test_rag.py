@@ -43,10 +43,10 @@ def test_orphans_are_reported():
 
 
 def test_pii_findings_carry_categories_not_values():
-    report = assess_chunks([Chunk("a", "Reach ali@acme.com about the invoice today.", [0.1] * 4)])
+    report = assess_chunks([Chunk("a", "Reach ali@example.com about the invoice today.", [0.1] * 4)])
     finding = next(f for f in report.findings if f.check == "personal_data_in_corpus")
     assert finding.evidence["categories"] == ["EMAIL"]
-    assert "ali@acme.com" not in str(finding.evidence)
+    assert "ali@example.com" not in str(finding.evidence)
 
 
 # ── bias ──────────────────────────────────────────────────────────────────────
