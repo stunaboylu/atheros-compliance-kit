@@ -164,17 +164,18 @@ What the output needs from the host — all in `aetheros-trinity-hub/firebase.js
 | Root `robots.txt` | `Disallow: /compliance-kit/demo/` and `Sitemap: https://atherosai.com/compliance-kit/sitemap.xml` | A robots file is only honoured at the domain root, so the one this build writes is documentation; the effective one is the company site's. |
 | Cache | `immutable` on `/compliance-kit/demo/_expo/static/**`; `max-age=0, must-revalidate` on HTML | Content-hashed bundle vs. pages that change on every release. |
 
-To verify the exact output locally before pushing:
+URLs carry no `.html` and every internal link is root-absolute under
+`/compliance-kit` — both because of the host: `cleanUrls: true` 301s any
+request that says `.html`, and `trailingSlash: false` serves the locale home at
+`/compliance-kit/en`, where a relative link would resolve one directory too
+high. A plain file server cannot preview this. Preview through the host's own
+emulator, from the company site's checkout, so what is checked is what ships:
 
 ```bash
-python scripts/build_public.py     # → public/
-mkdir -p /tmp/kit-preview && ln -sfn "$PWD/public" /tmp/kit-preview/compliance-kit
-cd /tmp/kit-preview && python3 -m http.server 8099   # http://localhost:8099/compliance-kit/
+# in aetheros-trinity-hub
+npm run build:firebase && firebase emulators:start --only hosting
+# → http://localhost:5000/compliance-kit
 ```
-
-The console must be previewed under the path — served from `/`, its scripts and
-its router both point at `/compliance-kit/demo/` and 404. That is by design: the
-export is built for the one place it is served.
 
 CI builds the same output on every push and asserts it is servable: every
 internal link resolves, every root-absolute reference in the demo sits under

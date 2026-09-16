@@ -54,10 +54,18 @@ _DEFAULT_SITE = "https://atherosai.com/compliance-kit"
 SITE_URL = (os.environ.get("SITE_URL") or _DEFAULT_SITE).rstrip("/")
 
 #: The path component of SITE_URL: "/compliance-kit" in production, "" when the
-#: site is served from a domain root. Pages link to each other relatively and
-#: never need it; it exists for the two things that cannot be relative — the
-#: console's asset and router base, and robots.txt's Disallow line.
+#: site is served from a domain root. Every internal link is root-absolute under
+#: it. Relative links were tried first and fail on the one page that matters
+#: most: the host serves the locale home at `/compliance-kit/en` — no trailing
+#: slash, by its own `trailingSlash: false` — so a relative `honesty` on that
+#: page resolves to `/compliance-kit/honesty` and 404s.
 BASE_PATH = urlparse(SITE_URL).path.rstrip("/")
+
+#: URLs carry no `.html`. The host (Firebase Hosting, `cleanUrls: true`) serves
+#: `en/quickstart.html` at `/en/quickstart` and 301s any request that says
+#: `.html` — so a canonical or a sitemap entry with the extension would point
+#: every engine at a redirect. Authors still write `quickstart.html` in the
+#: markdown, because that is the file; `page()` rewrites the rendered hrefs.
 
 ORG = {
     "name": "AtherosAI B.V.",
@@ -414,8 +422,27 @@ def render_markdown(src: str) -> str:
     return "\n".join(out)
 
 
+def path_for(slug: str, locale: str) -> str:
+    """Site-relative path, root-absolute: `/compliance-kit/en/quickstart`,
+    and `/compliance-kit/en` for the locale home (the host serves the directory
+    index there and redirects the slashed form to it)."""
+    return f"{BASE_PATH}/{locale}" if slug == "index" else f"{BASE_PATH}/{locale}/{slug}"
+
+
 def url_for(slug: str, locale: str) -> str:
-    return f"{SITE_URL}/{locale}/{slug}.html"
+    return f"{SITE_URL}/{locale}" if slug == "index" else f"{SITE_URL}/{locale}/{slug}"
+
+
+_CONTENT_HREF = re.compile(r'href="([a-z0-9-]+)\.html"')
+_DEMO_HREF = re.compile(r'href="\.\./demo/?"')
+
+
+def absolutise_links(body: str, locale: str) -> str:
+    """Authors link relatively (`quickstart.html`, `../demo/`) — the natural way
+    to write a link to a sibling file. The served URL is neither relative nor
+    `.html`; see BASE_PATH."""
+    body = _CONTENT_HREF.sub(lambda m: f'href="{path_for(m.group(1), locale)}"', body)
+    return _DEMO_HREF.sub(f'href="{BASE_PATH}/demo"', body)
 
 
 def json_ld(slug: str, locale: str, title: str, description: str, modified: str,
@@ -496,7 +523,7 @@ def json_ld(slug: str, locale: str, title: str, description: str, modified: str,
         "@type": "BreadcrumbList",
         "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": PRODUCT,
-             "item": f"{SITE_URL}/{locale}/index.html"},
+             "item": url_for("index", locale)},
         ] + ([] if slug == "index" else [
             {"@type": "ListItem", "position": 2, "name": title, "item": page_url}]),
     }
@@ -570,17 +597,19 @@ def page(slug: str, locale: str, title: str, body: str, description: str,
          modified: str, facts: dict, faq: list[tuple[str, str]]) -> str:
     other = "tr" if locale == "en" else "en"
     nav = "".join(
-        f'<a href="{s}.html"{" aria-current=page" if s == slug else ""}>{html.escape(label)}</a>'
+        f'<a href="{path_for(s, locale)}"{" aria-current=page" if s == slug else ""}>'
+        f'{html.escape(label)}</a>'
         for s, label in NAV[locale]
     )
+    body = absolutise_links(body, locale)
     updated = {"en": "Last updated", "tr": "Son güncelleme"}[locale]
     return f"""<!doctype html>
 <html lang="{locale}">
 {head(slug, locale, title, description, modified, facts, faq)}
 <header class="site"><div class="inner">
-  <a class="brand" href="index.html">{PRODUCT}</a>
+  <a class="brand" href="{path_for("index", locale)}">{PRODUCT}</a>
   <nav>{nav}</nav>
-  <a class="lang" href="../{other}/{slug}.html" hreflang="{other}">{LANG_NAME[other]}</a>
+  <a class="lang" href="{path_for(slug, other)}" hreflang="{other}">{LANG_NAME[other]}</a>
 </div></header>
 <main class="{'' if slug in WIDE_PAGES else 'narrow'}">
 {body}
@@ -601,7 +630,7 @@ def root_page(facts: dict) -> str:
     ld = json.dumps({
         "@context": "https://schema.org",
         "@graph": [
-            {"@type": "WebSite", "@id": f"{SITE_URL}/#website", "url": f"{SITE_URL}/",
+            {"@type": "WebSite", "@id": f"{SITE_URL}/#website", "url": SITE_URL,
              "name": PRODUCT, "inLanguage": ["en", "tr"],
              "publisher": {"@id": f"{SITE_URL}/#organization"}},
             {"@type": "Organization", "@id": f"{SITE_URL}/#organization",
@@ -617,10 +646,10 @@ def root_page(facts: dict) -> str:
 <meta name="description" content="A Python toolkit that produces EU AI Act evidence and
  ISO/IEC 42001 records for five named clauses from inside your own codebase and CI — RAG bias scoring,
  PII masking, risk classification, third-party vendor assessment. English and Turkish.">
-<link rel="canonical" href="{SITE_URL}/">
-<link rel="alternate" hreflang="en" href="{SITE_URL}/en/index.html">
-<link rel="alternate" hreflang="tr" href="{SITE_URL}/tr/index.html">
-<link rel="alternate" hreflang="x-default" href="{SITE_URL}/en/index.html">
+<link rel="canonical" href="{SITE_URL}">
+<link rel="alternate" hreflang="en" href="{url_for("index", "en")}">
+<link rel="alternate" hreflang="tr" href="{url_for("index", "tr")}">
+<link rel="alternate" hreflang="x-default" href="{url_for("index", "en")}">
 <script type="application/ld+json">{ld}</script>
 <style>{CSS}</style>
 <main class="narrow">
@@ -628,8 +657,8 @@ def root_page(facts: dict) -> str:
 <p class="lead">Compliance evidence, generated by the system that needs it. A Python toolkit
 that runs inside your own codebase and CI and produces the artefacts EU AI Act obligations and five named
 ISO/IEC 42001 clauses ask for — automatically, hash-chained, and without your data leaving the process.</p>
-<p><a class="cta" href="en/index.html">English</a>
-<a class="cta ghost" href="tr/index.html">Türkçe</a></p>
+<p><a class="cta" href="{path_for("index", "en")}">English</a>
+<a class="cta ghost" href="{path_for("index", "tr")}">Türkçe</a></p>
 <h2>What it does</h2>
 <ul>
 <li><strong>rag</strong> — is our knowledge base biased, duplicated, drifting, or full of
@@ -651,7 +680,7 @@ dependencies in the core, {facts['tests']} tests, no API key and no network requ
 (function () {{
   try {{
     if ((navigator.language || "").toLowerCase().startsWith("tr")) {{
-      location.replace("tr/index.html");
+      location.replace("{path_for("index", "tr")}");
     }}
   }} catch (e) {{}}
 }})();
@@ -661,7 +690,7 @@ dependencies in the core, {facts['tests']} tests, no API key and no network requ
 
 def write_sitemap(pages: list[tuple[str, str, str]]) -> str:
     """`pages` is (slug, locale, lastmod). Real XML, not an SPA fallback."""
-    urls = [f"  <url><loc>{SITE_URL}/</loc><changefreq>weekly</changefreq>"
+    urls = [f"  <url><loc>{SITE_URL}</loc><changefreq>weekly</changefreq>"
             f"<priority>1.0</priority></url>"]
     for slug, locale, modified in pages:
         alts = "".join(

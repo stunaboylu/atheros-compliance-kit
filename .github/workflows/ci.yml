@@ -242,14 +242,22 @@ jobs:
           # Every page the site links to must exist, and the demo must be reachable
           # from it — the link was added the moment a demo URL existed, and a
           # 404 there is the first thing a prospect would hit.
-          for page in (out / "en").glob("*.html"):
+          #
+          # Links are root-absolute under the served path and carry no `.html`
+          # (site/build.py, BASE_PATH): `/compliance-kit/en/quickstart` is the
+          # file `en/quickstart.html`, and `/compliance-kit/en` is `en/index.html`.
+          # Resolve the way the host does.
+          base = "/compliance-kit"
+          for page in list((out / "en").glob("*.html")) + [out / "index.html"]:
               for href in re.findall(r'href="([^"#]+)"', page.read_text()):
                   if href.startswith(("http", "mailto:")):
                       continue
-                  target = (out if href.startswith("/") else page.parent) / href.lstrip("/")
-                  if target.is_dir():
-                      target = target / "index.html"
-                  if not target.exists():
+                  if not href.startswith(base + "/"):
+                      problems.append(f"{page.name} -> {href}: not under {base}/")
+                      continue
+                  rel = href[len(base) + 1:]
+                  candidates = [out / rel, out / f"{rel}.html", out / rel / "index.html"]
+                  if not any(c.is_file() for c in candidates):
                       problems.append(f"{page.name} -> {href}")
 
           # The console is exported for the path it will be served from
