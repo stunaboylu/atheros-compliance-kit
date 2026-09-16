@@ -3,7 +3,7 @@
 
 # Öz-değerlendirme — AtherosAI Compliance Kit
 
-_`scripts/self_assessment.py` tarafından **1.0.0** sürümüne karşı, `EU-2024/1689:2024-07-12` mevzuat sürümüyle üretildi._
+_`scripts/self_assessment.py` tarafından **1.0.1** sürümüne karşı, `EU-2024/1689:2024-07-12` mevzuat sürümüyle üretildi._
 
 Bu ürünü kendi üzerinde çalıştırıp sonucu boşluklarıyla birlikte yayımlıyoruz. Satıcısı kendi değerlendirmesini üretemeyen bir uyum aracı, kimsenin satın almaması gereken bir araçtır.
 

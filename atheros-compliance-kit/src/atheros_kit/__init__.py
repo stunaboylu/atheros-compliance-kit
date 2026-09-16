@@ -37,7 +37,7 @@ from .guard import CustomEntity, GuardedClient, GuardPolicy
 from .rag import RAGAuditEngine, assess_chunks, score_corpus
 from .vendor import assess as assess_vendor
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 __all__ = [
     "__version__",

@@ -12,6 +12,26 @@ adds one section type of its own:
 
 ## [Unreleased]
 
+## [1.0.1] — 2026-09-16
+
+### Changed
+
+- **Every sample value in the documentation, the tests and the console fixtures is on a
+  reserved example domain.** The PII examples used `ali@acme.com`; acme.com is a registered,
+  live domain, and whether anyone reads mail at that address is unknowable. RFC 2606 reserves
+  `example.com` so that it can never be anyone's, and that is what every example now uses.
+  The credit-card sample is Visa's documented test PAN. The IBAN is unchanged: it is the
+  published example IBAN for the Netherlands, not an account. The licence's contact address
+  is `info@atherosai.com`, like every other one.
+
+  1.0.0 was published with the old README and withdrawn from PyPI the same day; 1.0.1 is
+  the same code with the clean documentation.
+
+## [1.0.0] — 2026-09-16
+
+First release. (The changelog previously dated this 2026-09-06, the date the section was
+written; the package was published on 2026-09-16, with everything below.)
+
 ### Added
 
 - `atheros-kit iso export` — collects the hash-chained ledger into one ISO/IEC 42001
@@ -40,11 +60,6 @@ adds one section type of its own:
 - The clause list and the not-covered list are measured into `site/facts.json` from
   `atheros_kit.iso.clauses` rather than hand-written on four pages in two languages, where
   a fifth clause would have left every copy still saying "four".
-
-
-## [1.0.0] — 2026-09-06
-
-First release.
 
 ### Added
 

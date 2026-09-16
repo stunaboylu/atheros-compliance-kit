@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "atheros-compliance-kit"
-version = "1.0.0"
+version = "1.0.1"
 description = "AtherosAI Compliance Kit — EU AI Act evidence and ISO/IEC 42001 records for five named clauses from inside your own codebase and CI: RAG bias and data-quality scoring, third-party LLM guardrails, risk classification with Annex IV dossiers, and third-party vendor assessment. English and Turkish."
 readme = "README.md"
 requires-python = ">=3.10"
