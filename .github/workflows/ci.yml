@@ -95,6 +95,27 @@ jobs:
           atheros-kit vendor assess openai --region EU || true
           atheros-kit audit verify
 
+  license-api:
+    # The only thing AtherosAI operates that a paying customer's activation
+    # depends on. Its critical test is that a token minted here verifies in
+    # the Kit's pure-Python Ed25519 code with no shared module between them —
+    # if that ever breaks, every paying customer is silently on the free tier.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install
+        working-directory: services/license-api
+        run: pip install -r requirements-dev.txt
+      - name: Lint
+        working-directory: services/license-api
+        run: ruff check app tests
+      - name: Test (SQLite in place of Postgres, a throwaway signing key, no network)
+        working-directory: services/license-api
+        run: pytest -q
+
   self-assessment:
     # We run the product on itself, and the run is a release gate. If the Kit
     # stops being able to assess the Kit, nothing else in this repo matters.

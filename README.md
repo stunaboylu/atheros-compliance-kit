@@ -84,9 +84,10 @@ python ../scripts/self_assessment.py --check
 python ../site/build.py
 ```
 
-CI runs eight jobs on every push: a 3.10/3.13/Windows test matrix, an assertion that the core
-imports nothing third-party, the self-assessment gate, a determinism gate, the console build with
-a static-content assertion, and the site copy lint.
+CI runs nine jobs on every push: a 3.10/3.13/Windows test matrix, an assertion that the core
+imports nothing third-party, the licence service's tests (a token minted there must verify here),
+the self-assessment gate, a determinism gate, the console build with a static-content assertion,
+and the site copy lint.
 
 ---
 

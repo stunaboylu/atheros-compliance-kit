@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import os
+from contextlib import asynccontextmanager
 from datetime import date, datetime, timedelta, timezone
 
 from fastapi import Depends, FastAPI, HTTPException, status
@@ -20,18 +21,43 @@ from .config import settings
 from .keys import jwks, public_key_hex, sign_token
 from .models import Base, Licence
 
-app = FastAPI(
-    title="AtherosAI licence service",
-    version="1.0.0",
-    docs_url="/docs" if settings.debug else None,   # never in production
-)
-
 engine = create_async_engine(settings.database_url, pool_pre_ping=True)
 Session = async_sessionmaker(engine, expire_on_commit=False)
 
 #: Salt for fingerprint hashing. Without it, a fingerprint is a stable global
 #: identifier for a machine and a database dump becomes a cross-customer join key.
 _FINGERPRINT_SALT = os.environ.get("ATHEROS_FINGERPRINT_SALT", "")
+
+
+async def startup() -> None:
+    # Fail loudly at boot rather than on the first customer request. A signing key
+    # discovered missing during an activation surfaces to the customer as "your
+    # licence is invalid", which is both wrong and the hardest kind of bug to
+    # attribute.
+    public_key_hex()
+    if not _FINGERPRINT_SALT:
+        raise RuntimeError(
+            "ATHEROS_FINGERPRINT_SALT is not set. Without it, stored fingerprints are "
+            "unsalted hashes of stable machine ids — a cross-customer join key in a "
+            "database that is supposed to hold nothing of the sort."
+        )
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    await startup()
+    yield
+    await engine.dispose()
+
+
+app = FastAPI(
+    title="AtherosAI licence service",
+    version="1.0.0",
+    docs_url="/docs" if settings.debug else None,   # never in production
+    lifespan=lifespan,
+)
 
 
 async def get_session() -> AsyncSession:
@@ -61,23 +87,6 @@ def _hash_key(key: str) -> str:
 
 def _hash_fingerprint(fingerprint: str) -> str:
     return hmac.new(_FINGERPRINT_SALT.encode(), fingerprint.encode(), hashlib.sha256).hexdigest()
-
-
-@app.on_event("startup")
-async def startup() -> None:
-    # Fail loudly at boot rather than on the first customer request. A signing key
-    # discovered missing during an activation surfaces to the customer as "your
-    # licence is invalid", which is both wrong and the hardest kind of bug to
-    # attribute.
-    public_key_hex()
-    if not _FINGERPRINT_SALT:
-        raise RuntimeError(
-            "ATHEROS_FINGERPRINT_SALT is not set. Without it, stored fingerprints are "
-            "unsalted hashes of stable machine ids — a cross-customer join key in a "
-            "database that is supposed to hold nothing of the sort."
-        )
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
 
 
 @app.get("/health")

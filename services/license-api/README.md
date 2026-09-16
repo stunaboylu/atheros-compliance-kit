@@ -58,3 +58,19 @@ uvicorn app.main:app --reload
 The private key belongs in a KMS or a secret manager, never in the image and
 never in the repository. `app/keys.py` reads it from the environment so that
 substituting a KMS-backed signer is one function, not a rewrite.
+
+## Test
+
+```bash
+pip install -r requirements-dev.txt
+pytest -q          # SQLite stands in for Postgres; a signing key is generated per run
+```
+
+The test that matters is `test_activation_mints_a_token_the_kit_verifies_offline`:
+a token minted here is handed to the Kit's own verifier, imported from
+`../../atheros-compliance-kit/src`, with the service's public key. The two sides
+share no code — `cryptography` here, pure Python there — so this is the only
+place the contract between them is checked. It also asserts that the same token
+is *refused* against the placeholder key the Kit currently ships with.
+
+CI runs this on every push (`license-api` job).
