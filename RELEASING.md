@@ -125,10 +125,10 @@ Topics on the repository: `eu-ai-act`, `iso-42001`, `ai-governance`,
 
 ## Not yet done
 
-- [ ] PyPI + TestPyPI trusted publishers registered (above)
-- [ ] `pypi` environment with a required reviewer
+- [x] PyPI + TestPyPI trusted publishers registered (2026-09-16)
+- [x] `pypi` environment with a required reviewer
 - [x] Repository public, under the product's one name
-- [ ] Tag `v1.0.0`
+- [x] Tag `v1.0.0` — on PyPI 2026-09-16, approved by hand at the `pypi` gate
 - [ ] Legal sign-off on `LICENSE`, the report footer, and the banned-phrase list
 
 ### Stage 2 — the paid tiers (deferred until Stripe goes live on atherosai.com)
