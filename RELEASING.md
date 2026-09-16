@@ -125,10 +125,33 @@ sixth spelling of a product that should have one name) and add topics —
 - [ ] PyPI + TestPyPI trusted publishers registered (above)
 - [ ] `pypi` environment with a required reviewer
 - [ ] Tag `v1.0.0`, then make the repository public and rename it
-- [ ] Licence service deployed, its public key added to `core/license.py`
-      `TRUSTED_KEYS`, and `ENFORCED` flipped to `True` — until all three,
-      `atheros-kit doctor` correctly reports that enforcement is off
 - [ ] Legal sign-off on `LICENSE`, the report footer, and the banned-phrase list
+
+### Stage 2 — the paid tiers (deferred until Stripe goes live on atherosai.com)
+
+The service is written and tested (`services/license-api`, CI job
+`license-api`). What remains is operational, and none of it is needed for the
+free tier, which never touches the service.
+
+- [ ] **Deploy** — Cloud Run + Cloud SQL Postgres, EU region (`europe-west4`),
+      `ATHEROS_SIGNING_KEY_PEM` and `ATHEROS_FINGERPRINT_SALT` from Secret
+      Manager, never from the image. The Dockerfile is ready; not Firebase
+      Functions (long-lived Postgres connection, two uvicorn workers).
+- [ ] **Signing key** — `python -m app.keys generate` once, straight into Secret
+      Manager. Record where it lives and who else can reach it: it is the only
+      private key in the product and today one person holds everything.
+- [ ] **One release flips three things together**: the public key hex into
+      `core/license.py` `TRUSTED_KEYS`, `ENFORCED = True`, and a changelog entry
+      saying so. Until then `atheros-kit doctor` correctly reports enforcement
+      off — and every module is open to everyone, which means a Team purchase
+      today buys support and SLA, not capabilities.
+- [ ] **Issuing keys** — nothing creates a `licences` row yet; the service only
+      activates rows that exist. Decide: Stripe webhook on atherosai.com → an
+      admin endpoint here (`POST /v1/licences`, admin-token), or hand-issued
+      rows for the first design partners (reasonable for five). This must exist
+      before the first card payment, or money is taken and no key is sent.
+- [ ] Runbook for the three likely incidents: key rotation (README has the
+      procedure), a customer over the activation ceiling, database restore.
 
 ---
 
